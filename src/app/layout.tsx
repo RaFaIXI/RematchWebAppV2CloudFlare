@@ -53,11 +53,11 @@ export default function RootLayout({
             "@context": "https://schema.org",
             "@type": "WebSite",
             "name": "Rematch CookBook",
-            "url": "https://rematch-cookbook.vercel.app",
+            "url": "https://rematch-cookbook.pages.dev",
             "description": "Learn the essential techniques to improve your game with our detailed video tutorials.",
             "potentialAction": {
               "@type": "SearchAction",
-              "target": "https://rematch-cookbook.vercel.app/search?q={search_term_string}",
+              "target": "https://rematch-cookbook.pages.dev/search?q={search_term_string}",
               "query-input": "required name=search_term_string"
             }
           })
@@ -67,9 +67,9 @@ export default function RootLayout({
             "@context": "https://schema.org",
             "@type": "Organization",
             "name": "Master Rematch",
-            "url": "https://rematch-cookbook.vercel.app",
+            "url": "https://rematch-cookbook.pages.dev",
             "description": "Learn the essential techniques to improve your game with our detailed video tutorials.",
-            "logo": "https://rematch-cookbook.vercel.app/favicon-32x32.png", 
+            "logo": "https://rematch-cookbook.pages.dev/favicon-32x32.png", 
             "sameAs": [
               "https://www.youtube.com/@rafassbm",
               "https://discord.com/invite/ua8D567NAp"
