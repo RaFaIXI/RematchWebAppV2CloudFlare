@@ -1,8 +1,30 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Cloudflare Next.js Quickstart
+
+This project is a quickstart for starting a Next.js to deploy on Cloudflare Pages.
+
+The quickstart includes some defaults for:
+
+- Basic Next.js setup with [Tailwind CSS](https://tailwindcss.com/)
+- Deployments to Cloudflare via [GitHub Actions](.github/workflows)
+- Formatting and linting via [Biome](https://biomejs.dev/)
+
+For a more complete using pnpm workspaces and a monorepo with a [Hono](https://hono.dev) API deployed to Cloudflare Workers, check out our [cloudflare-quickstart](https://github.com/gmdotdev/cloudflare-quickstart).
 
 ## Getting Started
 
-First, run the development server:
+1. Clone this repository
+
+```bash
+  git clone git@github.com:gmdotdev/cloudflare-nextjs-quickstart.git
+```
+
+2. Install dependencies
+
+```bash
+  pnpm install
+```
+
+3. Start the development server
 
 ```bash
 npm run dev
@@ -16,21 +38,31 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Deploying to Cloudflare
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Create a new GitHub repository for your project.
 
-## Learn More
+2. Set up the following GitHub repository secrets:
 
-To learn more about Next.js, take a look at the following resources:
+- [`CLOUDFLARE_ACCOUNT_ID`](https://developers.cloudflare.com/fundamentals/setup/find-account-and-zone-ids/)
+- [`CLOUDFLARE_API_TOKEN`](https://developers.cloudflare.com/workers/wrangler/ci-cd/#api-token)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. Create the Cloudflare Pages app with a project name matching that in [build-and-deploy.yml](.github/workflows/build-and-deploy.yml). You can create a new Pages app by:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Go to Workers & Pages in Cloudflare
+- Click the Pages tab and then `Upload assets`
+- Type the project name and click `Create Project`, skip the rest
 
-## Deploy on Vercel
+4. Push your repository to GitHub. The GitHub Actions workflow is set to manual trigger by default, so navigate to Actions to run the deploys manually.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Using Custom Domains
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+To use a custom domain with Cloudflare Pages, you can follow the [official documentation](https://developers.cloudflare.com/pages/configuration/custom-domains/).
+
+**Note**: This assumes your domain is already set up in Cloudflare.
+
+## Links
+
+- [Biome](https://biomejs.dev/)
+- [Cloudflare next-on-pages](https://developers.cloudflare.com/pages/framework-guides/nextjs/deploy-a-nextjs-site/)
+- [Next.js](https://nextjs.org)
