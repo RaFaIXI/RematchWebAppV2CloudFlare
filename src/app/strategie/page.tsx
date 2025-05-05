@@ -70,7 +70,7 @@ export default function StrategiePage() {
   const techniques: Array<{
     id: number
     videoUrl: string
-    videoType: "local" | "youtube"
+    videoType: "local" | "youtube" |"youtubemuted"
     difficulty: number
     utility: number
     title: string

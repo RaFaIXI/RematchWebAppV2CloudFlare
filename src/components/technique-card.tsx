@@ -21,7 +21,7 @@ interface TechniqueCardProps {
   title: string
   description: string
   videoUrl: string
-  videoType: "local" | "youtube"
+  videoType: "local" | "youtube" | "youtubemuted"
   fullDescription: string
   difficulty: number
   utility: number
@@ -88,9 +88,11 @@ export function TechniqueCard({
   const [isOpen, setIsOpen] = useState(false)
   const [lang, setLang] = useState<"en" | "fr">("en")
   const videoRef = useRef<HTMLVideoElement>(null)
-  const youtubeId = videoType === "youtube" ? getYouTubeVideoId(videoUrl) : null
+  const youtubeId = (videoType === "youtube" || videoType === "youtubemuted") ? getYouTubeVideoId(videoUrl) : null
 
   const isException = exeptionTitle.includes(title)
+  // Fix: Only mute if videoType is "youtubemuted"
+  const shouldMuteYoutube = videoType === "youtubemuted"
 
   useEffect(() => {
     const storedLang = localStorage.getItem("lang")
@@ -138,10 +140,10 @@ export function TechniqueCard({
   }, [isOpen, videoType, isException])
 
   const renderVideo = () => {
-    if (videoType === "youtube" && youtubeId) {
+    if ((videoType === "youtube" || videoType === "youtubemuted") && youtubeId) {
       return (
         <iframe
-          src={`https://www.youtube.com/embed/${youtubeId}?autoplay=${isOpen ? "1" : "0"}&loop=1&playlist=${youtubeId}&controls=${isException ? "1" : "0"}`}
+          src={`https://www.youtube.com/embed/${youtubeId}?autoplay=${isOpen ? "1" : "0"}&loop=1&playlist=${youtubeId}&controls=${isException ? "1" : "0"}${shouldMuteYoutube ? "&mute=1" : ""}`}
           title={`YouTube video: ${title}`}
           className="w-full h-full absolute top-0 left-0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
