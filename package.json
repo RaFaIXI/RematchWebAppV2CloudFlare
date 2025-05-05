@@ -28,6 +28,7 @@
     "wrangler": "^3.53.1"
   },
   "dependencies": {
+    "@radix-ui/react-accordion": "^1.2.8",
     "@radix-ui/react-dialog": "^1.1.11",
     "@radix-ui/react-slot": "^1.2.0",
     "analytics@^1.5.0": "link:/@vercel/analytics@^1.5.0",
