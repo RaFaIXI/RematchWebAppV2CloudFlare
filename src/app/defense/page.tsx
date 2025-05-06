@@ -70,7 +70,7 @@ const translations = {
     ],
   },
 }
-
+ 
 const techniqueMeta: Array<{
   id: number
   videoUrl: string

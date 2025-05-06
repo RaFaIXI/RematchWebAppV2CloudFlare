@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Heart, Video, Youtube, Globe, MessageSquare, ExternalLink } from "lucide-react";
-
+ 
 export default function CreditsPage() {
   const [lang, setLang] = useState<"en" | "fr">("en");
   

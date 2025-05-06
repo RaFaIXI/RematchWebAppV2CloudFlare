@@ -83,7 +83,7 @@ export default function StrategiePage() {
       videoType: "local",
       difficulty: 2,
       utility: 5,
-      ...t.techniques[0],
+      ...t.techniques[0], 
     },
     {
       id: 2,

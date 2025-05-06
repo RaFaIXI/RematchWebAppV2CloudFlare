@@ -419,7 +419,7 @@ export default function TirPage() {
           <p className="text-muted-foreground">
           {t.pageDescription}
           </p>
-        </div>
+        </div> 
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {techniques.map((technique) => (

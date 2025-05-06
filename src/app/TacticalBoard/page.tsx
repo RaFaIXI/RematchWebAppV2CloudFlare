@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Clipboard, Save, Undo, Download, ExternalLink, HomeIcon, Trash2, Edit3, X } from "lucide-react";
 import Footer from "@/components/Footer";
 import Image from "next/image";
-
+ 
 export default function TacticalBoardPage() {
   const [lang, setLang] = useState("en");
   const [players, setPlayers] = useState([]);

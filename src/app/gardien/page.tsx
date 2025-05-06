@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { TechniqueCard } from "@/components/technique-card"
 import Footer from "@/components/Footer"
-
+ 
 const translations = {
   en: {
     pageTitle: "Goalkeeper Techniques",

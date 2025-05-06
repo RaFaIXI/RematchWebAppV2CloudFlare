@@ -5,7 +5,7 @@ import Footer from "@/components/Footer"
 import { useEffect, useState } from "react"
 import { title } from "process"
 const translations = {
-  fr: {
+  fr: { 
     pageTitle: "Techniques de Dribble",
     pageDescription:
       "Maîtrisez l'art du dribble avec ces techniques pour éliminer vos adversaires et créer des occasions.",

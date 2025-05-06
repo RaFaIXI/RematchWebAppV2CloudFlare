@@ -4,7 +4,7 @@ import { CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { 
-  Timer, 
+  Timer,  
   Calendar, 
   CheckCircle, 
   Zap,

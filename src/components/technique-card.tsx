@@ -76,7 +76,7 @@ const getYouTubeVideoId = (url: string): string | null => {
 }
 const exeptionTitle = ["Son de la balle","Ball Sound","Mouvements et Tirs","Movements and Shots","Body Block","Sprint"]
 
-export function TechniqueCard({
+export function TechniqueCard({ 
   title,
   description,
   videoUrl,
