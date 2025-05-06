@@ -100,7 +100,7 @@ export function SiteHeader() {
 
               {mounted && (
                 <Button variant="ghost" onClick={toggleTheme}>
-                  {theme === "light" ? "🌙 Dark" : "☀️ Light"}
+                  {theme === "Dark" ? "🌙 Dark" : "☀️ Light"}
                 </Button>
               )}
 
