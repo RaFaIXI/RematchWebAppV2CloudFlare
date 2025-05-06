@@ -73,6 +73,7 @@ const [trainingHistory, setTrainingHistory] = useState<TrainingHistory>({});
   const [videoModal, setVideoModal] = useState({
     isOpen: false,
     videoUrl: "",
+    videoId: "", // Add this for YouTube video IDs
     title: ""
   });
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -274,22 +275,21 @@ const getNextMonth = () => {
     setSelectedMonth(selectedMonth + 1);
   }
 };
-  const openVideoModal = (id: string, title: string) => {
-    // Map routine ID to a video URL
-    // In a real application, these would be actual video URLs
-    const videoUrls = {
-      "beginner-1": "/video/Routines/pushballandscanroutine.mp4",
-      "intermediate-1": "/video/Routines/shootandcrossroutine.mp4",
-      "advanced-1": "/video/Routines/passroutine.mp4",
-    };
-
-    setVideoModal({
-      isOpen: true,
-      videoUrl: videoUrls[id as keyof typeof videoUrls] || "",
-      title: title
-    });
+const openVideoModal = (id: string, title: string) => {
+  // Map routine ID to YouTube video IDs
+  const youtubeVideoIds = {
+    "beginner-1": "QNI9AxLbLXw", // Example YouTube ID - replace with actual soccer routine videos
+    "intermediate-1": "BP-5sEXeHl0", // Example YouTube ID
+    "advanced-1": "tRywN5TbQNk", // Example YouTube ID
   };
 
+  setVideoModal({
+    isOpen: true,
+    videoUrl: "", // Keep for backwards compatibility
+    videoId: youtubeVideoIds[id as keyof typeof youtubeVideoIds] || "",
+    title: title
+  });
+};
   const closeVideoModal = () => {
     // Pause the video when modal is closed
     if (videoRef.current) {
@@ -299,6 +299,7 @@ const getNextMonth = () => {
     setVideoModal({
       isOpen: false,
       videoUrl: "",
+      videoId: "", // Ensure videoId is included
       title: ""
     });
   };
@@ -746,39 +747,38 @@ const getNextMonth = () => {
 
       {/* Video Modal */}
       {videoModal.isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
-          <div 
-            ref={modalContentRef}
-            className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-4xl mx-4"
-          >
-            <div className="p-4 flex justify-between items-center border-b border-gray-200 dark:border-gray-700">
-              <h3 className="text-xl font-bold">{t.watchingRoutine} {videoModal.title}</h3>
-              <Button variant="ghost" size="icon" onClick={closeVideoModal}>
-                <X className="h-5 w-5" />
-              </Button>
-            </div>
-            <div className="p-4">
-              <div className="w-full aspect-video bg-black rounded-md">
-                <video 
-                  ref={videoRef}
-                  className="w-full h-full" 
-                  controls
-                  autoPlay
-                  poster="/api/placeholder/840/472"
-                >
-                  <source src={videoModal.videoUrl} type="video/mp4" />
-                  Your browser does not support the video tag.
-                </video>
-              </div>
-            </div>
-            <div className="p-4 border-t border-gray-200 dark:border-gray-700 flex justify-end">
-              <Button variant="outline" onClick={closeVideoModal}>
-                {t.closeButton}
-              </Button>
-            </div>
-          </div>
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
+    <div 
+      ref={modalContentRef}
+      className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-4xl mx-4"
+    >
+      <div className="p-4 flex justify-between items-center border-b border-gray-200 dark:border-gray-700">
+        <h3 className="text-xl font-bold">{t.watchingRoutine} {videoModal.title}</h3>
+        <Button variant="ghost" size="icon" onClick={closeVideoModal}>
+          <X className="h-5 w-5" />
+        </Button>
+      </div>
+      <div className="p-4">
+        <div className="w-full aspect-video bg-black rounded-md">
+          <iframe
+            width="100%"
+            height="100%"
+            src={`https://www.youtube.com/embed/${videoModal.videoId}?autoplay=1`}
+            title={videoModal.title}
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          ></iframe>
         </div>
-      )}
+      </div>
+      <div className="p-4 border-t border-gray-200 dark:border-gray-700 flex justify-end">
+        <Button variant="outline" onClick={closeVideoModal}>
+          {t.closeButton}
+        </Button>
+      </div>
+    </div>
+  </div>
+)}
       
       <Footer />
     </div>
