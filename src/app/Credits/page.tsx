@@ -17,6 +17,7 @@ export default function CreditsPage() {
   const translations = {
     en: {
       title: "Credits",
+      reddit: "Join our Reddit Community",
       subtitle: "The amazing people behind this project",
       contributors: "Contributors",
       contributorsDescription: "This project was made possible by a passionate team of developers, designers, and contributors.",
@@ -32,6 +33,7 @@ export default function CreditsPage() {
     },
     fr: {
       title: "Crédits",
+      reddit: "Rejoignez notre communauté Reddit",
       subtitle: "Les personnes incroyables derrière ce projet",
       contributors: "Contributeurs",
       contributorsDescription: "Ce projet a été rendu possible grâce à une équipe passionnée de développeurs, designers et contributeurs.",
@@ -120,6 +122,7 @@ export default function CreditsPage() {
                 >
                   <ExternalLink size={16} className="text-red-600 dark:text-red-300" />
                 </Link>
+                
               </div>
               
               <div className="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
@@ -161,6 +164,16 @@ export default function CreditsPage() {
                   className="flex items-center justify-between p-3 bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200 rounded-lg mb-3 hover:bg-indigo-200 dark:hover:bg-indigo-800 transition-colors"
                 >
                   <span>{t.discordInvite}</span>
+                  <ExternalLink size={16} />
+                </Link>
+                 
+                <Link 
+                  href="https://www.reddit.com/r/Rematch/comments/1kgd5b5/just_launched_a_free_site_to_master_rematch_5v5/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between p-3 bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 rounded-lg mb-3 hover:bg-orange-200 dark:hover:bg-orange-800 transition-colors"
+                >
+                  <span>{t.reddit}</span>
                   <ExternalLink size={16} />
                 </Link>
                 
