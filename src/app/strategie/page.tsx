@@ -79,23 +79,23 @@ export default function StrategiePage() {
   }> = [
     {
       id: 1,
-      videoUrl: "/video/Strategie/BackBoard.mp4",
-      videoType: "local",
+      videoUrl: "https://www.youtube.com/watch?v=Z6ht02tLXjk",
+      videoType: "youtubemuted",
       difficulty: 2,
       utility: 5,
       ...t.techniques[0], 
     },
     {
       id: 2,
-      videoUrl: "/video/Strategie/buffergclickmiddleligneblanche.mp4",
-      videoType: "local",
+      videoUrl: "https://www.youtube.com/watch?v=uPyEDk2iJ-E",
+      videoType: "youtubemuted",
       difficulty: 2,
       utility: 3,
       ...t.techniques[1],
     },
     {
       id: 3,
-      videoUrl: "https://www.youtube.com/watch?v=cZAg62oHcpY",
+      videoUrl: "https://www.youtube.com/watch?v=Fm5-jA8R5dY",
       videoType: "youtube",
       difficulty: 5,
       utility: 3,

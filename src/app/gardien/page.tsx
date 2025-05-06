@@ -97,7 +97,7 @@ export default function GardienPage() {
   const techniques: Array<{
     id: number
     videoUrl: string
-    videoType: "local" | "youtube"
+    videoType: "local" | "youtube" |"youtubemuted"
     difficulty: number
     utility: number
     title: string
@@ -106,39 +106,39 @@ export default function GardienPage() {
   }> = [
     {
       id: 1,
-      videoUrl: "/video/Gardien/SonDesTirs.mp4",
-      videoType: "local",
+      videoUrl: "https://www.youtube.com/watch?v=i_5q23We3Uc",
+      videoType: "youtube",
       difficulty: 4,
       utility: 2,
       ...t.techniques[0],
     },
     {
       id: 2,
-      videoUrl: "/video/Gardien/relancemur.mp4",
-      videoType: "local",
+      videoUrl: "https://www.youtube.com/watch?v=3HE4hB1zub8",
+      videoType: "youtubemuted",
       difficulty: 1,
       utility: 2,
       ...t.techniques[1],
     },
     {
       id: 3,
-      videoUrl: "/video/Gardien/GoatGK.mp4",
-      videoType: "local",
+      videoUrl: "https://www.youtube.com/watch?v=nWoPOycva4c",
+      videoType: "youtubemuted",
       difficulty: 5,
       utility: 1,
       ...t.techniques[2],
     },    {
       id: 4,
-      videoUrl: "/video/Gardien/arrettir.mp4",
-      videoType: "local",
+      videoUrl: "https://www.youtube.com/watch?v=GDYiKktQRSk",
+      videoType: "youtubemuted",
       difficulty:3,
       utility: 4,
       ...t.techniques[3],
     },
     {
       id: 5,
-      videoUrl: "/video/Gardien/Arret+dasharret.mp4",
-      videoType: "local",
+      videoUrl: "https://www.youtube.com/watch?v=2jZ3VFWOKkw",
+      videoType: "youtubemuted",
       difficulty: 2,
       utility: 5,
       ...t.techniques[4],

@@ -74,35 +74,35 @@ const translations = {
 const techniqueMeta: Array<{
   id: number
   videoUrl: string
-  videoType: "local" | "youtube"
+  videoType: "local" | "youtube" |"youtubemuted"
   difficulty: number
   utility: number
 }> = [
   {
     id: 1,
-    videoUrl: "/video/Defense/tacleglisse.mp4",
-    videoType: "local",
+    videoUrl: "https://www.youtube.com/watch?v=ceGhCp49Bhk",
+    videoType: "youtubemuted",
     difficulty: 1,
     utility: 4,
   },
   {
     id: 2,
-    videoUrl: "/video/Defense/tacle.mp4",
-    videoType: "local",
+    videoUrl: "https://www.youtube.com/watch?v=CV6vAfubUuI",
+    videoType: "youtubemuted",
     difficulty: 1,
     utility: 5,
   },
   {
     id: 3,
-    videoUrl: "/video/Defense/block.mp4",
-    videoType: "local",
+    videoUrl: "https://www.youtube.com/watch?v=jCgDsnif1vk",
+    videoType: "youtubemuted",
     difficulty: 3,
     utility: 3,
   },
   {
     id: 4,
-    videoUrl: "/video/Defense/bodyblock.mp4",
-    videoType: "local",
+    videoUrl: "https://www.youtube.com/watch?v=dFbUb7rAEd0",
+    videoType: "youtubemuted",
     difficulty: 4,
     utility: 3,
   },

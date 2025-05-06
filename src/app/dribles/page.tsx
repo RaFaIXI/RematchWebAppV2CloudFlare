@@ -238,27 +238,27 @@ export default function DriblesPage() {
     const techniqueMeta: Array<{
       id: number
       videoUrl: string
-      videoType: "local" | "youtube"
+      videoType: "local" | "youtube" |"youtubemuted"
       difficulty: number
       utility: number
     }> = [
-    { id: 1, videoUrl: "/video/drible/arcenciel.mp4", videoType: "local", difficulty: 1, utility: 4 },
-    { id: 2, videoUrl: "/video/drible/controle.mp4", videoType: "local", difficulty: 1, utility: 5 },
-    { id: 3, videoUrl: "/video/drible/controleparfait.mp4", videoType: "local", difficulty: 2, utility: 5 },
-    { id: 4, videoUrl: "/video/drible/controleTete.mp4", videoType: "local", difficulty: 3, utility: 3 },
-    { id: 5, videoUrl: "/video/drible/dashdance.mp4", videoType: "local", difficulty: 2, utility: 1 },
-    { id: 6, videoUrl: "/video/drible/DribleCancel.mp4", videoType: "local", difficulty: 1, utility: 5 },
-    { id: 7, videoUrl: "/video/drible/dribles+specialpc.mp4", videoType: "local", difficulty: 1, utility: 4 },
-    { id: 8, videoUrl: "/video/drible/DriblesMouvementDashDance.mp4", videoType: "local", difficulty: 2, utility: 4 },
-    { id: 9, videoUrl: "/video/drible/HeaderRow.mp4", videoType: "local", difficulty: 2, utility: 2 },
-    { id: 10, videoUrl: "/video/drible/pushball.mp4", videoType: "local", difficulty: 1, utility: 5 },
-    { id: 11, videoUrl: "/video/drible/wallbounce.mp4", videoType: "local", difficulty: 2, utility: 1 },
-    { id: 12, videoUrl: "/video/drible/walldrible.mp4", videoType: "local", difficulty: 3, utility: 3 },
-    { id: 13, videoUrl: "/video/drible/WALLDASH.mp4", videoType: "local", difficulty: 4, utility: 3 },
-    { id: 14, videoUrl: "/video/drible/Dribbles-Chain.mp4", videoType: "local", difficulty: 4, utility: 3 },
-    { id: 15, videoUrl: "/video/drible/dashpush.mp4", videoType: "local", difficulty: 2, utility: 2 },
-    { id: 16, videoUrl: "/video/drible/sprint.mp4", videoType: "local", difficulty: 1, utility: 5 },
-    { id: 17, videoUrl: "/video/drible/WaveDash.mp4", videoType: "local", difficulty: 3, utility: 4 },
+    { id: 1, videoUrl: "https://youtu.be/D0iMRR1Y93M", videoType: "youtubemuted", difficulty: 1, utility: 4 },
+    { id: 2, videoUrl: "https://youtu.be/WQ6SemZPMls", videoType: "youtubemuted", difficulty: 1, utility: 5 },
+    { id: 3, videoUrl: "https://youtu.be/-gFidZd4y8A", videoType: "youtubemuted", difficulty: 2, utility: 5 },
+    { id: 4, videoUrl: "https://youtu.be/Bvsuu-x6umA", videoType: "youtubemuted", difficulty: 3, utility: 3 },
+    { id: 5, videoUrl: "https://youtu.be/rHh9FCiGkyk", videoType: "youtubemuted", difficulty: 2, utility: 1 },
+    { id: 6, videoUrl: "https://youtu.be/lE0a3yHPXj4", videoType: "youtubemuted", difficulty: 1, utility: 5 },
+    { id: 7, videoUrl: "https://youtu.be/cSmyH4gQRNk", videoType: "youtubemuted", difficulty: 1, utility: 4 },
+    { id: 8, videoUrl: "https://youtu.be/coIWvWCnr6w", videoType: "youtubemuted", difficulty: 2, utility: 4 },
+    { id: 9, videoUrl: "https://youtu.be/d4HhcwXWT7o", videoType: "youtubemuted", difficulty: 2, utility: 2 },
+    { id: 10, videoUrl: "https://youtu.be/oBHnJahyxcw", videoType: "youtubemuted", difficulty: 1, utility: 5 },
+    { id: 11, videoUrl: "https://youtu.be/-DBdXHjfwwU", videoType: "youtubemuted", difficulty: 2, utility: 1 },
+    { id: 12, videoUrl: "https://youtu.be/7xZhLzUH_pY", videoType: "youtubemuted", difficulty: 3, utility: 3 },
+    { id: 13, videoUrl: "https://youtu.be/hX5xom1Jg8s", videoType: "youtubemuted", difficulty: 4, utility: 3 },
+    { id: 14, videoUrl: "https://youtu.be/T3Zp-4aa8ds", videoType: "youtubemuted", difficulty: 4, utility: 3 },
+    { id: 15, videoUrl: "https://youtu.be/bvqvwub7s_c", videoType: "youtubemuted", difficulty: 2, utility: 2 },
+    { id: 16, videoUrl: "https://youtu.be/UqSTOTnoW5o", videoType: "youtubemuted", difficulty: 1, utility: 5 },
+    { id: 17, videoUrl: "https://youtu.be/jZrw-aZaKOY", videoType: "youtubemuted", difficulty: 3, utility: 4 },
 
 
 
