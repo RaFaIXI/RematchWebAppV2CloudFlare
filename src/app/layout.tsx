@@ -7,6 +7,7 @@ import type React from "react";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SiteHeader } from "@/components/layout/site-header";
 import { ClientLanguageHandler } from "@/components/client-language-handler";
+import Script from "next/script";
 
 
 
@@ -54,16 +55,30 @@ export default function RootLayout({
 
         <link rel="icon" href="/assets/favicon-32x32.png" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <Script
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=G-CM8EWL1MJ7"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-CM8EWL1MJ7');
+          `}
+        </Script>
+
+
         <script type="application/ld+json" dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "WebSite",
             "name": "Rematch CookBook",
-            "url": "https://rematch-cookbook.vercel.app",
+            "url": "rematch-guide.com",
             "description": "Learn the essential techniques to improve your game with our detailed video tutorials.",
             "potentialAction": {
               "@type": "SearchAction",
-              "target": "https://rematch-cookbook.vercel.app/search?q={search_term_string}",
+              "target": "rematch-guide.com/search?q={search_term_string}",
               "query-input": "required name=search_term_string"
             }
           })
@@ -73,9 +88,9 @@ export default function RootLayout({
             "@context": "https://schema.org",
             "@type": "Organization",
             "name": "Master Rematch",
-            "url": "https://rematch-cookbook.vercel.app",
+            "url": "rematch-guide.com",
             "description": "Learn the essential techniques to improve your game with our detailed video tutorials.",
-            "logo": "https://rematch-cookbook.vercel.app/favicon-32x32.png", 
+            "logo": "rematch-guide.com/favicon-32x32.png", 
             "sameAs": [
               "https://www.youtube.com/@rafassbm",
               "https://discord.com/invite/ua8D567NAp"
