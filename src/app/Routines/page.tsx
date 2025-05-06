@@ -4,7 +4,7 @@ import { CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { 
-  Timer,  
+  Timer, 
   Calendar, 
   CheckCircle, 
   Zap,
@@ -17,7 +17,54 @@ export default function Routines() {
   const [calendarView, setCalendarView] = useState(false);
 const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
 const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-const [trainingHistory, setTrainingHistory] = useState({});
+interface TrainingHistory {
+  [date: string]: { id: string; title: string; level: string; xp: number }[];
+}
+
+
+
+type TranslationType = {
+  [key: string]: string | string[];
+  pageJournal: string;
+  viewCalendar: string;
+  viewStats: string;
+  monthNames: string[];
+  weekDays: string[];
+  noTraining: string;
+  trainingOn: string;
+  routine: string;
+  level: string;
+  totalXP: string;
+  startButton: string;
+  completeButton: string;
+  completedButton: string;
+  // ...additional properties
+};
+
+type RoutineType = {
+  id: string;
+  titleKey: string;
+  descKey: string;
+  durationKey: string;
+  pointsKey: string;
+};
+
+// Reusable RoutineCard component
+interface RoutineCardProps { 
+  id: string;
+  title: string; 
+  description: string;
+  duration: string;
+  points: string;
+  startButtonText: string;
+  completeButtonText: string;
+  isCompleted: boolean;
+  onComplete: () => void;
+  onWatch: () => void;
+}
+
+
+const [trainingHistory, setTrainingHistory] = useState<TrainingHistory>({});
   const [lang, setLang] = useState<"en" | "fr">("en");
   const [activeTab, setActiveTab] = useState<"beginner" | "intermediate" | "advanced">("beginner");
   const [completedRoutines, setCompletedRoutines] = useState<string[]>([]);
@@ -158,13 +205,13 @@ const [trainingHistory, setTrainingHistory] = useState({});
       // Find routine details
       let routineDetails = null;
       Object.keys(routinesByLevel).forEach(level => {
-        const found = routinesByLevel[level].find(r => r.id === routineId);
+        const found = routinesByLevel[level as keyof typeof routinesByLevel].find(r => r.id === routineId);
         if (found) {
           routineDetails = {
             id: routineId,
-            title: t[found.titleKey],
+            title: t[found.titleKey as keyof typeof t],
             level,
-            xp: routineXP[routineId]
+            xp: routineXP[routineId as keyof typeof routineXP]
           };
         }
       });
@@ -173,7 +220,9 @@ const [trainingHistory, setTrainingHistory] = useState({});
       if (!newTrainingHistory[today]) {
         newTrainingHistory[today] = [];
       }
-      newTrainingHistory[today].push(routineDetails);
+      if (routineDetails) {
+        newTrainingHistory[today].push(routineDetails);
+      }
     }
     
     setCompletedRoutines(newCompletedRoutines);
@@ -183,11 +232,21 @@ const [trainingHistory, setTrainingHistory] = useState({});
   };
 
 // 5. Add these helper functions for the calendar
-const getDaysInMonth = (year, month) => {
+interface GetDaysInMonthParams {
+  year: number;
+  month: number;
+}
+
+const getDaysInMonth = ({ year, month }: GetDaysInMonthParams): number => {
   return new Date(year, month + 1, 0).getDate();
 };
 
-const getFirstDayOfMonth = (year, month) => {
+interface GetFirstDayOfMonthParams {
+  year: number;
+  month: number;
+}
+
+const getFirstDayOfMonth = ({ year, month }: GetFirstDayOfMonthParams): number => {
   return new Date(year, month, 1).getDay();
 };
 
@@ -219,7 +278,7 @@ const getNextMonth = () => {
 
     setVideoModal({
       isOpen: true,
-      videoUrl: videoUrls[id] || "",
+      videoUrl: videoUrls[id as keyof typeof videoUrls] || "",
       title: title
     });
   };
@@ -388,7 +447,7 @@ const getNextMonth = () => {
   // Fixed XP calculation
   const totalXP = completedRoutines.reduce((acc, routineId) => {
     // Use the routineXP lookup object instead of trying to parse from translations
-    return acc + (routineXP[routineId] || 0);
+    return acc + (routineXP[routineId as keyof typeof routineXP] || 0);
   }, 0);
 
   // Define player ranks and XP thresholds
@@ -566,21 +625,21 @@ const getNextMonth = () => {
                   
                   {/* Dynamically render routines based on active tab */}
                   <div className="space-y-4">
-                    {routinesByLevel[activeTab].map((routine) => (
-                      <RoutineCard
-                        key={routine.id}
-                        id={routine.id}
-                        title={t[routine.titleKey]}
-                        description={t[routine.descKey]}
-                        duration={t[routine.durationKey]}
-                        points={t[routine.pointsKey]}
-                        startButtonText={t.startButton}
-                        completeButtonText={completedRoutines.includes(routine.id) ? t.completedButton : t.completeButton}
-                        isCompleted={completedRoutines.includes(routine.id)}
-                        onComplete={() => markAsCompleted(routine.id)}
-                        onWatch={() => openVideoModal(routine.id, t[routine.titleKey])}
-                      />
-                    ))}
+                  {routinesByLevel[activeTab].map((routine) => (
+                  <RoutineCard
+                    key={routine.id}
+                    id={routine.id}
+                    title={getTranslationValue(t, routine.titleKey)}
+                    description={getTranslationValue(t, routine.descKey)}
+                    duration={getTranslationValue(t, routine.durationKey)}
+                    points={getTranslationValue(t, routine.pointsKey)}
+                    startButtonText={t.startButton}
+                    completeButtonText={completedRoutines.includes(routine.id) ? t.completedButton : t.completeButton}
+                    isCompleted={completedRoutines.includes(routine.id)}
+                    onComplete={() => markAsCompleted(routine.id)}
+                    onWatch={() => openVideoModal(routine.id, getTranslationValue(t, routine.titleKey))}
+                  />
+                ))}
                   </div>
                   
                 </div>
@@ -624,13 +683,13 @@ const getNextMonth = () => {
     </div>
     
     <div className="grid grid-cols-7 gap-1">
-      {Array(getFirstDayOfMonth(selectedYear, selectedMonth))
+      {Array(getFirstDayOfMonth({ year: selectedYear, month: selectedMonth }))
         .fill(null)
         .map((_, i) => (
           <div key={`empty-${i}`} className="aspect-square p-1"></div>
         ))}
       
-      {Array(getDaysInMonth(selectedYear, selectedMonth))
+      {Array(getDaysInMonth({ year: selectedYear, month: selectedMonth }))
         .fill(null)
         .map((_, i) => {
           const day = i + 1;
@@ -778,4 +837,13 @@ function RoutineCard({
       </div>
     </div>
   );
+}
+
+// Helper function to safely access translation keys
+export function getTranslationValue(t: { [key: string]: string | string[] }, key: string): string {
+  if (key in t) {
+    const value = t[key];
+    return Array.isArray(value) ? value.join(", ") : value;
+  }
+  return key; // Fallback to key name if not found
 }
