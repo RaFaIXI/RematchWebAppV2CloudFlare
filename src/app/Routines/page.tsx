@@ -230,12 +230,19 @@ const [trainingHistory, setTrainingHistory] = useState<TrainingHistory>({});
     localStorage.setItem("completedRoutines", JSON.stringify(newCompletedRoutines));
     localStorage.setItem("trainingHistory", JSON.stringify(newTrainingHistory));
   };
-
-// 5. Add these helper functions for the calendar
-interface GetDaysInMonthParams {
-  year: number;
-  month: number;
-}
+  // Helper function to safely access translation keys
+  function getTranslationValue(t: { [key: string]: string | string[] }, key: string): string {
+    if (key in t) {
+      const value = t[key];
+      return Array.isArray(value) ? value.join(", ") : value;
+    }
+    return key; // Fallback to key name if not found
+  }
+  // 5. Add these helper functions for the calendar
+  interface GetDaysInMonthParams {
+    year: number;
+    month: number;
+  }
 
 const getDaysInMonth = ({ year, month }: GetDaysInMonthParams): number => {
   return new Date(year, month + 1, 0).getDate();
@@ -839,11 +846,3 @@ function RoutineCard({
   );
 }
 
-// Helper function to safely access translation keys
-export function getTranslationValue(t: { [key: string]: string | string[] }, key: string): string {
-  if (key in t) {
-    const value = t[key];
-    return Array.isArray(value) ? value.join(", ") : value;
-  }
-  return key; // Fallback to key name if not found
-}
