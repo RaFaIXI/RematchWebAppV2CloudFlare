@@ -117,7 +117,7 @@ export default function Home() {
               </div>
               <div className="mx-auto aspect-video overflow-hidden rounded-xl object-cover sm:w-full lg:order-last">
                 <img
-                  src="/imagen_2024-07-05_181123833.png"
+                  src="/rematch.png"
                   alt={t.imageAlt}
                   className="w-full h-full object-cover"
                   onClick={() => window.open("https://discord.com/invite/ua8D567NAp", "_blank")}

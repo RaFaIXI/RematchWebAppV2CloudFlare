@@ -11,6 +11,7 @@ export function SiteHeader() {
   const [isOpen, setIsOpen] = useState(false)
   const [lang, setLang] = useState("en")
   const [mounted, setMounted] = useState(false)
+  const [isEmbedded, setIsEmbedded] = useState(false)
   const { theme, setTheme } = useTheme()
 
   useEffect(() => {
@@ -20,6 +21,9 @@ export function SiteHeader() {
     if (storedLang) {
       setLang(storedLang)
     }
+    
+    // Check if the page is embedded in an iframe
+    setIsEmbedded(window.self !== window.top)
   }, [])
 
   const toggleLang = () => {
@@ -42,15 +46,15 @@ export function SiteHeader() {
     { href: "/strategie", label: lang === "fr" ? "Stratégie" : "Strategy" },
     { href: "/Routines", label: lang === "fr" ? "Routines" : "Routines" },
     { href: "/TacticalBoard", label: lang === "fr" ? "Tableau Tactique" : "Tactical Board" },
-
-
   ]
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center">
         <Link href="/" className="flex items-center space-x-2">
-          <img src="/assets/favicon-32x32.png" alt="" />
+          {!isEmbedded && (
+            <img src="/assets/favicon-32x32.png" alt="" />
+          )}
           <span className="font-bold">
             {lang === "fr" ? "Maîtrisez Rematch" : "Master Rematch"}
           </span>
@@ -73,9 +77,11 @@ export function SiteHeader() {
             </Button>
           )}
 
-          <Button variant="ghost" onClick={toggleLang}>
-            {lang === "fr" ? "🇬🇧 English" : "🇫🇷 Français"}
-          </Button>
+          {!isEmbedded && mounted && (
+            <Button variant="ghost" onClick={toggleLang}>
+              {lang === "fr" ? "🇬🇧 English" : "🇫🇷 Français"}
+            </Button>
+          )}
         </nav>
 
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -104,9 +110,11 @@ export function SiteHeader() {
                 </Button>
               )}
 
-              <Button variant="ghost" onClick={toggleLang}>
-                {lang === "fr" ? "🇬🇧 English" : "🇫🇷 Français"}
-              </Button>
+              {!isEmbedded && (
+                <Button variant="ghost" onClick={toggleLang}>
+                  {lang === "fr" ? "🇬🇧 English" : "🇫🇷 Français"}
+                </Button>
+              )}
             </div>
           </SheetContent>
         </Sheet>
