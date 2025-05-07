@@ -74,7 +74,7 @@ const translations = {
 const techniqueMeta: Array<{
   id: number
   videoUrl: string
-  videoType: "local" | "youtube" |"youtubemuted"
+  videoType: "local" | "youtube" | "youtubemuted" | "youtubeclip"
   difficulty: number
   utility: number
 }> = [
@@ -101,8 +101,8 @@ const techniqueMeta: Array<{
   },
   {
     id: 4,
-    videoUrl: "https://www.youtube.com/watch?v=dFbUb7rAEd0",
-    videoType: "youtubemuted",
+    videoUrl: "https://www.youtube.com/embed/mjie8ekJ5Yg?si=-aSVKqSNCdGjeyuV&amp;clip=UgkxGgoaT9_bNZghrp4DH_ydlKV-u6py_Vyp&amp;clipt=EI-lDhiNhRA",
+    videoType: "youtubeclip",
     difficulty: 4,
     utility: 3,
   },

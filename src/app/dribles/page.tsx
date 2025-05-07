@@ -238,7 +238,7 @@ export default function DriblesPage() {
     const techniqueMeta: Array<{
       id: number
       videoUrl: string
-      videoType: "local" | "youtube" |"youtubemuted"
+      videoType: "local" | "youtube" | "youtubemuted" | "youtubeclip"
       difficulty: number
       utility: number
     }> = [
@@ -257,7 +257,7 @@ export default function DriblesPage() {
     { id: 13, videoUrl: "https://youtu.be/hX5xom1Jg8s", videoType: "youtubemuted", difficulty: 4, utility: 3 },
     { id: 14, videoUrl: "https://youtu.be/T3Zp-4aa8ds", videoType: "youtubemuted", difficulty: 4, utility: 3 },
     { id: 15, videoUrl: "https://youtu.be/bvqvwub7s_c", videoType: "youtubemuted", difficulty: 2, utility: 2 },
-    { id: 16, videoUrl: "https://youtu.be/UqSTOTnoW5o", videoType: "youtubemuted", difficulty: 1, utility: 5 },
+    { id: 16, videoUrl: "https://www.youtube.com/embed/mjie8ekJ5Yg?si=jpaif3_u733zHyHa&amp;clip=UgkxCb4_JrFA1w2ZtT5_-IuS2AQH7tPxcoOa&amp;clipt=EM2CAhit1wU", videoType: "youtubeclip", difficulty: 1, utility: 5 },
     { id: 17, videoUrl: "https://youtu.be/jZrw-aZaKOY", videoType: "youtubemuted", difficulty: 3, utility: 4 },
 
 

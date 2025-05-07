@@ -266,7 +266,7 @@ export default function TirPage() {
     const techniqueMeta: Array<{
       id: number
       videoUrl: string
-      videoType: "local" | "youtube" |"youtubemuted"
+      videoType: "local" | "youtube" | "youtubemuted" | "youtubeclip"
       difficulty: number
       utility: number
     }> = [
@@ -384,8 +384,8 @@ export default function TirPage() {
       },
       {
         id: 17,
-        videoUrl: "https://youtu.be/VBTAR70Tdr4",
-        videoType: "youtubemuted",
+        videoUrl: "https://www.youtube.com/embed/mjie8ekJ5Yg?si=VbszIFqXepMa_Ddv&amp;clip=UgkxOw9joVY3AoWMmMQLIupfT69oWCATax9q&amp;clipt=EO2UGBjN6Rs",
+        videoType: "youtubeclip",
         difficulty: 1,
         utility: 5,
       },

@@ -21,7 +21,7 @@ interface TechniqueCardProps {
   title: string
   description: string
   videoUrl: string
-  videoType: "local" | "youtube" | "youtubemuted"
+  videoType: "local" | "youtube" | "youtubemuted" | "youtubeclip"
   fullDescription: string
   difficulty: number
   utility: number
@@ -74,6 +74,8 @@ const getYouTubeVideoId = (url: string): string | null => {
   const match = url.match(regExp)
   return match && match[2].length === 11 ? match[2] : null
 }
+
+
 const exeptionTitle = ["Son de la balle","Ball Sound","Mouvements et Tirs","Movements and Shots","Body Block","Sprint"]
 
 export function TechniqueCard({ 
@@ -88,6 +90,8 @@ export function TechniqueCard({
   const [isOpen, setIsOpen] = useState(false)
   const [lang, setLang] = useState<"en" | "fr">("en")
   const videoRef = useRef<HTMLVideoElement>(null)
+  
+  // Process different video types
   const youtubeId = (videoType === "youtube" || videoType === "youtubemuted") ? getYouTubeVideoId(videoUrl) : null
 
   const isException = exeptionTitle.includes(title)
@@ -140,7 +144,19 @@ export function TechniqueCard({
   }, [isOpen, videoType, isException])
 
   const renderVideo = () => {
-    if ((videoType === "youtube" || videoType === "youtubemuted") && youtubeId) {
+    // Handle YouTube clip
+    if (videoType === "youtubeclip" && videoUrl) {
+      return (
+      <iframe 
+      className="w-full h-full absolute top-0 left-0"
+      src={videoUrl+"&autoplay=1"} 
+      title="YouTube video player" 
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+      allowFullScreen></iframe>
+      )
+    }
+    // Handle regular YouTube videos
+    else if ((videoType === "youtube" || videoType === "youtubemuted") && youtubeId) {
       return (
         <iframe
           src={`https://www.youtube.com/embed/${youtubeId}?autoplay=${isOpen ? "1" : "0"}&loop=1&playlist=${youtubeId}&controls=${isException ? "1" : "0"}${shouldMuteYoutube ? "&mute=1" : ""}`}
@@ -150,7 +166,9 @@ export function TechniqueCard({
           allowFullScreen
         ></iframe>
       )
-    } else {
+    } 
+    // Handle local videos
+    else {
       return (
         <video
           ref={videoRef}
