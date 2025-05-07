@@ -3,12 +3,18 @@
 import { TechniqueCard } from "@/components/technique-card"
 import Footer from "@/components/Footer"
 import { useEffect, useState } from "react"
+import { Slider } from "@/components/ui/slider"
 
 const translations = {
   fr: {
     pageTitle: "Techniques de Défense",
     pageDescription:
       "Maîtrisez l'art de défendre avec ces techniques essentielles pour protéger votre but et récupérer le ballon.",
+    filterTitle: "Filtres",
+    difficultyLabel: "Difficulté",
+    utilityLabel: "Utilité",
+    resetFilters: "Réinitialiser les filtres",
+    noResults: "Aucune technique ne correspond à vos filtres. Essayez d'ajuster vos critères.",
     techniques: [
       {
         title: "Tacle glissé",
@@ -33,15 +39,18 @@ const translations = {
         description: "Utilisez votre corps pour bloquer les adversaires et les ralentir",
         fullDescription:
           "Le body block est une technique défensive/de mouvement qui consiste à utiliser votre corps pour bloquer les adversaires. Positionnez-vous sur le chemin de l'adversaire et utilisez votre corps pour le ralentir. Cette technique est utile pour perturber le mouvement de l'adversaire et créer de l'espace pour vos coéquipiers. Le timing et le positionnement sont cruciaux : anticipez les mouvements de l'adversaire et ajustez votre position en conséquence. Un blocage corporel bien exécuté peut créer des opportunités pour votre équipe.",
-
       },
-      
     ],
   },
   en: {
     pageTitle: "Defensive Techniques",
     pageDescription:
       "Master the art of defending with these essential techniques to protect your goal and recover the ball.",
+    filterTitle: "Filters",
+    difficultyLabel: "Difficulty",
+    utilityLabel: "Utility",
+    resetFilters: "Reset Filters",
+    noResults: "No techniques match your filters. Try adjusting your criteria.",
     techniques: [
       {
         title: "Slide Tackle",
@@ -106,11 +115,14 @@ const techniqueMeta: Array<{
     difficulty: 4,
     utility: 3,
   },
-
 ]
 
 export default function DefensePage() {
   const [lang, setLang] = useState<"en" | "fr">("en")
+  const [minDifficulty, setMinDifficulty] = useState(1)
+  const [maxDifficulty, setMaxDifficulty] = useState(5)
+  const [minUtility, setMinUtility] = useState(1)
+  const [maxUtility, setMaxUtility] = useState(5)
 
   useEffect(() => {
     const storedLang = localStorage.getItem("lang")
@@ -120,10 +132,29 @@ export default function DefensePage() {
   }, [])
 
   const t = translations[lang]
-  const techniques = t.techniques.map((tech, index) => ({
+  
+  // Combine technique data with meta data
+  const combinedTechniques = t.techniques.map((tech, index) => ({
     ...tech,
     ...techniqueMeta[index],
   }))
+  
+  // Apply filters
+  const filteredTechniques = combinedTechniques.filter(
+    (technique) => 
+      technique.difficulty >= minDifficulty && 
+      technique.difficulty <= maxDifficulty &&
+      technique.utility >= minUtility &&
+      technique.utility <= maxUtility
+  )
+
+  // Reset all filters to default values
+  const resetFilters = () => {
+    setMinDifficulty(1)
+    setMaxDifficulty(5)
+    setMinUtility(1)
+    setMaxUtility(5)
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -133,20 +164,88 @@ export default function DefensePage() {
           <p className="text-muted-foreground">{t.pageDescription}</p>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {techniques.map((technique) => (
-            <TechniqueCard
-              key={technique.id}
-              title={technique.title}
-              description={technique.description}
-              fullDescription={technique.fullDescription}
-              videoUrl={technique.videoUrl}
-              videoType={technique.videoType}
-              difficulty={technique.difficulty}
-              utility={technique.utility}
-            />
-          ))}
+        {/* Filter Section */}
+        <div className="mb-8 p-6 bg-card rounded-lg shadow-sm border">
+          <h2 className="text-xl font-semibold mb-4">{t.filterTitle}</h2>
+          
+          <div className="space-y-6">
+            {/* Difficulty Filter */}
+            <div>
+              <label className="block mb-2 font-medium">{t.difficultyLabel}: {minDifficulty} - {maxDifficulty}</label>
+              <div className="flex gap-4 items-center">
+                <span className="text-sm">1</span>
+                <div className="flex-grow">
+                  <Slider
+                    defaultValue={[minDifficulty, maxDifficulty]}
+                    min={1}
+                    max={5}
+                    step={1}
+                    value={[minDifficulty, maxDifficulty]}
+                    onValueChange={(values) => {
+                      setMinDifficulty(values[0])
+                      setMaxDifficulty(values[1])
+                    }}
+                  />
+                </div>
+                <span className="text-sm">5</span>
+              </div>
+            </div>
+            
+            {/* Utility Filter */}
+            <div>
+              <label className="block mb-2 font-medium">{t.utilityLabel}: {minUtility} - {maxUtility}</label>
+              <div className="flex gap-4 items-center">
+                <span className="text-sm">1</span>
+                <div className="flex-grow">
+                  <Slider
+                    defaultValue={[minUtility, maxUtility]}
+                    min={1}
+                    max={5}
+                    step={1}
+                    value={[minUtility, maxUtility]}
+                    onValueChange={(values) => {
+                      setMinUtility(values[0])
+                      setMaxUtility(values[1])
+                    }}
+                  />
+                </div>
+                <span className="text-sm">5</span>
+              </div>
+            </div>
+            
+            {/* Reset Button */}
+            <div>
+              <button 
+                onClick={resetFilters}
+                className="px-4 py-2 bg-secondary hover:bg-secondary/80 rounded-md transition-colors"
+              >
+                {t.resetFilters}
+              </button>
+            </div>
+          </div>
         </div>
+
+        {/* Techniques Grid */}
+        {filteredTechniques.length > 0 ? (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {filteredTechniques.map((technique) => (
+              <TechniqueCard
+                key={technique.id}
+                title={technique.title}
+                description={technique.description}
+                fullDescription={technique.fullDescription}
+                videoUrl={technique.videoUrl}
+                videoType={technique.videoType}
+                difficulty={technique.difficulty}
+                utility={technique.utility}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12 text-muted-foreground">
+            {t.noResults}
+          </div>
+        )}
       </main>
       <Footer />
     </div>

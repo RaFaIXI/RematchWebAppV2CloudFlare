@@ -55,7 +55,6 @@ export default function CreditsPage() {
     { name: "@askii_78", role: lang === "en" ? "Clip Provider" : "Clippeur"},
     { name: "@exzya", role: lang === "en" ? "Clip Provider" : "Clippeur"},
     { name: "@rurer", role: lang === "en" ? "Labber" : "Labbeur"},
-    { name: "@Pix3lViking", role: lang === "en" ? "Youtube Clip Provider" : "Clippeur Youtube"},
 
     
 
@@ -143,6 +142,25 @@ export default function CreditsPage() {
                 >
                   <ExternalLink size={16} className="text-blue-600 dark:text-blue-300" />
                 </Link>
+              </div>
+
+              <div className="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                <Youtube size={24} className="text-red-600" />
+                <div className="flex-1">
+                  <h3 className="font-medium text-gray-800 dark:text-white">@Pix3lViking</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    {lang === "en" ? "For providing awesome clips!" : "Pour les super extraits fournis !"}
+                  </p>
+                </div>
+                <Link 
+                  href="https://youtube.com/@PixelVikingGames" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center w-8 h-8 bg-red-100 dark:bg-red-900 rounded-full hover:bg-red-200 dark:hover:bg-red-800 transition-colors"
+                >
+                  <ExternalLink size={16} className="text-red-600 dark:text-red-300" />
+                </Link>
+                
               </div>
             </div>
           </div>
