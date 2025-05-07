@@ -8,6 +8,7 @@ import Footer from "@/components/Footer";
 
 export default function Home() {
   const [lang, setLang] = useState<"en" | "fr">("en");
+  const [isEmbedded, setIsEmbedded] = useState(false);
 
   useEffect(() => {
     // Check if the page is embedded in an iframe
@@ -15,6 +16,7 @@ export default function Home() {
       // Force French language when embedded in an iframe
       setLang("fr");
       localStorage.setItem("lang", "fr");
+      setIsEmbedded(true);
       console.log("Page is embedded in an iframe. Forcing French language.");
     } else {
       // Not in an iframe, use stored language preference if available
@@ -22,6 +24,7 @@ export default function Home() {
       if (storedLang) {
         setLang(storedLang as "en" | "fr");
       }
+      setIsEmbedded(false);
       console.log("Page is not embedded.");
     }
   }, []);
@@ -76,10 +79,19 @@ export default function Home() {
 
   const t = translations[lang];
 
+  // Determine gradient and button colors based on embedded status
+  const gradientClasses = isEmbedded 
+    ? "bg-gradient-to-b from-[#2E3192] to-black dark:from-[#2E3192] dark:to-black" 
+    : "bg-gradient-to-b from-green-50 to-white dark:from-green-950 dark:to-background";
+  
+  const buttonClasses = isEmbedded
+    ? "bg-[#2E3192] hover:bg-blue-800"
+    : "bg-green-600 hover:bg-green-700";
+
   return (
     <div className="flex flex-col min-h-screen">
       <main className="flex-1">
-        <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-b from-green-50 to-white dark:from-green-950 dark:to-background">
+        <section className={`w-full py-12 md:py-24 lg:py-32 ${gradientClasses}`}>
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center space-y-4 text-center">
               <div className="space-y-2">
@@ -92,7 +104,7 @@ export default function Home() {
               </div>
               <div className="space-x-4">
                 <Link href="/tir">
-                  <Button className="bg-green-600 hover:bg-green-700" aria-label="Start learning football shooting">{t.startButton}</Button>
+                  <Button className={buttonClasses} aria-label="Start learning football shooting">{t.startButton}</Button>
                 </Link>
               </div>
             </div>
@@ -111,7 +123,7 @@ export default function Home() {
                 </div>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
                   <Link href="/tir">
-                    <Button className="bg-green-600 hover:bg-green-700">{t.exploreButton}</Button>
+                    <Button className={buttonClasses}>{t.exploreButton}</Button>
                   </Link>
                 </div>
               </div>
@@ -142,7 +154,7 @@ export default function Home() {
             </div>
 
             <div className="mx-auto grid gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 items-start pt-8">
-              <CategoryCard href="/tir" icon={<Spline />} title={t.shoot} desc={t.shootDesc} color="green" />
+              <CategoryCard href="/tir" icon={<Spline />} title={t.shoot} desc={t.shootDesc} color={isEmbedded ? "blue" : "green"} />
               <CategoryCard href="/defense" icon={<Shield />} title={t.defense} desc={t.defenseDesc} color="blue" />
               <CategoryCard href="/strategie" icon={<Lightbulb />} title={t.strategy} desc={t.strategyDesc} color="purple" />
               <CategoryCard href="/gardien" icon={<HandMetal />} title={t.goalkeeper} desc={t.goalkeeperDesc} color="yellow" />

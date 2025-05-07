@@ -6,24 +6,32 @@ import Link from "next/link";
 
 export default function Footer() {
   const [lang, setLang] = useState<"en" | "fr">("en");
+  const [isEmbedded, setIsEmbedded] = useState(false)
 
   useEffect(() => {
     const storedLang = localStorage.getItem("lang");
     if (storedLang === "en" || storedLang === "fr") {
       setLang(storedLang);
     }
+
+        // Check if the page is embedded in an iframe
+        setIsEmbedded(window.self !== window.top)
   }, []);
 
   // Translations based on the selected language
   const translations = {
     en: {
       copyrightText: `© ${new Date().getFullYear()} Master Rematch`,
+      copyrightText2: `© ${new Date().getFullYear()} Rematch France`,
+
       discordAriaLabel: "Tech ideas go →",
       credits: "Credits",
       discordText: "Tech ideas go →"
     },
     fr: {
       copyrightText: `© ${new Date().getFullYear()} Maîtrisez Rematch`,
+      copyrightText2: `© ${new Date().getFullYear()} Rematch France`,
+
       discordAriaLabel: "Idées de techniques ",
       credits: "Crédits",
       discordText: "Idées de techniques →"
@@ -36,7 +44,7 @@ export default function Footer() {
     <footer className="w-full border-t py-4">
       <div className="container flex flex-col items-center justify-between gap-3 md:h-16 md:flex-row">
         <p className="text-center text-sm text-gray-500 md:text-left">
-          {t.copyrightText}
+        {isEmbedded ? t.copyrightText2 : t.copyrightText}
         </p>
         <div className="flex items-center gap-4">
           <Link
