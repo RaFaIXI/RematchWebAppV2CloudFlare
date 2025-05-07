@@ -74,6 +74,7 @@ const [trainingHistory, setTrainingHistory] = useState<TrainingHistory>({});
     isOpen: false,
     videoUrl: "",
     videoId: "", // Add this for YouTube video IDs
+    videoType: "", // Add this for video type
     title: ""
   });
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -278,15 +279,22 @@ const getNextMonth = () => {
 const openVideoModal = (id: string, title: string) => {
   // Map routine ID to YouTube video IDs
   const youtubeVideoIds = {
-    "beginner-1": "QNI9AxLbLXw", // Example YouTube ID - replace with actual soccer routine videos
-    "intermediate-1": "BP-5sEXeHl0", // Example YouTube ID
-    "advanced-1": "tRywN5TbQNk", // Example YouTube ID
+    "beginner-1": "https://www.youtube.com/embed/mjie8ekJ5Yg?si=E0WfkbfsqUhw0D9M&amp;clip=UgkxwHKgBfQjRkcGLIX8PwK1Ub0lA8EKl2dm&amp;clipt=EMPcIRjBvCM", // Example YouTube ID - replace with actual soccer routine videos
+    "intermediate-1": "https://www.youtube.com/embed/mjie8ekJ5Yg?si=JKpK__eS3MYFH4Sl&amp;clip=UgkxgNCo9kmalP9hwZ0wDx2jQcHAkbvXFIJA&amp;clipt=EM-xIxivhic&autoplay=1", // Example YouTube ID
+    "advanced-1": "https://www.youtube.com/embed/mjie8ekJ5Yg?si=RIYKCLEUNGR3sSEx&amp;clip=UgkxGbiebSLCyTIrPZmXTPZ2pvYYzqQMkEMp&amp;clipt=EMfQHRinpSE", // Example YouTube ID
+  };
+  // si type est youtube juste mettre id
+  const youtubeType = {
+    "beginner-1": "Clip", // Example YouTube ID - replace with actual soccer routine videos
+    "intermediate-1": "Clip", // Example YouTube ID
+    "advanced-1": "Clip", // Example YouTube ID 
   };
 
   setVideoModal({
     isOpen: true,
     videoUrl: "", // Keep for backwards compatibility
     videoId: youtubeVideoIds[id as keyof typeof youtubeVideoIds] || "",
+    videoType: youtubeType[id as keyof typeof youtubeType] || "",
     title: title
   });
 };
@@ -300,6 +308,7 @@ const openVideoModal = (id: string, title: string) => {
       isOpen: false,
       videoUrl: "",
       videoId: "", // Ensure videoId is included
+      videoType: "", // Ensure videoType is included
       title: ""
     });
   };
@@ -760,6 +769,18 @@ const openVideoModal = (id: string, title: string) => {
       </div>
       <div className="p-4">
         <div className="w-full aspect-video bg-black rounded-md">
+        {videoModal.videoType === "Clip" ? (
+
+        <iframe 
+            width="100%"
+            height="100%"
+            src={videoModal.videoId}
+            title="YouTube video player" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+            allowFullScreen>
+          </iframe>
+          ) : (
+
           <iframe
             width="100%"
             height="100%"
@@ -768,7 +789,7 @@ const openVideoModal = (id: string, title: string) => {
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
-          ></iframe>
+          ></iframe>)}
         </div>
       </div>
       <div className="p-4 border-t border-gray-200 dark:border-gray-700 flex justify-end">

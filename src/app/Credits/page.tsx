@@ -55,7 +55,9 @@ export default function CreditsPage() {
     { name: "@askii_78", role: lang === "en" ? "Clip Provider" : "Clippeur"},
     { name: "@exzya", role: lang === "en" ? "Clip Provider" : "Clippeur"},
     { name: "@rurer", role: lang === "en" ? "Labber" : "Labbeur"},
+    { name: "@Pix3lViking", role: lang === "en" ? "Youtube Clip Provider" : "Clippeur Youtube"},
 
+    
 
   ];
 
