@@ -279,9 +279,9 @@ const getNextMonth = () => {
 const openVideoModal = (id: string, title: string) => {
   // Map routine ID to YouTube video IDs
   const youtubeVideoIds = {
-    "beginner-1": "https://www.youtube.com/embed/mjie8ekJ5Yg?si=E0WfkbfsqUhw0D9M&amp;clip=UgkxwHKgBfQjRkcGLIX8PwK1Ub0lA8EKl2dm&amp;clipt=EMPcIRjBvCM", // Example YouTube ID - replace with actual soccer routine videos
+    "beginner-1": "https://www.youtube.com/embed/mjie8ekJ5Yg?si=E0WfkbfsqUhw0D9M&amp;clip=UgkxwHKgBfQjRkcGLIX8PwK1Ub0lA8EKl2dm&amp;clipt=EMPcIRjBvCM&autoplay=1", // Example YouTube ID - replace with actual soccer routine videos
     "intermediate-1": "https://www.youtube.com/embed/mjie8ekJ5Yg?si=JKpK__eS3MYFH4Sl&amp;clip=UgkxgNCo9kmalP9hwZ0wDx2jQcHAkbvXFIJA&amp;clipt=EM-xIxivhic&autoplay=1", // Example YouTube ID
-    "advanced-1": "https://www.youtube.com/embed/mjie8ekJ5Yg?si=RIYKCLEUNGR3sSEx&amp;clip=UgkxGbiebSLCyTIrPZmXTPZ2pvYYzqQMkEMp&amp;clipt=EMfQHRinpSE", // Example YouTube ID
+    "advanced-1": "https://www.youtube.com/embed/mjie8ekJ5Yg?si=RIYKCLEUNGR3sSEx&amp;clip=UgkxGbiebSLCyTIrPZmXTPZ2pvYYzqQMkEMp&amp;clipt=EMfQHRinpSE&autoplay=1", // Example YouTube ID
   };
   // si type est youtube juste mettre id
   const youtubeType = {
