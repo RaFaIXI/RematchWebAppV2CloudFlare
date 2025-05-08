@@ -84,9 +84,10 @@ export default function Home() {
     ? "bg-gradient-to-b from-[#2E3192] to-white dark:from-[#2E3192] dark:to-background" 
     : "bg-gradient-to-b from-green-50 to-white dark:from-green-950 dark:to-background";
   
+  // Updated button styling for better visibility when embedded
   const buttonClasses = isEmbedded
-    ? "bg-[#2E3192] hover:bg-blue-800"
-    : "bg-green-600 hover:bg-green-700";
+    ? "bg-[#2E3192] hover:bg-blue-600 text-white font-medium"
+    : "bg-green-600 hover:bg-green-700 text-white";
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -154,11 +155,46 @@ export default function Home() {
             </div>
 
             <div className="mx-auto grid gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 items-start pt-8">
-              <CategoryCard href="/tir" icon={<Spline />} title={t.shoot} desc={t.shootDesc} color={isEmbedded ? "blue" : "green"} />
-              <CategoryCard href="/defense" icon={<Shield />} title={t.defense} desc={t.defenseDesc} color="blue" />
-              <CategoryCard href="/strategie" icon={<Lightbulb />} title={t.strategy} desc={t.strategyDesc} color="purple" />
-              <CategoryCard href="/gardien" icon={<HandMetal />} title={t.goalkeeper} desc={t.goalkeeperDesc} color="yellow" />
-              <CategoryCard href="/dribles" icon={<Footprints />} title={t.dribbling} desc={t.dribblingDesc} color="red" />
+              <CategoryCard 
+                href="/tir" 
+                icon={<Spline />} 
+                title={t.shoot} 
+                desc={t.shootDesc} 
+                color={isEmbedded ? "blue" : "green"} 
+                isEmbedded={isEmbedded} 
+              />
+              <CategoryCard 
+                href="/defense" 
+                icon={<Shield />} 
+                title={t.defense} 
+                desc={t.defenseDesc} 
+                color="blue" 
+                isEmbedded={isEmbedded}
+              />
+              <CategoryCard 
+                href="/strategie" 
+                icon={<Lightbulb />} 
+                title={t.strategy} 
+                desc={t.strategyDesc} 
+                color="purple" 
+                isEmbedded={isEmbedded}
+              />
+              <CategoryCard 
+                href="/gardien" 
+                icon={<HandMetal />} 
+                title={t.goalkeeper} 
+                desc={t.goalkeeperDesc} 
+                color="yellow" 
+                isEmbedded={isEmbedded}
+              />
+              <CategoryCard 
+                href="/dribles" 
+                icon={<Footprints />} 
+                title={t.dribbling} 
+                desc={t.dribblingDesc} 
+                color="red" 
+                isEmbedded={isEmbedded}
+              />
             </div>
           </div>
         </section>
@@ -168,17 +204,38 @@ export default function Home() {
   );
 }
 
-// Reusable CategoryCard component
-function CategoryCard({ href, icon, title, desc, color }: { href: string; icon: React.ReactNode; title: string; desc: string; color: string }) {
+// Updated CategoryCard component with embedded styling
+function CategoryCard({ 
+  href, 
+  icon, 
+  title, 
+  desc, 
+  color, 
+  isEmbedded 
+}: { 
+  href: string; 
+  icon: React.ReactNode; 
+  title: string; 
+  desc: string; 
+  color: string; 
+  isEmbedded: boolean;
+}) {
+  // Apply different styling for text and hover effects when embedded
+  const cardClasses = isEmbedded
+    ? "group flex flex-col items-center space-y-2 rounded-lg p-4 transition-all hover:bg-blue-50 dark:hover:bg-blue-900"
+    : "group flex flex-col items-center space-y-2 rounded-lg p-4 transition-all hover:bg-white dark:hover:bg-gray-950";
+  
+  // Make title text more prominent when embedded
+  const titleClasses = isEmbedded
+    ? "text-xl font-bold text-[#2E3192]"
+    : "text-xl font-bold";
+
   return (
-    <Link
-      href={href}
-      className="group flex flex-col items-center space-y-2 rounded-lg p-4 transition-all hover:bg-white dark:hover:bg-gray-950"
-    >
+    <Link href={href} className={cardClasses}>
       <div className={`rounded-full bg-${color}-100 p-4 dark:bg-${color}-900`}>
         {icon}
       </div>
-      <h3 className="text-xl font-bold">{title}</h3>
+      <h3 className={titleClasses}>{title}</h3>
       <p className="text-sm text-gray-500 dark:text-gray-400 text-center">{desc}</p>
     </Link>
   );
