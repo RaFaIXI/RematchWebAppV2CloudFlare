@@ -44,7 +44,6 @@ const translations = {
   },
 }
 
-
 // Star rating component
 const StarRating = ({
   rating,
@@ -74,7 +73,6 @@ const getYouTubeVideoId = (url: string): string | null => {
   const match = url.match(regExp)
   return match && match[2].length === 11 ? match[2] : null
 }
-
 
 const exeptionTitle = ["Son de la balle","Ball Sound","Mouvements et Tirs","Movements and Shots","Body Block","Sprint"]
 
@@ -147,24 +145,26 @@ export function TechniqueCard({
     // Handle YouTube clip
     if (videoType === "youtubeclip" && videoUrl) {
       return (
-      <iframe 
-      className="w-full h-full absolute top-0 left-0"
-      src={videoUrl+"&autoplay=1"} 
-      title="YouTube video player" 
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-      allowFullScreen></iframe>
+        <iframe 
+          className="w-full h-full absolute top-0 left-0"
+          src={videoUrl+"&autoplay=1"} 
+          title="YouTube video player" 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+          allowFullScreen></iframe>
       )
     }
-    // Handle regular YouTube videos
+    // Handle regular YouTube videos with hidden UI elements
     else if ((videoType === "youtube" || videoType === "youtubemuted") && youtubeId) {
       return (
-        <iframe
-          src={`https://www.youtube.com/embed/${youtubeId}?autoplay=${isOpen ? "1" : "0"}&loop=1&playlist=${youtubeId}&controls=${isException ? "1" : "0"}${shouldMuteYoutube ? "&mute=1" : ""}`}
-          title={`YouTube video: ${title}`}
-          className="w-full h-full absolute top-0 left-0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        ></iframe>
+        <div className="youtube-container w-full h-full absolute top-0 left-0 overflow-hidden">
+          <iframe
+            src={`https://www.youtube.com/embed/${youtubeId}?autoplay=${isOpen ? "1" : "0"}&loop=1&playlist=${youtubeId}&controls=${isException ? "1" : "0"}&color=white&modestbranding=1&rel=0&playsinline=1${shouldMuteYoutube ? "&mute=1" : ""}`}
+            title={`YouTube video: ${title}`}
+            className="w-[300%] h-full absolute top-0 left-[-100%]"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          ></iframe>
+        </div>
       )
     } 
     // Handle local videos

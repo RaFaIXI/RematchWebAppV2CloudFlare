@@ -89,3 +89,19 @@
         font-family: Arial, Helvetica, sans-serif;
     }
 }
+
+
+
+
+/* Add this to your global CSS file */
+
+.youtube-container {
+    overflow: hidden;
+    /* No clicking/hover effects when not an exception video */
+    pointer-events: none;
+}
+
+/* Re-enable pointer events for exception videos that need controls */
+.youtube-container.has-controls {
+    pointer-events: auto;
+}
