@@ -81,7 +81,7 @@ export default function Home() {
 
   // Determine gradient and button colors based on embedded status
   const gradientClasses = isEmbedded 
-    ? "bg-gradient-to-b from-[#2E3192] to-white dark:from-green-950 dark:to-background" 
+    ? "bg-gradient-to-b from-[#2E3192] to-white dark:from-[#2E3192] dark:to-background" 
     : "bg-gradient-to-b from-green-50 to-white dark:from-green-950 dark:to-background";
   
   const buttonClasses = isEmbedded
