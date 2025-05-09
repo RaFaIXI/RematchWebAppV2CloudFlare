@@ -42,6 +42,20 @@ export const metadata = {
     "google-site-verification": "WMwlYdrRXd3vYBa2i5cgQENMA5FPl6Xs_d2osN49Llc",
   },
   type: "website",
+
+  openGraph: {
+    title: "Rematch CookBook",
+    description: "Master Rematch with detailed soccer tutorials, training guides, and techniques for dribbling, shooting, and goalkeeping. Your ultimate Rematch guide.",
+    url: "https://rematch-guide.com", // Replace with your actual URL
+    siteName: "Rematch CookBook",
+    images: [
+      {
+        url: "/assets/favicon-32x32.png", // Must be in /public
+        alt: "Rematch CookBook Open Graph Image",
+      },
+    ],
+    type: "website",
+  },
 };
 
 export default function RootLayout({
