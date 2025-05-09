@@ -50,7 +50,7 @@ export const metadata = {
     siteName: "Rematch CookBook",
     images: [
       {
-        url: "/assets/favicon-32x32.png", // Must be in /public
+        url: "/images/logo-element.png", // Must be in /public
         alt: "Rematch CookBook Open Graph Image",
       },
     ],
