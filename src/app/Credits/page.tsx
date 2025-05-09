@@ -1,18 +1,28 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Heart, Video, Youtube, Globe, MessageSquare, ExternalLink } from "lucide-react";
+import { Heart, Video, Youtube, Globe, MessageSquare, ExternalLink, DollarSign } from "lucide-react";
  
 export default function CreditsPage() {
   const [lang, setLang] = useState<"en" | "fr">("en");
+  const [isEmbedded, setIsEmbedded] = useState(false);
   
   useEffect(() => {
-    const storedLang = localStorage.getItem("lang");
-    if (storedLang === "en" || storedLang === "fr") {
-      setLang(storedLang);
+    // Check if the page is embedded in an iframe
+    if (window.top !== window.self) {
+      setIsEmbedded(true);
+      // Force French language when embedded in an iframe
+      setLang("fr");
+      localStorage.setItem("lang", "fr");
+    } else {
+      setIsEmbedded(false);
+      // Not in an iframe, use stored language preference if available
+      const storedLang = localStorage.getItem("lang");
+      if (storedLang === "en" || storedLang === "fr") {
+        setLang(storedLang);
+      }
     }
   }, []);
-
 
   const translations = {
     en: {
@@ -29,7 +39,8 @@ export default function CreditsPage() {
       discordInvite: "Join our team on Discord",
       youtube: "YouTube Channel",
       languageToggle: "Switch to French",
-      backToHome: "Back to Home"
+      backToHome: "Back to Home",
+      supportMe: "Support This Project"
     },
     fr: {
       title: "Crédits",
@@ -45,7 +56,8 @@ export default function CreditsPage() {
       discordInvite: "Rejoignez notre équipe sur Discord",
       youtube: "Chaîne YouTube",
       languageToggle: "Passer en Anglais",
-      backToHome: "Retour à l'Accueil"
+      backToHome: "Retour à l'Accueil",
+      supportMe: "Soutenir Ce Projet"
     }
   };
 
@@ -55,9 +67,6 @@ export default function CreditsPage() {
     { name: "@askii_78", role: lang === "en" ? "Clip Provider" : "Clippeur"},
     { name: "@exzya", role: lang === "en" ? "Clip Provider" : "Clippeur"},
     { name: "@rurer", role: lang === "en" ? "Labber" : "Labbeur"},
-
-    
-
   ];
 
   return (
@@ -75,6 +84,8 @@ export default function CreditsPage() {
             >
               <span>{t.backToHome}</span>
             </Link>
+            
+
           </div>
         </div>
 
@@ -206,6 +217,17 @@ export default function CreditsPage() {
                   <span>{t.youtube}</span>
                   <ExternalLink size={16} />
                 </Link>
+                
+                {/* Donation link inside the community section when not embedded */}
+                {!isEmbedded && (
+                  <Link 
+                    href="/donate" 
+                    className="flex items-center justify-between p-3 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-lg mt-3 hover:bg-green-200 dark:hover:bg-green-800 transition-colors"
+                  >
+                    <span>{t.supportMe}</span>
+                    <ExternalLink size={16} />
+                  </Link>
+                )}
               </div>
             </div>
           </div>

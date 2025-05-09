@@ -37,6 +37,7 @@ export function SiteHeader() {
     setTheme(theme === "light" ? "dark" : "light")
   }
 
+  // Create routes array with conditional donate link
   const routes = [
     { href: "/", label: lang === "fr" ? "Accueil" : "Home" },
     { href: "/tir", label: lang === "fr" ? "Tir" : "Shoot" },
@@ -44,10 +45,15 @@ export function SiteHeader() {
     { href: "/dribles", label: lang === "fr" ? "Dribles" : "Dribbles" },
     { href: "/gardien", label: lang === "fr" ? "Gardien" : "Goalkeeper" },
     { href: "/strategie", label: lang === "fr" ? "Stratégie" : "Strategy" },
-   /// { href: "/mental", label: lang === "fr" ? "Mentalité" : "Mentality" },
+    // { href: "/mental", label: lang === "fr" ? "Mentalité" : "Mentality" },
     { href: "/Routines", label: lang === "fr" ? "Routines" : "Routines" },
     { href: "/TacticalBoard", label: lang === "fr" ? "Tableau Tactique" : "Tactical Board" },
   ]
+  
+  // Add donate link only if not embedded
+  if (!isEmbedded) {
+    routes.push({ href: "/donate", label: lang === "fr" ? "Soutiens-moi" : "Support me" })
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -107,7 +113,7 @@ export function SiteHeader() {
 
               {mounted && (
                 <Button variant="ghost" onClick={toggleTheme}>
-                  {theme === "Dark" ? "🌙 Dark" : "☀️ Light"}
+                  {theme === "light" ? "🌙 Dark" : "☀️ Light"}
                 </Button>
               )}
 
