@@ -50,7 +50,7 @@ export const metadata = {
     siteName: "Rematch CookBook",
     images: [
       {
-        url: "https://rematch-guide.com/images/logo-element.png", // Use absolute URL
+        url: "https://rematch-guide.com/images/logo-element.png",  // Use absolute URL
         alt: "Rematch CookBook Open Graph Image",
       },
     ],
