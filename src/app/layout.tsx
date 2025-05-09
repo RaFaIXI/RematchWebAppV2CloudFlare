@@ -50,7 +50,7 @@ export const metadata = {
     siteName: "Rematch CookBook",
     images: [
       {
-        url: "/images/logo-element.png", // Must be in /public
+        url: "https://rematch-guide.com/images/logo-element.png", // Use absolute URL
         alt: "Rematch CookBook Open Graph Image",
       },
     ],
@@ -72,6 +72,7 @@ export default function RootLayout({
         <meta property="og:title" content="Rematch CookBook" />
         <meta property="og:description" content="Master Rematch with detailed soccer tutorials..." />
         <meta property="og:image" content="https://rematch-guide.com/images/logo-element.png" />
+        <meta property="og:image:alt" content="Rematch CookBook Open Graph Imagek" />
         <meta property="og:url" content="https://rematch-guide.com" />
         <meta property="og:type" content="website" />
         <Script
