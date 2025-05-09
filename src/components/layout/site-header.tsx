@@ -44,6 +44,7 @@ export function SiteHeader() {
     { href: "/dribles", label: lang === "fr" ? "Dribles" : "Dribbles" },
     { href: "/gardien", label: lang === "fr" ? "Gardien" : "Goalkeeper" },
     { href: "/strategie", label: lang === "fr" ? "Stratégie" : "Strategy" },
+   /// { href: "/mental", label: lang === "fr" ? "Mentalité" : "Mentality" },
     { href: "/Routines", label: lang === "fr" ? "Routines" : "Routines" },
     { href: "/TacticalBoard", label: lang === "fr" ? "Tableau Tactique" : "Tactical Board" },
   ]
