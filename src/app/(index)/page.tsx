@@ -51,6 +51,7 @@ export default function Home() {
       goalkeeperDesc: "Specific techniques for goalkeepers",
       dribblingDesc: "Improve your dribbling and ball control",
       imageAlt: "Football training",
+      videoAlt: "Football training video",
     },
     fr: {
       heading: "Maîtrisez Rematch",
@@ -74,6 +75,7 @@ export default function Home() {
       goalkeeperDesc: "Techniques spécifiques pour les gardiens de but",
       dribblingDesc: "Améliorez vos compétences de dribble et contrôle du ballon",
       imageAlt: "Entraînement de football",
+      videoAlt: "Vidéo d'entraînement de football",
     },
   };
 
@@ -128,14 +130,27 @@ export default function Home() {
                   </Link>
                 </div>
               </div>
-              <div className="mx-auto aspect-video overflow-hidden rounded-xl object-cover sm:w-full lg:order-last">
-                <img
-                  src="/rematch.png"
-                  alt={t.imageAlt}
-                  className="w-full h-full object-cover"
-                  onClick={() => window.open("https://discord.com/invite/ua8D567NAp", "_blank")}
-                  style={{ cursor: "pointer" }}
-                />
+              <div className="mx-auto aspect-video overflow-hidden rounded-xl sm:w-full lg:order-last">
+                {isEmbedded ? (
+                  // Show image when embedded
+                  <img
+                    src="/rematch.png"
+                    alt={t.imageAlt}
+                    className="w-full h-full object-cover"
+                    onClick={() => window.open("https://discord.com/invite/ua8D567NAp", "_blank")}
+                    style={{ cursor: "pointer" }}
+                  />
+                ) : (
+                  // Show YouTube video when not embedded
+                  <iframe
+                    src="https://www.youtube.com/embed/EwN-2enZCh8"
+                    title={t.videoAlt}
+                    className="w-full h-full object-cover"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  ></iframe>
+                )}
               </div>
             </div>
           </div>
