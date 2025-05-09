@@ -69,6 +69,11 @@ export default function RootLayout({
 
         <link rel="icon" href="/assets/favicon-32x32.png" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta property="og:title" content="Rematch CookBook" />
+        <meta property="og:description" content="Master Rematch with detailed soccer tutorials..." />
+        <meta property="og:image" content="https://rematch-guide.com/images/logo-element.png" />
+        <meta property="og:url" content="https://rematch-guide.com" />
+        <meta property="og:type" content="website" />
         <Script
           async
           src="https://www.googletagmanager.com/gtag/js?id=G-CM8EWL1MJ7"
