@@ -40,13 +40,13 @@ export function SiteHeader() {
   // Create routes array with conditional donate link
   const routes = [
     { href: "/", label: lang === "fr" ? "Accueil" : "Home" },
+    { href: "/Routines", label: lang === "fr" ? "Routines" : "Routines" },
     { href: "/tir", label: lang === "fr" ? "Tir" : "Shoot" },
     { href: "/defense", label: lang === "fr" ? "Défense" : "Defense" },
     { href: "/dribles", label: lang === "fr" ? "Dribles" : "Dribbles" },
     { href: "/gardien", label: lang === "fr" ? "Gardien" : "Goalkeeper" },
     { href: "/strategie", label: lang === "fr" ? "Stratégie" : "Strategy" },
     // { href: "/mental", label: lang === "fr" ? "Mentalité" : "Mentality" },
-    { href: "/Routines", label: lang === "fr" ? "Routines" : "Routines" },
     { href: "/TacticalBoard", label: lang === "fr" ? "Tableau Tactique" : "Tactical Board" },
   ]
   

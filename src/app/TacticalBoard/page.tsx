@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
-import { Clipboard, Save, Undo, Download, ExternalLink, HomeIcon, Trash2, Edit3, X } from "lucide-react";
+import { Clipboard, Save, Undo, Download, ExternalLink, HomeIcon, Trash2, Edit3, X, ArrowRight, Type, MinusIcon } from "lucide-react";
 import Footer from "@/components/Footer";
 import Image from "next/image";
 
@@ -17,7 +17,18 @@ export default function TacticalBoardPage() {
   const [lines, setLines] = useState<Line[]>([]);
   const [currentLine, setCurrentLine] = useState<Line | null>(null);
   const [selectedLineColor, setSelectedLineColor] = useState("#ffffff");
+  const [lineWidth, setLineWidth] = useState(3); 
+  const [drawingTool, setDrawingTool] = useState<"freehand" | "line" | "arrow" | "text">("freehand");
+  const [teamSize, setTeamSize] = useState<4 | 5>(5);
+  const [startPoint, setStartPoint] = useState<{x: number, y: number} | null>(null);
+  const [isTextMode, setIsTextMode] = useState(false);
+  const [currentText, setCurrentText] = useState("");
+  const [textPosition, setTextPosition] = useState<{x: number, y: number} | null>(null);
+  const [texts, setTexts] = useState<{id: string, text: string, x: number, y: number, color: string}[]>([]);
+  const [isPlacingText, setIsPlacingText] = useState(false);
+
   const fieldRef = useRef<HTMLDivElement>(null);
+  const textInputRef = useRef<HTMLInputElement>(null);
   const easterEggTimerRef = useRef<NodeJS.Timeout | null>(null);
   
   useEffect(() => {
@@ -41,6 +52,11 @@ export default function TacticalBoardPage() {
     checkForEasterEgg();
   }, [players]);
 
+  useEffect(() => {
+    // Re-initialize players when team size changes
+    initializePlayers();
+  }, [teamSize]);
+
   const translations = {
     en: {
       title: "Tactical Board",
@@ -54,8 +70,19 @@ export default function TacticalBoardPage() {
       easterEggMessage: "Cheeky! Keep it classy!",
       drawLines: "Draw Mode",
       exitDrawMode: "Exit Draw Mode",
-      clearLines: "Clear Lines",
-      lineColor: "Line Color"
+      clearLines: "Clear",
+      lineColor: "Line Color",
+      lineWidth: "Line Width",
+      format4v4: "4v4 Format",
+      format5v5: "5v5 Format",
+      drawingTools: "Drawing Tools",
+      freehand: "Freehand",
+      straightLine: "Straight Line",
+      arrow: "Arrow",
+      text: "Text",
+      addText: "Add Text",
+      enterText: "Enter text...",
+      placeText: "Click on the field to place text"
     },
     fr: {
       title: "Tableau Tactique",
@@ -70,30 +97,61 @@ export default function TacticalBoardPage() {
       drawLines: "Mode Dessin",
       exitDrawMode: "Quitter Mode Dessin",
       clearLines: "Effacer",
-      lineColor: "Couleur"
+      lineColor: "Couleur",
+      lineWidth: "Épaisseur",
+      format4v4: "Format 4v4",
+      format5v5: "Format 5v5",
+      drawingTools: "Outils de Dessin",
+      freehand: "Main Levée",
+      straightLine: "Ligne Droite",
+      arrow: "Flèche",
+      text: "Texte",
+      addText: "Ajouter Texte",
+      enterText: "Entrez du texte...",
+      placeText: "Cliquez sur le terrain pour placer le texte"
     }
   };
 
   const t = translations[lang];
 
   const initializePlayers = () => {
-    // Team A (blue)
-    const teamA = [
-      { id: "a1", team: "a", x: 100, y: 200, color: "#3b82f6" },  // Left back
-      { id: "a2", team: "a", x: 200, y: 120, color: "#3b82f6" },  // Left forward
-      { id: "a3", team: "a", x: 150, y: 250, color: "#3b82f6" },  // Center back
-      { id: "a4", team: "a", x: 200, y: 380, color: "#3b82f6" },  // Right forward
-      { id: "a5", team: "a", x: 100, y: 300, color: "#3b82f6" },  // Right back
-    ];
+    let teamA, teamB;
     
-    // Team B (red)
-    const teamB = [
-      { id: "b1", team: "b", x: 500, y: 200, color: "#ef4444" },  // Left back
-      { id: "b2", team: "b", x: 400, y: 120, color: "#ef4444" },  // Left forward
-      { id: "b3", team: "b", x: 450, y: 250, color: "#ef4444" },  // Center back
-      { id: "b4", team: "b", x: 400, y: 380, color: "#ef4444" },  // Right forward
-      { id: "b5", team: "b", x: 500, y: 300, color: "#ef4444" },  // Right back
-    ];
+    if (teamSize === 5) {
+      // Team A (blue) - 5 players
+      teamA = [
+        { id: "a1", team: "a", x: 100, y: 200, color: "#3b82f6" },  // Left back
+        { id: "a2", team: "a", x: 200, y: 120, color: "#3b82f6" },  // Left forward
+        { id: "a3", team: "a", x: 150, y: 250, color: "#3b82f6" },  // Center back
+        { id: "a4", team: "a", x: 200, y: 380, color: "#3b82f6" },  // Right forward
+        { id: "a5", team: "a", x: 100, y: 300, color: "#3b82f6" },  // Right back
+      ];
+      
+      // Team B (red) - 5 players
+      teamB = [
+        { id: "b1", team: "b", x: 500, y: 200, color: "#ef4444" },  // Left back
+        { id: "b2", team: "b", x: 400, y: 120, color: "#ef4444" },  // Left forward
+        { id: "b3", team: "b", x: 450, y: 250, color: "#ef4444" },  // Center back
+        { id: "b4", team: "b", x: 400, y: 380, color: "#ef4444" },  // Right forward
+        { id: "b5", team: "b", x: 500, y: 300, color: "#ef4444" },  // Right back
+      ];
+    } else {
+      // Team A (blue) - 4 players
+      teamA = [
+        { id: "a1", team: "a", x: 100, y: 170, color: "#3b82f6" },  // Left back
+        { id: "a2", team: "a", x: 200, y: 170, color: "#3b82f6" },  // Left forward
+        { id: "a3", team: "a", x: 200, y: 330, color: "#3b82f6" },  // Right forward
+        { id: "a4", team: "a", x: 100, y: 330, color: "#3b82f6" },  // Right back
+      ];
+      
+      // Team B (red) - 4 players
+      teamB = [
+        { id: "b1", team: "b", x: 500, y: 170, color: "#ef4444" },  // Left back
+        { id: "b2", team: "b", x: 400, y: 170, color: "#ef4444" },  // Left forward
+        { id: "b3", team: "b", x: 400, y: 330, color: "#ef4444" },  // Right forward
+        { id: "b4", team: "b", x: 500, y: 330, color: "#ef4444" },  // Right back
+      ];
+    }
     
     // Ball
     const ball = { id: "ball", team: "ball", x: 300, y: 250, color: "#ffffff" };
@@ -101,6 +159,7 @@ export default function TacticalBoardPage() {
     setPlayers([...teamA, ...teamB, ball]);
     setHistory([[...teamA, ...teamB, ball]]);
     setLines([]);
+    setTexts([]);
   };
 
   // Handle player dragging
@@ -133,6 +192,7 @@ export default function TacticalBoardPage() {
     points: LinePoint[];
     color: string;
     width: number;
+    type: "freehand" | "line" | "arrow";
   }
 
   const handleFieldPointerDown = (e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>): void => {
@@ -151,13 +211,72 @@ export default function TacticalBoardPage() {
         y = e.clientY - fieldRect.top;
       }
       
-      setIsDrawing(true);
-      setCurrentLine({
-        id: `line-${Date.now()}`,
-        points: [{ x, y }],
-        color: selectedLineColor,
-        width: 3
-      });
+      if (drawingTool === "text") {
+        // Place text at this position
+        if (currentText.trim()) {
+          const newText = {
+            id: `text-${Date.now()}`,
+            text: currentText,
+            x,
+            y,
+            color: selectedLineColor
+          };
+          setTexts([...texts, newText]);
+          setCurrentText("");
+          setIsPlacingText(false);
+        }
+        return;
+      }
+      
+      if (drawingTool === "line" || drawingTool === "arrow") {
+        // For straight lines and arrows, we track the start point
+        setStartPoint({x, y});
+        setIsDrawing(true);
+        setCurrentLine({
+          id: `line-${Date.now()}`,
+          points: [{x, y}, {x, y}], // Start and initial end point (same)
+          color: selectedLineColor,
+          width: lineWidth,
+          type: drawingTool
+        });
+      } else {
+        // Freehand drawing
+        setIsDrawing(true);
+        setCurrentLine({
+          id: `line-${Date.now()}`,
+          points: [{ x, y }],
+          color: selectedLineColor,
+          width: lineWidth,
+          type: "freehand"
+        });
+      }
+    } else if (isPlacingText) {
+      const fieldRect = fieldRef.current?.getBoundingClientRect();
+      if (!fieldRect) return;
+
+      let x: number, y: number;
+      
+      // Handle both touch and mouse events
+      if ('touches' in e) {
+        x = e.touches[0].clientX - fieldRect.left;
+        y = e.touches[0].clientY - fieldRect.top;
+      } else {
+        x = e.clientX - fieldRect.left;
+        y = e.clientY - fieldRect.top;
+      }
+      
+      if (currentText.trim()) {
+        const newText = {
+          id: `text-${Date.now()}`,
+          text: currentText,
+          x,
+          y,
+          color: selectedLineColor
+        };
+        setTexts([...texts, newText]);
+        setCurrentText("");
+        setIsPlacingText(false);
+      }
     }
   };
 
@@ -188,7 +307,6 @@ export default function TacticalBoardPage() {
           : player
       ));
     } else if (isDrawingMode && isDrawing && currentLine) {
-      // Drawing mode - add new point to current line
       const fieldRect = fieldRef.current?.getBoundingClientRect();
       if (!fieldRect) return;
       let x, y;
@@ -201,19 +319,28 @@ export default function TacticalBoardPage() {
         x = e.clientX - fieldRect.left;
         y = e.clientY - fieldRect.top;
       }
-      
-      // Add point only if it's sufficiently distant from the last point
-      // This prevents too many points and makes the line smoother
-      const lastPoint = currentLine.points[currentLine.points.length - 1];
-      const dx = x - lastPoint.x;
-      const dy = y - lastPoint.y;
-      const distance = Math.sqrt(dx * dx + dy * dy);
-      
-      if (distance > 5) {
-        setCurrentLine({
-          ...currentLine,
-          points: [...currentLine.points, {x, y}]
-        });
+
+      if (drawingTool === "freehand") {
+        // Drawing mode - add new point to current freehand line
+        const lastPoint = currentLine.points[currentLine.points.length - 1];
+        const dx = x - lastPoint.x;
+        const dy = y - lastPoint.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        if (distance > 5) {
+          setCurrentLine({
+            ...currentLine,
+            points: [...currentLine.points, {x, y}]
+          });
+        }
+      } else if (drawingTool === "line" || drawingTool === "arrow") {
+        // Update end point for straight line or arrow
+        if (startPoint) {
+          setCurrentLine({
+            ...currentLine,
+            points: [currentLine.points[0], {x, y}]
+          });
+        }
       }
     }
   };
@@ -225,11 +352,13 @@ export default function TacticalBoardPage() {
       setDraggedPlayer(null);
     } else if (isDrawingMode && isDrawing && currentLine) {
       // End the current line drawing
-      if (currentLine.points.length > 1) {
+      if ((drawingTool === "freehand" && currentLine.points.length > 1) || 
+          (drawingTool !== "freehand" && startPoint)) {
         setLines([...lines, currentLine]);
       }
       setCurrentLine(null);
       setIsDrawing(false);
+      setStartPoint(null);
     }
   };
 
@@ -237,12 +366,27 @@ export default function TacticalBoardPage() {
     setIsDrawingMode(!isDrawingMode);
     setCurrentLine(null);
     setIsDrawing(false);
+    setStartPoint(null);
+    setIsTextMode(false);
+    setIsPlacingText(false);
   };
 
   const clearAllLines = () => {
     setLines([]);
+    setTexts([]);
     setCurrentLine(null);
     setIsDrawing(false);
+    setIsPlacingText(false);
+  };
+
+  const handleTextSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (currentText.trim()) {
+      setIsPlacingText(true);
+      if (textInputRef.current) {
+        textInputRef.current.blur();  // Hide mobile keyboard
+      }
+    }
   };
 
   const checkForEasterEgg = () => {
@@ -355,16 +499,42 @@ export default function TacticalBoardPage() {
     y: number;
   }
 
-  const generateSvgPath = (points: Point[]): string => {
+  const generateSvgPath = (points: Point[], type: string): string => {
     if (!points || points.length < 2) return "";
     
-    let path = `M ${points[0].x} ${points[0].y}`;
-    
-    for (let i = 1; i < points.length; i++) {
-      path += ` L ${points[i].x} ${points[i].y}`;
+    if (type === "freehand") {
+      let path = `M ${points[0].x} ${points[0].y}`;
+      
+      for (let i = 1; i < points.length; i++) {
+        path += ` L ${points[i].x} ${points[i].y}`;
+      }
+      
+      return path;
+    } else if (type === "line") {
+      return `M ${points[0].x} ${points[0].y} L ${points[1].x} ${points[1].y}`;
+    } else if (type === "arrow") {
+      const start = points[0];
+      const end = points[1];
+      
+      // Calculate the angle
+      const angle = Math.atan2(end.y - start.y, end.x - start.x);
+      const arrowLength = 15; // Length of arrow head
+      
+      // Calculate the points of the arrow head
+      const arrowPoint1 = {
+        x: end.x - arrowLength * Math.cos(angle - Math.PI/6),
+        y: end.y - arrowLength * Math.sin(angle - Math.PI/6)
+      };
+      
+      const arrowPoint2 = {
+        x: end.x - arrowLength * Math.cos(angle + Math.PI/6),
+        y: end.y - arrowLength * Math.sin(angle + Math.PI/6)
+      };
+      
+      return `M ${start.x} ${start.y} L ${end.x} ${end.y} M ${end.x} ${end.y} L ${arrowPoint1.x} ${arrowPoint1.y} M ${end.x} ${end.y} L ${arrowPoint2.x} ${arrowPoint2.y}`;
     }
     
-    return path;
+    return "";
   };
 
   const downloadImage = () => {
@@ -419,15 +589,57 @@ export default function TacticalBoardPage() {
       ctx.lineWidth = line.width || 3;
       ctx.beginPath();
       
-      // Draw the line path
-      ctx.moveTo(line.points[0].x, line.points[0].y);
-      for (let i = 1; i < line.points.length; i++) {
-        ctx.lineTo(line.points[i].x, line.points[i].y);
+      if (line.type === "freehand") {
+        // Draw the line path
+        ctx.moveTo(line.points[0].x, line.points[0].y);
+        for (let i = 1; i < line.points.length; i++) {
+          ctx.lineTo(line.points[i].x, line.points[i].y);
+        }
+      } else if (line.type === "line") {
+        // Draw a straight line
+        ctx.moveTo(line.points[0].x, line.points[0].y);
+        ctx.lineTo(line.points[1].x, line.points[1].y);
+      } else if (line.type === "arrow") {
+        // Draw an arrow
+        const start = line.points[0];
+        const end = line.points[1];
+        
+        // Main line
+        ctx.moveTo(start.x, start.y);
+        ctx.lineTo(end.x, end.y);
+        ctx.stroke();
+        
+        // Arrow head
+        const angle = Math.atan2(end.y - start.y, end.x - start.x);
+        const arrowLength = 15;
+        
+        ctx.beginPath();
+        ctx.moveTo(end.x, end.y);
+        ctx.lineTo(
+          end.x - arrowLength * Math.cos(angle - Math.PI/6),
+          end.y - arrowLength * Math.sin(angle - Math.PI/6)
+        );
+        ctx.moveTo(end.x, end.y);
+        ctx.lineTo(
+          end.x - arrowLength * Math.cos(angle + Math.PI/6),
+          end.y - arrowLength * Math.sin(angle + Math.PI/6)
+        );
       }
       
       ctx.stroke();
     });
   }
+    
+    // Draw text elements
+    texts.forEach(textItem => {
+      if (ctx) {
+        ctx.font = '16px Arial';
+        ctx.fillStyle = textItem.color;
+        ctx.textAlign = 'center';
+        ctx.fillText(textItem.text, textItem.x, textItem.y);
+      }
+    });
+
     // Draw players and ball
     players.forEach(player => {
       if (player.id === "ball") {
@@ -506,6 +718,29 @@ export default function TacticalBoardPage() {
             <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">{lang === "en" ? "Controls" : "Contrôles"}</h2>
             
             <div className="space-y-4">
+              <div className="flex gap-2">
+                <button 
+                  onClick={() => setTeamSize(4)}
+                  className={`flex-1 py-2 px-3 rounded-lg transition-colors ${
+                    teamSize === 4 
+                      ? 'bg-blue-600 text-white' 
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  }`}
+                >
+                  {t.format4v4}
+                </button>
+                <button 
+                  onClick={() => setTeamSize(5)}
+                  className={`flex-1 py-2 px-3 rounded-lg transition-colors ${
+                    teamSize === 5 
+                      ? 'bg-blue-600 text-white' 
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  }`}
+                >
+                  {t.format5v5}
+                </button>
+              </div>
+              
               <button 
                 onClick={resetBoard}
                 className="w-full flex items-center justify-center space-x-2 p-3 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
@@ -542,7 +777,7 @@ export default function TacticalBoardPage() {
                 <span>{isDrawingMode ? t.exitDrawMode : t.drawLines}</span>
               </button>
               
-              {lines.length > 0 && (
+              {(lines.length > 0 || texts.length > 0) && (
                 <button 
                   onClick={clearAllLines}
                   className="w-full flex items-center justify-center space-x-2 p-3 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 rounded-lg hover:bg-red-200 dark:hover:bg-red-800 transition-colors"
@@ -554,24 +789,101 @@ export default function TacticalBoardPage() {
             </div>
             
             {isDrawingMode && (
-              <div className="mt-4">
-                <h3 className="font-bold text-gray-800 dark:text-white mb-2">{t.lineColor}</h3>
-                <div className="grid grid-cols-4 gap-2">
-                  {lineColors.map((colorOption) => (
-                    <div
-                      key={colorOption.color}
-                      className={`h-8 rounded-md cursor-pointer border-2 ${
-                        selectedLineColor === colorOption.color 
-                          ? 'border-yellow-400 dark:border-yellow-500' 
-                          : 'border-transparent'
-                      }`}
-                      style={{ backgroundColor: colorOption.color }}
-                      onClick={() => setSelectedLineColor(colorOption.color)}
-                      title={colorOption.name}
-                    ></div>
-                  ))}
+              <>
+                <div className="mt-4">
+                  <h3 className="font-bold text-gray-800 dark:text-white mb-2">{t.drawingTools}</h3>
+                  <div className="grid grid-cols-4 gap-2">
+                    <button
+                      className={`p-2 rounded ${drawingTool === 'freehand' ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}
+                      onClick={() => setDrawingTool('freehand')}
+                      title={t.freehand}
+                    >
+                      <Edit3 size={16} />
+                    </button>
+                    <button
+                      className={`p-2 rounded ${drawingTool === 'line' ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}
+                      onClick={() => setDrawingTool('line')}
+                      title={t.straightLine}
+                    >
+                      <MinusIcon size={16} />
+                    </button>
+                    <button
+                      className={`p-2 rounded ${drawingTool === 'arrow' ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}
+                      onClick={() => setDrawingTool('arrow')}
+                      title={t.arrow}
+                    >
+                      <ArrowRight size={16} />
+                    </button>
+                    <button
+                      className={`p-2 rounded ${drawingTool === 'text' ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}
+                      onClick={() => setDrawingTool('text')}
+                      title={t.text}
+                    >
+                      <Type size={16} />
+                    </button>
+                  </div>
                 </div>
-              </div>
+              
+                <div className="mt-4">
+                  <h3 className="font-bold text-gray-800 dark:text-white mb-2">{t.lineColor}</h3>
+                  <div className="grid grid-cols-4 gap-2">
+                    {lineColors.map((colorOption) => (
+                      <div
+                        key={colorOption.color}
+                        className={`h-8 rounded-md cursor-pointer border-2 ${
+                          selectedLineColor === colorOption.color 
+                            ? 'border-yellow-400 dark:border-yellow-500' 
+                            : 'border-transparent'
+                        }`}
+                        style={{ backgroundColor: colorOption.color }}
+                        onClick={() => setSelectedLineColor(colorOption.color)}
+                        title={colorOption.name}
+                      ></div>
+                    ))}
+                  </div>
+                </div>
+              
+                <div className="mt-4">
+                  <h3 className="font-bold text-gray-800 dark:text-white mb-2">{t.lineWidth}</h3>
+                  <input 
+                    type="range" 
+                    min="1" 
+                    max="10" 
+                    value={lineWidth} 
+                    onChange={(e) => setLineWidth(parseInt(e.target.value))}
+                    className="w-full accent-blue-500"
+                  />
+                  <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
+                    <span>1px</span>
+                    <span>5px</span>
+                    <span>10px</span>
+                  </div>
+                </div>
+                
+                {drawingTool === 'text' && (
+                  <div className="mt-4">
+                    <form onSubmit={handleTextSubmit}>
+                      <div className="flex">
+                        <input
+                          ref={textInputRef}
+                          type="text" 
+                          value={currentText}
+                          onChange={(e) => setCurrentText(e.target.value)}
+                          placeholder={t.enterText}
+                          className="flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded-l-md dark:bg-gray-700"
+                        />
+                        <button 
+                          type="submit"
+                          className="bg-blue-500 text-white p-2 rounded-r-md"
+                          disabled={!currentText.trim()}
+                        >
+                          {t.addText}
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                )}
+              </>
             )}
             
             <div className="mt-6">
@@ -591,23 +903,19 @@ export default function TacticalBoardPage() {
                 </div>
               </div>
             </div>
-            
-            {isDrawingMode && (
-              <div className="mt-4 p-3 bg-purple-100 dark:bg-purple-900 rounded-lg">
-                <p className="text-purple-800 dark:text-purple-200 text-sm">
-                  {lang === "en" 
-                    ? "Click and drag anywhere on the field to draw lines. Select a color above." 
-                    : "Cliquez et faites glisser n'importe où sur le terrain pour dessiner des lignes. Sélectionnez une couleur ci-dessus."}
-                </p>
-              </div>
-            )}
           </div>
           
           {/* Tactical Board */}
           <div className="md:col-span-3">
             <div 
               ref={fieldRef}
-              className={`bg-green-700 dark:bg-green-800 w-full h-[500px] rounded-xl shadow-md relative overflow-hidden ${isDrawingMode ? 'cursor-crosshair' : 'cursor-default'}`}
+              className={`bg-green-700 dark:bg-green-800 w-full h-[500px] rounded-xl shadow-md relative overflow-hidden ${
+                isDrawingMode 
+                  ? drawingTool === 'text' || isPlacingText 
+                    ? 'cursor-text' 
+                    : 'cursor-crosshair' 
+                  : 'cursor-default'
+              }`}
               onMouseDown={handleFieldPointerDown}
               onTouchStart={handleFieldPointerDown}
               onMouseMove={handlePointerMove}
@@ -639,7 +947,7 @@ export default function TacticalBoardPage() {
                 {lines.map((line) => (
                   <path
                     key={line.id}
-                    d={generateSvgPath(line.points)}
+                    d={generateSvgPath(line.points, line.type)}
                     stroke={line.color}
                     strokeWidth={line.width || 3}
                     fill="none"
@@ -651,7 +959,7 @@ export default function TacticalBoardPage() {
                 {/* Current drawing line */}
                 {currentLine && currentLine.points && currentLine.points.length > 1 && (
                   <path
-                    d={generateSvgPath(currentLine.points)}
+                    d={generateSvgPath(currentLine.points, currentLine.type)}
                     stroke={currentLine.color}
                     strokeWidth={currentLine.width || 3}
                     fill="none"
@@ -660,6 +968,23 @@ export default function TacticalBoardPage() {
                   />
                 )}
               </svg>
+              
+              {/* Text elements */}
+              {texts.map((textItem) => (
+                <div 
+                  key={textItem.id}
+                  className="absolute pointer-events-none"
+                  style={{
+                    left: textItem.x,
+                    top: textItem.y,
+                    transform: 'translate(-50%, -50%)',
+                    color: textItem.color,
+                    textShadow: '1px 1px 1px rgba(0,0,0,0.5)'
+                  }}
+                >
+                  {textItem.text}
+                </div>
+              ))}
               
               {/* Players and ball */}
               {players.map((player) => (
@@ -681,6 +1006,15 @@ export default function TacticalBoardPage() {
                   {player.id !== "ball" && player.id.charAt(1)}
                 </div>
               ))}
+              
+              {/* Text placement instructions */}
+              {isPlacingText && (
+                <div className="absolute inset-x-0 bottom-4 flex justify-center">
+                  <div className="bg-black bg-opacity-70 text-white px-4 py-2 rounded-md">
+                    {t.placeText}
+                  </div>
+                </div>
+              )}
               
               {/* Easter Egg Animation with Image */}
               {showEasterEgg && (
@@ -706,9 +1040,9 @@ export default function TacticalBoardPage() {
             
             <div className="mt-4 text-sm text-gray-600 dark:text-gray-400 text-center">
               {isDrawingMode 
-                ? (lang === "en" 
-                    ? "Click and drag anywhere to draw lines" 
-                    : "Cliquez et faites glisser n'importe où pour dessiner des lignes")
+                ? (drawingTool === 'text'
+                    ? (lang === "en" ? "Enter text and click on the field to place it" : "Entrez du texte et cliquez sur le terrain pour le placer")
+                    : (lang === "en" ? "Click and drag to draw" : "Cliquez et faites glisser pour dessiner"))
                 : (lang === "en" 
                     ? "Drag players and ball to create your tactical setup" 
                     : "Faites glisser les joueurs et le ballon pour créer votre configuration tactique")
