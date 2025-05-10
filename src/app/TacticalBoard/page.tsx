@@ -10,7 +10,12 @@ export default function TacticalBoardPage() {
   const [players, setPlayers] = useState<{ id: string; team: string; x: number; y: number; color: string }[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const [draggedPlayer, setDraggedPlayer] = useState<string | null>(null);
-  const [history, setHistory] = useState<{ id: string; team: string; x: number; y: number; color: string }[][]>([]);
+  // Update history to store all elements (players, lines, and texts)
+  const [history, setHistory] = useState<{
+    players: { id: string; team: string; x: number; y: number; color: string }[];
+    lines: Line[];
+    texts: {id: string, text: string, x: number, y: number, color: string}[];
+  }[]>([]);
   const [showEasterEgg, setShowEasterEgg] = useState(false);
   const [isDrawingMode, setIsDrawingMode] = useState(false);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -156,8 +161,14 @@ export default function TacticalBoardPage() {
     // Ball
     const ball = { id: "ball", team: "ball", x: 300, y: 250, color: "#ffffff" };
     
-    setPlayers([...teamA, ...teamB, ball]);
-    setHistory([[...teamA, ...teamB, ball]]);
+    const initialPlayers = [...teamA, ...teamB, ball];
+    setPlayers(initialPlayers);
+    // Update history to include all elements
+    setHistory([{
+      players: initialPlayers,
+      lines: [],
+      texts: []
+    }]);
     setLines([]);
     setTexts([]);
   };
@@ -221,7 +232,14 @@ export default function TacticalBoardPage() {
             y,
             color: selectedLineColor
           };
-          setTexts([...texts, newText]);
+          const updatedTexts = [...texts, newText];
+          setTexts(updatedTexts);
+          // Add to history when text is added
+          setHistory([...history, {
+            players: [...players],
+            lines: [...lines],
+            texts: updatedTexts
+          }]);
           setCurrentText("");
           setIsPlacingText(false);
         }
@@ -273,7 +291,14 @@ export default function TacticalBoardPage() {
           y,
           color: selectedLineColor
         };
-        setTexts([...texts, newText]);
+        const updatedTexts = [...texts, newText];
+        setTexts(updatedTexts);
+        // Add to history when text is placed
+        setHistory([...history, {
+          players: [...players],
+          lines: [...lines],
+          texts: updatedTexts
+        }]);
         setCurrentText("");
         setIsPlacingText(false);
       }
@@ -347,14 +372,26 @@ export default function TacticalBoardPage() {
 
   const handlePointerUp = () => {
     if (isDragging) {
-      setHistory([...history, [...players]]);
+      // Update history with all current elements when a player is moved
+      setHistory([...history, {
+        players: [...players],
+        lines: [...lines],
+        texts: [...texts]
+      }]);
       setIsDragging(false);
       setDraggedPlayer(null);
     } else if (isDrawingMode && isDrawing && currentLine) {
       // End the current line drawing
       if ((drawingTool === "freehand" && currentLine.points.length > 1) || 
           (drawingTool !== "freehand" && startPoint)) {
-        setLines([...lines, currentLine]);
+        const updatedLines = [...lines, currentLine];
+        setLines(updatedLines);
+        // Add to history when a drawing is completed
+        setHistory([...history, {
+          players: [...players],
+          lines: updatedLines,
+          texts: [...texts]
+        }]);
       }
       setCurrentLine(null);
       setIsDrawing(false);
@@ -377,6 +414,12 @@ export default function TacticalBoardPage() {
     setCurrentLine(null);
     setIsDrawing(false);
     setIsPlacingText(false);
+    // Add to history when clearing all drawings
+    setHistory([...history, {
+      players: [...players],
+      lines: [],
+      texts: []
+    }]);
   };
 
   const handleTextSubmit = (e: React.FormEvent) => {
@@ -489,7 +532,11 @@ export default function TacticalBoardPage() {
       const newHistory = [...history];
       newHistory.pop();
       setHistory(newHistory);
-      setPlayers([...newHistory[newHistory.length - 1]]);
+      // Restore all elements from history
+      const lastState = newHistory[newHistory.length - 1];
+      setPlayers([...lastState.players]);
+      setLines([...lastState.lines]);
+      setTexts([...lastState.texts]);
     }
   };
 
