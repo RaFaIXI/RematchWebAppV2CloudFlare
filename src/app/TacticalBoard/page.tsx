@@ -31,6 +31,9 @@ export default function TacticalBoardPage() {
   const [textPosition, setTextPosition] = useState<{x: number, y: number} | null>(null);
   const [texts, setTexts] = useState<{id: string, text: string, x: number, y: number, color: string}[]>([]);
   const [isPlacingText, setIsPlacingText] = useState(false);
+  const [isPortrait, setIsPortrait] = useState(false);
+  const [fieldHeight, setFieldHeight] = useState(500);
+  const [fieldWidth, setFieldWidth] = useState(0);
 
   const fieldRef = useRef<HTMLDivElement>(null);
   const textInputRef = useRef<HTMLInputElement>(null);
@@ -42,15 +45,42 @@ export default function TacticalBoardPage() {
       setLang(storedLang);
     }
     
-    // Initialize players
+    // Check initial orientation
+    checkOrientation();
+    
+    // Add resize listener to detect orientation changes
+    window.addEventListener('resize', checkOrientation);
+    
+    // Initialize players with orientation-aware positions
     initializePlayers();
 
     return () => {
       if (easterEggTimerRef.current) {
         clearTimeout(easterEggTimerRef.current);
       }
+      window.removeEventListener('resize', checkOrientation);
     };
   }, []);
+
+  const checkOrientation = () => {
+    // Check if device is in portrait mode
+    const portrait = window.innerHeight > window.innerWidth;
+    setIsPortrait(portrait);
+    
+    // Adjust field dimensions based on orientation
+    if (fieldRef.current) {
+      if (portrait) {
+        // For portrait, make field taller and narrower
+        const width = Math.min(window.innerWidth - 32, 500); // Account for padding
+        setFieldWidth(width);
+        setFieldHeight(Math.min(window.innerHeight * 0.5, 600)); // Half of viewport height
+      } else {
+        // For landscape, use default dimensions
+        setFieldWidth(0); // Will use 100% in CSS
+        setFieldHeight(500); // Default height
+      }
+    }
+  };
 
   useEffect(() => {
     // Check for easter egg pattern after each move
@@ -58,9 +88,9 @@ export default function TacticalBoardPage() {
   }, [players]);
 
   useEffect(() => {
-    // Re-initialize players when team size changes
+    // Re-initialize players when team size changes or orientation changes
     initializePlayers();
-  }, [teamSize]);
+  }, [teamSize, isPortrait]);
 
   const translations = {
     en: {
@@ -122,44 +152,93 @@ export default function TacticalBoardPage() {
   const initializePlayers = () => {
     let teamA, teamB;
     
-    if (teamSize === 5) {
-      // Team A (blue) - 5 players
-      teamA = [
-        { id: "a1", team: "a", x: 100, y: 200, color: "#3b82f6" },  // Left back
-        { id: "a2", team: "a", x: 200, y: 120, color: "#3b82f6" },  // Left forward
-        { id: "a3", team: "a", x: 150, y: 250, color: "#3b82f6" },  // Center back
-        { id: "a4", team: "a", x: 200, y: 380, color: "#3b82f6" },  // Right forward
-        { id: "a5", team: "a", x: 100, y: 300, color: "#3b82f6" },  // Right back
-      ];
+    if (isPortrait) {
+      // Portrait orientation - vertical field layout
+      if (teamSize === 5) {
+        // Team A (blue) - 5 players in portrait mode
+        teamA = [
+          { id: "a1", team: "a", x: 100, y: 100, color: "#3b82f6" },  // Top left
+          { id: "a2", team: "a", x: 200, y: 100, color: "#3b82f6" },  // Top right
+          { id: "a3", team: "a", x: 150, y: 175, color: "#3b82f6" },  // Center
+          { id: "a4", team: "a", x: 100, y: 250, color: "#3b82f6" },  // Bottom left
+          { id: "a5", team: "a", x: 200, y: 250, color: "#3b82f6" },  // Bottom right
+        ];
+        
+        // Team B (red) - 5 players in portrait mode
+        teamB = [
+          { id: "b1", team: "b", x: 100, y: fieldHeight - 100, color: "#ef4444" },  // Bottom left
+          { id: "b2", team: "b", x: 200, y: fieldHeight - 100, color: "#ef4444" },  // Bottom right
+          { id: "b3", team: "b", x: 150, y: fieldHeight - 175, color: "#ef4444" },  // Center
+          { id: "b4", team: "b", x: 100, y: fieldHeight - 250, color: "#ef4444" },  // Top left
+          { id: "b5", team: "b", x: 200, y: fieldHeight - 250, color: "#ef4444" },  // Top right
+        ];
+      } else {
+        // Team A (blue) - 4 players in portrait mode
+        teamA = [
+          { id: "a1", team: "a", x: 90, y: 100, color: "#3b82f6" },   // Top left
+          { id: "a2", team: "a", x: 210, y: 100, color: "#3b82f6" },  // Top right
+          { id: "a3", team: "a", x: 90, y: 200, color: "#3b82f6" },   // Bottom left
+          { id: "a4", team: "a", x: 210, y: 200, color: "#3b82f6" },  // Bottom right
+        ];
+        
+        // Team B (red) - 4 players in portrait mode
+        teamB = [
+          { id: "b1", team: "b", x: 90, y: fieldHeight - 100, color: "#ef4444" },   // Bottom left
+          { id: "b2", team: "b", x: 210, y: fieldHeight - 100, color: "#ef4444" },  // Bottom right
+          { id: "b3", team: "b", x: 90, y: fieldHeight - 200, color: "#ef4444" },   // Top left
+          { id: "b4", team: "b", x: 210, y: fieldHeight - 200, color: "#ef4444" },  // Top right
+        ];
+      }
       
-      // Team B (red) - 5 players
-      teamB = [
-        { id: "b1", team: "b", x: 500, y: 200, color: "#ef4444" },  // Left back
-        { id: "b2", team: "b", x: 400, y: 120, color: "#ef4444" },  // Left forward
-        { id: "b3", team: "b", x: 450, y: 250, color: "#ef4444" },  // Center back
-        { id: "b4", team: "b", x: 400, y: 380, color: "#ef4444" },  // Right forward
-        { id: "b5", team: "b", x: 500, y: 300, color: "#ef4444" },  // Right back
-      ];
+      // Ball in the middle for portrait
+      const ball = { id: "ball", team: "ball", x: 150, y: fieldHeight / 2, color: "#ffffff" };
+      
     } else {
-      // Team A (blue) - 4 players
-      teamA = [
-        { id: "a1", team: "a", x: 100, y: 170, color: "#3b82f6" },  // Left back
-        { id: "a2", team: "a", x: 200, y: 170, color: "#3b82f6" },  // Left forward
-        { id: "a3", team: "a", x: 200, y: 330, color: "#3b82f6" },  // Right forward
-        { id: "a4", team: "a", x: 100, y: 330, color: "#3b82f6" },  // Right back
-      ];
+      // Landscape orientation - horizontal field layout (original)
+      if (teamSize === 5) {
+        // Team A (blue) - 5 players
+        teamA = [
+          { id: "a1", team: "a", x: 100, y: 200, color: "#3b82f6" },  // Left back
+          { id: "a2", team: "a", x: 200, y: 120, color: "#3b82f6" },  // Left forward
+          { id: "a3", team: "a", x: 150, y: 250, color: "#3b82f6" },  // Center back
+          { id: "a4", team: "a", x: 200, y: 380, color: "#3b82f6" },  // Right forward
+          { id: "a5", team: "a", x: 100, y: 300, color: "#3b82f6" },  // Right back
+        ];
+        
+        // Team B (red) - 5 players
+        teamB = [
+          { id: "b1", team: "b", x: 500, y: 200, color: "#ef4444" },  // Left back
+          { id: "b2", team: "b", x: 400, y: 120, color: "#ef4444" },  // Left forward
+          { id: "b3", team: "b", x: 450, y: 250, color: "#ef4444" },  // Center back
+          { id: "b4", team: "b", x: 400, y: 380, color: "#ef4444" },  // Right forward
+          { id: "b5", team: "b", x: 500, y: 300, color: "#ef4444" },  // Right back
+        ];
+      } else {
+        // Team A (blue) - 4 players
+        teamA = [
+          { id: "a1", team: "a", x: 100, y: 170, color: "#3b82f6" },  // Left back
+          { id: "a2", team: "a", x: 200, y: 170, color: "#3b82f6" },  // Left forward
+          { id: "a3", team: "a", x: 200, y: 330, color: "#3b82f6" },  // Right forward
+          { id: "a4", team: "a", x: 100, y: 330, color: "#3b82f6" },  // Right back
+        ];
+        
+        // Team B (red) - 4 players
+        teamB = [
+          { id: "b1", team: "b", x: 500, y: 170, color: "#ef4444" },  // Left back
+          { id: "b2", team: "b", x: 400, y: 170, color: "#ef4444" },  // Left forward
+          { id: "b3", team: "b", x: 400, y: 330, color: "#ef4444" },  // Right forward
+          { id: "b4", team: "b", x: 500, y: 330, color: "#ef4444" },  // Right back
+        ];
+      }
       
-      // Team B (red) - 4 players
-      teamB = [
-        { id: "b1", team: "b", x: 500, y: 170, color: "#ef4444" },  // Left back
-        { id: "b2", team: "b", x: 400, y: 170, color: "#ef4444" },  // Left forward
-        { id: "b3", team: "b", x: 400, y: 330, color: "#ef4444" },  // Right forward
-        { id: "b4", team: "b", x: 500, y: 330, color: "#ef4444" },  // Right back
-      ];
+      // Ball in the middle for landscape
+      const ball = { id: "ball", team: "ball", x: 300, y: 250, color: "#ffffff" };
     }
     
-    // Ball
-    const ball = { id: "ball", team: "ball", x: 300, y: 250, color: "#ffffff" };
+    // Add the ball to the appropriate position based on orientation
+    const ball = isPortrait
+      ? { id: "ball", team: "ball", x: 150, y: fieldHeight / 2, color: "#ffffff" }
+      : { id: "ball", team: "ball", x: 300, y: 250, color: "#ffffff" };
     
     const initialPlayers = [...teamA, ...teamB, ball];
     setPlayers(initialPlayers);
@@ -759,7 +838,177 @@ export default function TacticalBoardPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        {/* Responsive layout based on orientation */}
+        <div className={`grid grid-cols-1 ${isPortrait ? '' : 'md:grid-cols-4'} gap-6`}>
+          {/* Tactical Board - For portrait mode, show the board first */}
+          {isPortrait && (
+            <div className="md:col-span-3">
+              <div 
+                ref={fieldRef}
+                className={`bg-green-700 dark:bg-green-800 w-full rounded-xl shadow-md relative overflow-hidden ${
+                  isDrawingMode 
+                    ? drawingTool === 'text' || isPlacingText 
+                      ? 'cursor-text' 
+                      : 'cursor-crosshair' 
+                    : 'cursor-default'
+                }`}
+                style={{ 
+                  height: `${fieldHeight}px`,
+                  width: fieldWidth ? `${fieldWidth}px` : '100%',
+                  margin: '0 auto' // Center the field in portrait mode
+                }}
+                onMouseDown={handleFieldPointerDown}
+                onTouchStart={handleFieldPointerDown}
+                onMouseMove={handlePointerMove}
+                onTouchMove={handlePointerMove}
+                onMouseUp={handlePointerUp}
+                onTouchEnd={handlePointerUp}
+                onMouseLeave={handlePointerUp}
+              >
+                {/* Field markings - Adjusted for portrait orientation */}
+                <div className="absolute inset-0">
+                  {/* Center circle */}
+                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 border-2 border-white opacity-50 rounded-full"></div>
+                  
+                  {/* Center line - horizontal for portrait */}
+                  {isPortrait ? (
+                    <div className="absolute top-1/2 left-0 transform -translate-y-1/2 w-full h-0.5 bg-white opacity-50"></div>
+                  ) : (
+                    <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-0.5 h-full bg-white opacity-50"></div>
+                  )}
+                  
+                  {/* Center dot */}
+                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full"></div>
+                  
+                  {/* Team goal areas - adjust for portrait */}
+                  {isPortrait ? (
+                    <>
+                      {/* Team A goal area (top) */}
+                      <div className="absolute top-0 left-1/2 transform -translate-x-1/2 h-16 w-32 border-2 border-white opacity-50"></div>
+                      
+                      {/* Team B goal area (bottom) */}
+                      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 h-16 w-32 border-2 border-white opacity-50"></div>
+                    </>
+                  ) : (
+                    <>
+                      {/* Team A goal area (left) */}
+                      <div className="absolute top-1/2 left-0 transform -translate-y-1/2 w-16 h-32 border-2 border-white opacity-50"></div>
+                      
+                      {/* Team B goal area (right) */}
+                      <div className="absolute top-1/2 right-0 transform -translate-y-1/2 w-16 h-32 border-2 border-white opacity-50"></div>
+                    </>
+                  )}
+                </div>
+                
+                {/* Lines */}
+                <svg className="absolute inset-0 w-full h-full pointer-events-none">
+                  {lines.map((line) => (
+                    <path
+                      key={line.id}
+                      d={generateSvgPath(line.points, line.type)}
+                      stroke={line.color}
+                      strokeWidth={line.width || 3}
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  ))}
+                  
+                  {/* Current drawing line */}
+                  {currentLine && currentLine.points && currentLine.points.length > 1 && (
+                    <path
+                      d={generateSvgPath(currentLine.points, currentLine.type)}
+                      stroke={currentLine.color}
+                      strokeWidth={currentLine.width || 3}
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  )}
+                </svg>
+                
+                {/* Text elements */}
+                {texts.map((textItem) => (
+                  <div 
+                    key={textItem.id}
+                    className="absolute pointer-events-none"
+                    style={{
+                      left: textItem.x,
+                      top: textItem.y,
+                      transform: 'translate(-50%, -50%)',
+                      color: textItem.color,
+                      textShadow: '1px 1px 1px rgba(0,0,0,0.5)'
+                    }}
+                  >
+                    {textItem.text}
+                  </div>
+                ))}
+                
+                {/* Players and ball */}
+                {players.map((player) => (
+                  <div
+                    key={player.id}
+                    className={`absolute ${isDrawingMode ? '' : 'cursor-move'} ${player.id === "ball" ? "rounded-full border-2 border-gray-400 w-8 h-8 z-20" : "rounded-full w-12 h-12 flex items-center justify-center text-white font-bold z-10"}`}
+                    style={{
+                      backgroundColor: player.color,
+                      left: player.x - (player.id === "ball" ? 4 : 6), // Center the player
+                      top: player.y - (player.id === "ball" ? 4 : 6),
+                      boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
+                      userSelect: 'none', // Prevent text selection
+                      touchAction: 'none', // Prevent browser handling of touch events
+                      pointerEvents: isDrawingMode ? 'none' : 'auto' // Allows drawing through players in drawing mode
+                    }}
+                    onMouseDown={(e) => handlePlayerPointerDown(player.id, e)}
+                    onTouchStart={(e) => handlePlayerPointerDown(player.id, e)}
+                  >
+                    {player.id !== "ball" && player.id.charAt(1)}
+                  </div>
+                ))}
+                
+                {/* Text placement instructions */}
+                {isPlacingText && (
+                  <div className="absolute inset-x-0 bottom-4 flex justify-center">
+                    <div className="bg-black bg-opacity-70 text-white px-4 py-2 rounded-md">
+                      {t.placeText}
+                    </div>
+                  </div>
+                )}
+                
+                {/* Easter Egg Animation with Image */}
+                {showEasterEgg && (
+                  <div className="absolute inset-0 flex items-center justify-center z-30">
+                    <div className="bg-black bg-opacity-70 p-6 rounded-lg animate-bounce">
+                      <p className="text-2xl text-white font-bold mb-4">{t.easterEggMessage}</p>
+                      <div className="flex justify-center">
+                        {/* Replace the emoji with the actual image */}
+                        <div className="relative w-64 h-64">
+                          <Image 
+                            src="/images.png" 
+                            alt="Easter Egg Image" 
+                            layout="fill"
+                            objectFit="contain"
+                            priority
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              <div className="mt-4 text-sm text-gray-600 dark:text-gray-400 text-center">
+                {isDrawingMode 
+                  ? (drawingTool === 'text'
+                      ? (lang === "en" ? "Enter text and click on the field to place it" : "Entrez du texte et cliquez sur le terrain pour le placer")
+                      : (lang === "en" ? "Click and drag to draw" : "Cliquez et faites glisser pour dessiner"))
+                  : (lang === "en" 
+                      ? "Drag players and ball to create your tactical setup" 
+                      : "Faites glisser les joueurs et le ballon pour créer votre configuration tactique")
+                }
+              </div>
+            </div>
+          )}
+
           {/* Control Panel */}
           <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md">
             <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">{lang === "en" ? "Controls" : "Contrôles"}</h2>
@@ -952,154 +1201,157 @@ export default function TacticalBoardPage() {
             </div>
           </div>
           
-          {/* Tactical Board */}
-          <div className="md:col-span-3">
-            <div 
-              ref={fieldRef}
-              className={`bg-green-700 dark:bg-green-800 w-full h-[500px] rounded-xl shadow-md relative overflow-hidden ${
-                isDrawingMode 
-                  ? drawingTool === 'text' || isPlacingText 
-                    ? 'cursor-text' 
-                    : 'cursor-crosshair' 
-                  : 'cursor-default'
-              }`}
-              onMouseDown={handleFieldPointerDown}
-              onTouchStart={handleFieldPointerDown}
-              onMouseMove={handlePointerMove}
-              onTouchMove={handlePointerMove}
-              onMouseUp={handlePointerUp}
-              onTouchEnd={handlePointerUp}
-              onMouseLeave={handlePointerUp}
-            >
-              {/* Field markings */}
-              <div className="absolute inset-0">
-                {/* Center circle */}
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 border-2 border-white opacity-50 rounded-full"></div>
+          {/* Tactical Board - For landscape mode, show the board after controls */}
+          {!isPortrait && (
+            <div className="md:col-span-3">
+              <div 
+                ref={fieldRef}
+                className={`bg-green-700 dark:bg-green-800 w-full h-[500px] rounded-xl shadow-md relative overflow-hidden ${
+                  isDrawingMode 
+                    ? drawingTool === 'text' || isPlacingText 
+                      ? 'cursor-text' 
+                      : 'cursor-crosshair' 
+                    : 'cursor-default'
+                }`}
+                onMouseDown={handleFieldPointerDown}
+                onTouchStart={handleFieldPointerDown}
+                onMouseMove={handlePointerMove}
+                onTouchMove={handlePointerMove}
+                onMouseUp={handlePointerUp}
+                onTouchEnd={handlePointerUp}
+                onMouseLeave={handlePointerUp}
+              >
+                {/* Field markings */}
+                <div className="absolute inset-0">
+                  {/* Center circle */}
+                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 border-2 border-white opacity-50 rounded-full"></div>
+                  
+                  {/* Center line */}
+                  <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-0.5 h-full bg-white opacity-50"></div>
+                  
+                  {/* Center dot */}
+                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full"></div>
+                  
+                  {/* Team A goal area */}
+                  <div className="absolute top-1/2 left-0 transform -translate-y-1/2 w-16 h-32 border-2 border-white opacity-50"></div>
+                  
+                  {/* Team B goal area */}
+                  <div className="absolute top-1/2 right-0 transform -translate-y-1/2 w-16 h-32 border-2 border-white opacity-50"></div>
+                </div>
                 
-                {/* Center line */}
-                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-0.5 h-full bg-white opacity-50"></div>
+                {/* Lines */}
+                <svg className="absolute inset-0 w-full h-full pointer-events-none">
+                  {lines.map((line) => (
+                    <path
+                      key={line.id}
+                      d={generateSvgPath(line.points, line.type)}
+                      stroke={line.color}
+                      strokeWidth={line.width || 3}
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  ))}
+                  
+                  {/* Current drawing line */}
+                  {currentLine && currentLine.points && currentLine.points.length > 1 && (
+                    <path
+                      d={generateSvgPath(currentLine.points, currentLine.type)}
+                      stroke={currentLine.color}
+                      strokeWidth={currentLine.width || 3}
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  )}
+                </svg>
                 
-                {/* Center dot */}
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full"></div>
-                
-                {/* Team A goal area */}
-                <div className="absolute top-1/2 left-0 transform -translate-y-1/2 w-16 h-32 border-2 border-white opacity-50"></div>
-                
-                {/* Team B goal area */}
-                <div className="absolute top-1/2 right-0 transform -translate-y-1/2 w-16 h-32 border-2 border-white opacity-50"></div>
-              </div>
-              
-              {/* Lines */}
-              <svg className="absolute inset-0 w-full h-full pointer-events-none">
-                {lines.map((line) => (
-                  <path
-                    key={line.id}
-                    d={generateSvgPath(line.points, line.type)}
-                    stroke={line.color}
-                    strokeWidth={line.width || 3}
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
+                {/* Text elements */}
+                {texts.map((textItem) => (
+                  <div 
+                    key={textItem.id}
+                    className="absolute pointer-events-none"
+                    style={{
+                      left: textItem.x,
+                      top: textItem.y,
+                      transform: 'translate(-50%, -50%)',
+                      color: textItem.color,
+                      textShadow: '1px 1px 1px rgba(0,0,0,0.5)'
+                    }}
+                  >
+                    {textItem.text}
+                  </div>
                 ))}
                 
-                {/* Current drawing line */}
-                {currentLine && currentLine.points && currentLine.points.length > 1 && (
-                  <path
-                    d={generateSvgPath(currentLine.points, currentLine.type)}
-                    stroke={currentLine.color}
-                    strokeWidth={currentLine.width || 3}
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                )}
-              </svg>
-              
-              {/* Text elements */}
-              {texts.map((textItem) => (
-                <div 
-                  key={textItem.id}
-                  className="absolute pointer-events-none"
-                  style={{
-                    left: textItem.x,
-                    top: textItem.y,
-                    transform: 'translate(-50%, -50%)',
-                    color: textItem.color,
-                    textShadow: '1px 1px 1px rgba(0,0,0,0.5)'
-                  }}
-                >
-                  {textItem.text}
-                </div>
-              ))}
-              
-              {/* Players and ball */}
-              {players.map((player) => (
-                <div
-                  key={player.id}
-                  className={`absolute ${isDrawingMode ? '' : 'cursor-move'} ${player.id === "ball" ? "rounded-full border-2 border-gray-400 w-8 h-8 z-20" : "rounded-full w-12 h-12 flex items-center justify-center text-white font-bold z-10"}`}
-                  style={{
-                    backgroundColor: player.color,
-                    left: player.x - (player.id === "ball" ? 4 : 6), // Center the player
-                    top: player.y - (player.id === "ball" ? 4 : 6),
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
-                    userSelect: 'none', // Prevent text selection
-                    touchAction: 'none', // Prevent browser handling of touch events
-                    pointerEvents: isDrawingMode ? 'none' : 'auto' // Allows drawing through players in drawing mode
-                  }}
-                  onMouseDown={(e) => handlePlayerPointerDown(player.id, e)}
-                  onTouchStart={(e) => handlePlayerPointerDown(player.id, e)}
-                >
-                  {player.id !== "ball" && player.id.charAt(1)}
-                </div>
-              ))}
-              
-              {/* Text placement instructions */}
-              {isPlacingText && (
-                <div className="absolute inset-x-0 bottom-4 flex justify-center">
-                  <div className="bg-black bg-opacity-70 text-white px-4 py-2 rounded-md">
-                    {t.placeText}
+                {/* Players and ball */}
+                {players.map((player) => (
+                  <div
+                    key={player.id}
+                    className={`absolute ${isDrawingMode ? '' : 'cursor-move'} ${player.id === "ball" ? "rounded-full border-2 border-gray-400 w-8 h-8 z-20" : "rounded-full w-12 h-12 flex items-center justify-center text-white font-bold z-10"}`}
+                    style={{
+                      backgroundColor: player.color,
+                      left: player.x - (player.id === "ball" ? 4 : 6), // Center the player
+                      top: player.y - (player.id === "ball" ? 4 : 6),
+                      boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
+                      userSelect: 'none', // Prevent text selection
+                      touchAction: 'none', // Prevent browser handling of touch events
+                      pointerEvents: isDrawingMode ? 'none' : 'auto' // Allows drawing through players in drawing mode
+                    }}
+                    onMouseDown={(e) => handlePlayerPointerDown(player.id, e)}
+                    onTouchStart={(e) => handlePlayerPointerDown(player.id, e)}
+                  >
+                    {player.id !== "ball" && player.id.charAt(1)}
                   </div>
-                </div>
-              )}
-              
-              {/* Easter Egg Animation with Image */}
-              {showEasterEgg && (
-                <div className="absolute inset-0 flex items-center justify-center z-30">
-                  <div className="bg-black bg-opacity-70 p-6 rounded-lg animate-bounce">
-                    <p className="text-2xl text-white font-bold mb-4">{t.easterEggMessage}</p>
-                    <div className="flex justify-center">
-                      {/* Replace the emoji with the actual image */}
-                      <div className="relative w-64 h-64">
-                        <Image 
-                          src="/images.png" 
-                          alt="Easter Egg Image" 
-                          layout="fill"
-                          objectFit="contain"
-                          priority
-                        />
+                ))}
+                
+                {/* Text placement instructions */}
+                {isPlacingText && (
+                  <div className="absolute inset-x-0 bottom-4 flex justify-center">
+                    <div className="bg-black bg-opacity-70 text-white px-4 py-2 rounded-md">
+                      {t.placeText}
+                    </div>
+                  </div>
+                )}
+                
+                {/* Easter Egg Animation with Image */}
+                {showEasterEgg && (
+                  <div className="absolute inset-0 flex items-center justify-center z-30">
+                    <div className="bg-black bg-opacity-70 p-6 rounded-lg animate-bounce">
+                      <p className="text-2xl text-white font-bold mb-4">{t.easterEggMessage}</p>
+                      <div className="flex justify-center">
+                        {/* Replace the emoji with the actual image */}
+                        <div className="relative w-64 h-64">
+                          <Image 
+                            src="/images.png" 
+                            alt="Easter Egg Image" 
+                            layout="fill"
+                            objectFit="contain"
+                            priority
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
+              
+              <div className="mt-4 text-sm text-gray-600 dark:text-gray-400 text-center">
+                {isDrawingMode 
+                  ? (drawingTool === 'text'
+                      ? (lang === "en" ? "Enter text and click on the field to place it" : "Entrez du texte et cliquez sur le terrain pour le placer")
+                      : (lang === "en" ? "Click and drag to draw" : "Cliquez et faites glisser pour dessiner"))
+                  : (lang === "en" 
+                      ? "Drag players and ball to create your tactical setup" 
+                      : "Faites glisser les joueurs et le ballon pour créer votre configuration tactique")
+                }
+              </div>
             </div>
-            
-            <div className="mt-4 text-sm text-gray-600 dark:text-gray-400 text-center">
-              {isDrawingMode 
-                ? (drawingTool === 'text'
-                    ? (lang === "en" ? "Enter text and click on the field to place it" : "Entrez du texte et cliquez sur le terrain pour le placer")
-                    : (lang === "en" ? "Click and drag to draw" : "Cliquez et faites glisser pour dessiner"))
-                : (lang === "en" 
-                    ? "Drag players and ball to create your tactical setup" 
-                    : "Faites glisser les joueurs et le ballon pour créer votre configuration tactique")
-              }
-            </div>
-          </div>
+          )}
         </div>
 
         <Footer />
 
       </div>
     </div>
-  );}
+  );
+}
