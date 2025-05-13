@@ -17,18 +17,24 @@ export default function Home() {
       setLang("fr");
       localStorage.setItem("lang", "fr");
       setIsEmbedded(true);
-      console.log("Page is embedded in an iframe. Forcing French language.");
-    } else {
-      // Not in an iframe, use stored language preference if available
-      const storedLang = localStorage.getItem("lang");
-      if (storedLang) {
-        setLang(storedLang as "en" | "fr");
-      }
-      setIsEmbedded(false);
-      console.log("Page is not embedded.");
+    try {
+      // Try to get the URL of the parent (embedding) page
+      const embedderURL = document.referrer;
+      console.log("Page is embedded in an iframe by:", embedderURL);
+    } catch (error) {
+      // If we can't access parent information due to same-origin policy
+      console.log("Page is embedded in an iframe but cannot determine embedder due to security restrictions");
     }
-  }, []);
-
+  } else {
+    // Not in an iframe, use stored language preference if available
+    const storedLang = localStorage.getItem("lang");
+    if (storedLang) {
+      setLang(storedLang as "en" | "fr");
+    }
+    setIsEmbedded(false);
+    console.log("Page is not embedded.");
+  }
+}, []);
   const translations = {
     en: {
       heading: "Master Rematch",
