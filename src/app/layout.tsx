@@ -14,7 +14,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 // Define metadata for the page (this is the Next.js way)
 export const metadata = {
-  title: "Master Rematch: Guides, Tutorials & Training | Rematch CookBook",
+  title: "Master Rematch: Guides, Tutorials & Training | Rematch Guide",
   description: "Master Rematch with detailed soccer tutorials, training guides, and techniques for dribbling, shooting, and goalkeeping. Your ultimate Rematch guide.",
   keywords: ["Rematch","Rematch Guide","Guide", "soccer", "tutorials", "training", "techniques", "goalkeeper", "shooting", "dribbling","Rematch",
     "Rematch Tutorial",
@@ -26,21 +26,21 @@ export const metadata = {
   ],
   authors: [{ name: "RaFa", url: "https://discord.com/invite/ua8D567NAp" }],
   creator: "RaFa",
-  siteName: "Rematch CookBook",
+  siteName: "Rematch Guide",
   other: {
     "google-site-verification": "WMwlYdrRXd3vYBa2i5cgQENMA5FPl6Xs_d2osN49Llc",
   },
   type: "website",
 
   openGraph: {
-    title: "Rematch CookBook",
+    title: "Rematch Guide",
     description: "Master Rematch with detailed soccer tutorials, training guides, and techniques for dribbling, shooting, and goalkeeping. Your ultimate Rematch guide.",
     url: "https://rematch-guide.com", // Replace with your actual URL
-    siteName: "Rematch CookBook",
+    siteName: "Rematch Guide",
     images: [
       {
         url: "https://rematch-guide.com/images/logo-element.png",  // Use absolute URL
-        alt: "Rematch CookBook Open Graph Image",
+        alt: "Rematch Guide Open Graph Image",
       },
     ],
     type: "website",
