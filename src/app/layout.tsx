@@ -9,17 +9,6 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { ClientLanguageHandler } from "@/components/client-language-handler";
 import Script from "next/script";
 
-
-
-interface RootLayoutProps {
-  children: React.ReactNode;
-}
-
-
-
-
-// app/layout.tsx - Server Component
-
 // Set up the Google Font
 const inter = Inter({ subsets: ["latin"] });
 
@@ -66,7 +55,6 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-
         <link rel="icon" href="/assets/favicon-32x32.png" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta property="og:title" content="Rematch CookBook" />
@@ -87,7 +75,30 @@ export default function RootLayout({
             gtag('config', 'G-CM8EWL1MJ7');
           `}
         </Script>
-
+        
+        {/* Script to disable right-click only when page is embedded in an iframe */}
+        <Script id="disable-right-click" strategy="beforeInteractive">
+          {`
+            // Check if the page is embedded in an iframe
+            function isEmbedded() {
+              try {
+                return window.self !== window.top;
+              } catch (e) {
+                // If we can't access parent due to same-origin policy, 
+                // we're definitely in an iframe
+                return true;
+              }
+            }
+            
+            // Only disable right-click if the page is embedded
+            if (isEmbedded()) {
+              document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+              });
+            }
+          `}
+        </Script>
 
         <script type="application/ld+json" dangerouslySetInnerHTML={{
           __html: JSON.stringify({
