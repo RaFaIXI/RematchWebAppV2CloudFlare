@@ -1,10 +1,10 @@
 "use client"
 
 import Link from "next/link"
-import { Menu, Sun, Moon } from "lucide-react"
+import { Menu, Sun, Moon, ChevronDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { useTheme } from "next-themes"
 
 export function SiteHeader() {
@@ -12,6 +12,8 @@ export function SiteHeader() {
   const [lang, setLang] = useState("en")
   const [mounted, setMounted] = useState(false)
   const [isEmbedded, setIsEmbedded] = useState(false)
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+  const dropdownRef = useRef(null)
   const { theme, setTheme } = useTheme()
 
   useEffect(() => {
@@ -24,6 +26,18 @@ export function SiteHeader() {
     
     // Check if the page is embedded in an iframe
     setIsEmbedded(window.self !== window.top)
+
+    // Add event listener for clicks outside the dropdown
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !(dropdownRef.current as HTMLElement).contains(event.target as Node)) {
+      setDropdownOpen(false)
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
   }, [])
 
   const toggleLang = () => {
@@ -37,22 +51,26 @@ export function SiteHeader() {
     setTheme(theme === "light" ? "dark" : "light")
   }
 
-  // Create routes array with conditional donate link
-  const routes = [
-    { href: "/", label: lang === "fr" ? "Accueil" : "Home" },
-    { href: "/Routines", label: lang === "fr" ? "Routines" : "Routines" },
+  // Guide dropdown routes
+  const guideRoutes = [
     { href: "/tir", label: lang === "fr" ? "Tir" : "Shoot" },
     { href: "/defense", label: lang === "fr" ? "Défense" : "Defense" },
     { href: "/dribles", label: lang === "fr" ? "Dribles" : "Dribbles" },
     { href: "/gardien", label: lang === "fr" ? "Gardien" : "Goalkeeper" },
     { href: "/strategie", label: lang === "fr" ? "Stratégie" : "Strategy" },
-    // { href: "/mental", label: lang === "fr" ? "Mentalité" : "Mentality" },
+  ]
+
+  // Main routes (excluding the ones in the dropdown)
+  const mainRoutes = [
+    { href: "/", label: lang === "fr" ? "Accueil" : "Home" },
+    // Guide dropdown will be inserted between Home and Routines
+    { href: "/Routines", label: lang === "fr" ? "Routines" : "Routines" },
     { href: "/TacticalBoard", label: lang === "fr" ? "Tableau Tactique" : "Tactical Board" },
   ]
   
   // Add donate link only if not embedded
   if (!isEmbedded) {
-    routes.push({ href: "/donate", label: lang === "fr" ? "Soutiens-moi" : "Support me" })
+    mainRoutes.push({ href: "/donate", label: lang === "fr" ? "Soutiens-moi" : "Support me" })
   }
 
   return (
@@ -68,7 +86,51 @@ export function SiteHeader() {
         </Link>
 
         <nav className="hidden md:flex ml-auto items-center space-x-6 text-sm font-medium">
-          {routes.map((route) => (
+          {/* Render Home link first */}
+          <Link
+            href="/"
+            className="transition-colors hover:text-foreground/80 text-foreground/60"
+          >
+            {lang === "fr" ? "Accueil" : "Home"}
+          </Link>
+
+          {/* Guide Dropdown Menu */}
+          <div 
+            className="relative"
+            ref={dropdownRef}
+          >
+            <button
+              onClick={() => window.location.href = "/tir"}
+              onMouseEnter={() => setDropdownOpen(true)}
+              className="flex items-center transition-colors hover:text-foreground/80 text-foreground/60 bg-transparent border-none cursor-pointer"
+            >
+              {lang === "fr" ? "Guide" : "Guide"}
+              <ChevronDown className="ml-1 h-4 w-4" />
+            </button>
+            
+            {dropdownOpen && (
+              <div 
+                className="absolute left-0 top-full mt-2 w-48 rounded-md bg-background shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50"
+                onMouseEnter={() => setDropdownOpen(true)}
+                onMouseLeave={() => setDropdownOpen(false)}
+              >
+                <div className="py-1">
+                  {guideRoutes.map((route) => (
+                    <Link
+                      key={route.href}
+                      href={route.href}
+                      className="block px-4 py-2 text-sm hover:bg-accent"
+                    >
+                      {route.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Render remaining main routes (skipping Home since it's already rendered) */}
+          {mainRoutes.slice(1).map((route) => (
             <Link
               key={route.href}
               href={route.href}
@@ -100,7 +162,40 @@ export function SiteHeader() {
           </SheetTrigger>
           <SheetContent side="right">
             <div className="flex flex-col space-y-4 mt-8">
-              {routes.map((route) => (
+              {/* Render Home link first */}
+              <Link
+                href="/"
+                className="text-lg font-medium"
+                onClick={() => setIsOpen(false)}
+              >
+                {lang === "fr" ? "Accueil" : "Home"}
+              </Link>
+              
+              {/* Guide section in mobile menu */}
+              <div>
+                <Link 
+                  href="/tir" 
+                  className="text-lg font-medium flex items-center justify-between"
+                  onClick={() => setIsOpen(false)}
+                >
+                  {lang === "fr" ? "Guide" : "Guide"}
+                </Link>
+                <div className="ml-4 mt-2 space-y-2">
+                  {guideRoutes.map((route) => (
+                    <Link
+                      key={route.href}
+                      href={route.href}
+                      className="block text-sm"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      {route.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              {/* Render remaining main routes (skipping Home) */}
+              {mainRoutes.slice(1).map((route) => (
                 <Link
                   key={route.href}
                   href={route.href}
