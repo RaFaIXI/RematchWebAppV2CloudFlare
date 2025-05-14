@@ -24,14 +24,17 @@ export default function Home() {
         const embedderURL = document.referrer;
         console.log("Page is embedded in an iframe by:", embedderURL);
         
-        // Check if embedder is rematchfrance.fr
-        if (embedderURL.includes("https://www.rematchfrance.fr")) {
+        // Check if the embedder is specifically rematchfrance.fr
+        if (embedderURL && embedderURL.includes("rematchfrance.fr")) {
+          console.log("Embedded specifically on rematchfrance.fr");
           setIsEmbeddedRematchFrance(true);
-          console.log("Embedded by RematchFrance - applying special styling");
+        } else {
+          setIsEmbeddedRematchFrance(false);
         }
       } catch (error) {
         // If we can't access parent information due to same-origin policy
         console.log("Page is embedded in an iframe but cannot determine embedder due to security restrictions");
+        setIsEmbeddedRematchFrance(false);
       }
     } else {
       // Not in an iframe, use stored language preference if available
@@ -100,16 +103,12 @@ export default function Home() {
   // Determine gradient and button colors based on embedded status
   const gradientClasses = isEmbeddedRematchFrance 
     ? "bg-gradient-to-b from-[#2E3192] to-white dark:from-[#2E3192] dark:to-background" 
-    : isEmbedded
-      ? "bg-gradient-to-b from-blue-100 to-white dark:from-blue-900 dark:to-background"
-      : "bg-gradient-to-b from-green-50 to-white dark:from-green-950 dark:to-background";
+    : "bg-gradient-to-b from-green-50 to-white dark:from-green-950 dark:to-background";
   
   // Updated button styling for better visibility when embedded
   const buttonClasses = isEmbeddedRematchFrance
     ? "bg-[#2E3192] hover:bg-blue-600 text-white font-medium"
-    : isEmbedded
-      ? "bg-blue-500 hover:bg-blue-600 text-white font-medium"
-      : "bg-green-600 hover:bg-green-700 text-white";
+    : "bg-green-600 hover:bg-green-700 text-white";
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -196,8 +195,7 @@ export default function Home() {
                 title={t.shoot} 
                 desc={t.shootDesc} 
                 color={isEmbeddedRematchFrance ? "blue" : "green"} 
-                isEmbedded={isEmbedded}
-                isEmbeddedRematchFrance={isEmbeddedRematchFrance}
+                isEmbeddedRematchFrance={isEmbeddedRematchFrance} 
               />
               <CategoryCard 
                 href="/defense" 
@@ -205,7 +203,6 @@ export default function Home() {
                 title={t.defense} 
                 desc={t.defenseDesc} 
                 color="blue" 
-                isEmbedded={isEmbedded}
                 isEmbeddedRematchFrance={isEmbeddedRematchFrance}
               />
               <CategoryCard 
@@ -214,7 +211,6 @@ export default function Home() {
                 title={t.strategy} 
                 desc={t.strategyDesc} 
                 color="purple" 
-                isEmbedded={isEmbedded}
                 isEmbeddedRematchFrance={isEmbeddedRematchFrance}
               />
               <CategoryCard 
@@ -223,7 +219,6 @@ export default function Home() {
                 title={t.goalkeeper} 
                 desc={t.goalkeeperDesc} 
                 color="yellow" 
-                isEmbedded={isEmbedded}
                 isEmbeddedRematchFrance={isEmbeddedRematchFrance}
               />
               <CategoryCard 
@@ -232,7 +227,6 @@ export default function Home() {
                 title={t.dribbling} 
                 desc={t.dribblingDesc} 
                 color="red" 
-                isEmbedded={isEmbedded}
                 isEmbeddedRematchFrance={isEmbeddedRematchFrance}
               />
             </div>
@@ -251,30 +245,24 @@ function CategoryCard({
   title, 
   desc, 
   color, 
-  isEmbedded,
-  isEmbeddedRematchFrance
+  isEmbeddedRematchFrance 
 }: { 
   href: string; 
   icon: React.ReactNode; 
   title: string; 
   desc: string; 
   color: string; 
-  isEmbedded: boolean;
   isEmbeddedRematchFrance: boolean;
 }) {
-  // Apply different styling for text and hover effects when embedded from rematchfrance.fr
+  // Apply different styling for text and hover effects when embedded on rematchfrance.fr
   const cardClasses = isEmbeddedRematchFrance
     ? "group flex flex-col items-center space-y-2 rounded-lg p-4 transition-all hover:bg-blue-50 dark:hover:bg-blue-900"
-    : isEmbedded
-      ? "group flex flex-col items-center space-y-2 rounded-lg p-4 transition-all hover:bg-blue-50 dark:hover:bg-blue-900"
-      : "group flex flex-col items-center space-y-2 rounded-lg p-4 transition-all hover:bg-white dark:hover:bg-gray-950";
+    : "group flex flex-col items-center space-y-2 rounded-lg p-4 transition-all hover:bg-white dark:hover:bg-gray-950";
   
-  // Make title text more prominent when embedded from rematchfrance.fr
+  // Make title text more prominent when embedded on rematchfrance.fr
   const titleClasses = isEmbeddedRematchFrance
     ? "text-xl font-bold text-[#2E3192]"
-    : isEmbedded
-      ? "text-xl font-bold text-blue-600"
-      : "text-xl font-bold";
+    : "text-xl font-bold";
 
   return (
     <Link href={href} className={cardClasses}>
