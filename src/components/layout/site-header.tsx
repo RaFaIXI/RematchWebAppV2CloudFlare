@@ -62,8 +62,7 @@ export function SiteHeader() {
 
   // Main routes (excluding the ones in the dropdown)
   const mainRoutes = [
-    { href: "/", label: lang === "fr" ? "Accueil" : "Home" },
-    // Guide dropdown will be inserted between Home and Routines
+    // Removing Home link as users can click on the title
     { href: "/Routines", label: lang === "fr" ? "Routines" : "Routines" },
     { href: "/TacticalBoard", label: lang === "fr" ? "Tableau Tactique" : "Tactical Board" },
   ]
@@ -86,13 +85,7 @@ export function SiteHeader() {
         </Link>
 
         <nav className="hidden md:flex ml-auto items-center space-x-6 text-sm font-medium">
-          {/* Render Home link first */}
-          <Link
-            href="/"
-            className="transition-colors hover:text-foreground/80 text-foreground/60"
-          >
-            {lang === "fr" ? "Accueil" : "Home"}
-          </Link>
+          {/* Removed Home link, as users can click on Master Rematch */}
 
           {/* Guide Dropdown Menu */}
           <div 
@@ -129,8 +122,8 @@ export function SiteHeader() {
             )}
           </div>
 
-          {/* Render remaining main routes (skipping Home since it's already rendered) */}
-          {mainRoutes.slice(1).map((route) => (
+          {/* Render all main routes (no longer need to skip Home) */}
+          {mainRoutes.map((route) => (
             <Link
               key={route.href}
               href={route.href}
@@ -162,14 +155,7 @@ export function SiteHeader() {
           </SheetTrigger>
           <SheetContent side="right">
             <div className="flex flex-col space-y-4 mt-8">
-              {/* Render Home link first */}
-              <Link
-                href="/"
-                className="text-lg font-medium"
-                onClick={() => setIsOpen(false)}
-              >
-                {lang === "fr" ? "Accueil" : "Home"}
-              </Link>
+              {/* Removed Home link from mobile menu too */}
               
               {/* Guide section in mobile menu */}
               <div>
@@ -194,8 +180,8 @@ export function SiteHeader() {
                 </div>
               </div>
 
-              {/* Render remaining main routes (skipping Home) */}
-              {mainRoutes.slice(1).map((route) => (
+              {/* Render all main routes (no longer need to skip Home) */}
+              {mainRoutes.map((route) => (
                 <Link
                   key={route.href}
                   href={route.href}
