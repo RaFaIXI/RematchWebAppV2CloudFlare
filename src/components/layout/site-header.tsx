@@ -15,6 +15,7 @@ export function SiteHeader() {
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const dropdownRef = useRef(null)
   const { theme, setTheme } = useTheme()
+  const [isEmbeddedRematchFrance, setIsEmbeddedRematchFrance] = useState(false);
 
   useEffect(() => {
     setMounted(true)
@@ -24,8 +25,34 @@ export function SiteHeader() {
       setLang(storedLang)
     }
     
-    // Check if the page is embedded in an iframe
-    setIsEmbedded(window.self !== window.top)
+
+    if (window.top !== window.self) {
+      // Force French language when embedded in an iframe
+
+      setIsEmbedded(true);
+      
+      try {
+        // Try to get the URL of the parent (embedding) page
+        const embedderURL = document.referrer;
+        console.log("Page is embedded in an iframe by:", embedderURL);
+        
+        // Check if the embedder is specifically rematchfrance.fr
+        if (embedderURL && embedderURL.includes("rematchfrance.fr")) {
+          console.log("Embedded specifically on rematchfrance.fr");
+          setIsEmbeddedRematchFrance(true);
+        } else {
+          setIsEmbeddedRematchFrance(false);
+        }
+      } catch (error) {
+        // If we can't access parent information due to same-origin policy
+        console.log("Page is embedded in an iframe but cannot determine embedder due to security restrictions");
+        setIsEmbeddedRematchFrance(false);
+      }
+    } else {
+      setIsEmbedded(false);
+      setIsEmbeddedRematchFrance(false);
+      console.log("Page is not embedded.");
+    }
 
     // Add event listener for clicks outside the dropdown
     const handleClickOutside = (event: MouseEvent) => {
@@ -68,7 +95,7 @@ export function SiteHeader() {
   ]
   
   // Add donate link only if not embedded
-  if (!isEmbedded) {
+  if (!isEmbeddedRematchFrance) {
     mainRoutes.push({ href: "/donate", label: lang === "fr" ? "Soutiens-moi" : "Support me" })
   }
 
@@ -76,7 +103,7 @@ export function SiteHeader() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center">
         <Link href="/" className="flex items-center space-x-2">
-          {!isEmbedded && (
+          {!isEmbeddedRematchFrance && (
             <img src="/assets/favicon-32x32.png" alt="" />
           )}
           <span className="font-bold">
@@ -139,7 +166,7 @@ export function SiteHeader() {
             </Button>
           )}
 
-          {!isEmbedded && mounted && (
+          {!isEmbeddedRematchFrance && mounted && (
             <Button variant="ghost" onClick={toggleLang}>
               {lang === "fr" ? "🇬🇧 English" : "🇫🇷 Français"}
             </Button>
@@ -198,7 +225,7 @@ export function SiteHeader() {
                 </Button>
               )}
 
-              {!isEmbedded && (
+              {!isEmbeddedRematchFrance && (
                 <Button variant="ghost" onClick={toggleLang}>
                   {lang === "fr" ? "🇬🇧 English" : "🇫🇷 Français"}
                 </Button>
