@@ -27,7 +27,6 @@ export function SiteHeader() {
     
 
     if (window.top !== window.self) {
-      // Force French language when embedded in an iframe
 
       setIsEmbedded(true);
       
