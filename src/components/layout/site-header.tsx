@@ -111,7 +111,6 @@ export function SiteHeader() {
         </Link>
 
         <nav className="hidden md:flex ml-auto items-center space-x-6 text-sm font-medium">
-          {/* Removed Home link, as users can click on Master Rematch */}
 
           {/* Guide Dropdown Menu */}
           <div 
@@ -119,15 +118,15 @@ export function SiteHeader() {
             ref={dropdownRef}
           >
             <button
-              onClick={() => window.location.href = "/tir"}
-              onMouseEnter={() => setDropdownOpen(true)}
+              onClick={() => !isEmbeddedRematchFrance && (window.location.href = "/tir")}
+              onMouseEnter={() => !isEmbeddedRematchFrance && setDropdownOpen(true)}
               className="flex items-center transition-colors hover:text-foreground/80 text-foreground/60 bg-transparent border-none cursor-pointer"
             >
               {lang === "fr" ? "Guide" : "Guide"}
               <ChevronDown className="ml-1 h-4 w-4" />
             </button>
             
-            {dropdownOpen && (
+            {dropdownOpen && !isEmbeddedRematchFrance && (
               <div 
                 className="absolute left-0 top-full mt-2 w-48 rounded-md bg-background shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50"
                 onMouseEnter={() => setDropdownOpen(true)}
