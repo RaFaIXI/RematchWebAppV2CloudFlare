@@ -126,7 +126,7 @@ export function SiteHeader() {
               <ChevronDown className="ml-1 h-4 w-4" />
             </button>
             
-            {dropdownOpen && !isEmbeddedRematchFrance && (
+            {dropdownOpen && (
               <div 
                 className="absolute left-0 top-full mt-2 w-48 rounded-md bg-background shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50"
                 onMouseEnter={() => setDropdownOpen(true)}
