@@ -16,18 +16,7 @@ export default function DiscordAuthPage() {
       router.push("/dashboard");
     }
     
-    // Check if the page is in an iframe
-    if (window.top !== window.self) {
-      // Force French language when embedded in an iframe
-      setLang("fr");
-      localStorage.setItem("lang", "fr");
-    } else {
-      // Not in an iframe, use stored language preference if available
-      const storedLang = localStorage.getItem("lang");
-      if (storedLang === "en" || storedLang === "fr") {
-        setLang(storedLang);
-      }
-    }
+
 
     // Check if this is a redirect from Discord OAuth
     const urlParams = new URLSearchParams(window.location.search);
