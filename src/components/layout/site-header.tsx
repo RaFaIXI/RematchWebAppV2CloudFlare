@@ -119,7 +119,7 @@ export function SiteHeader() {
           >
             <button
               onClick={() => !isEmbeddedRematchFrance && (window.location.href = "/tir")}
-              onMouseEnter={() => !isEmbeddedRematchFrance && setDropdownOpen(true)}
+              onMouseEnter={() => setDropdownOpen(true)}
               className="flex items-center transition-colors hover:text-foreground/80 text-foreground/60 bg-transparent border-none cursor-pointer"
             >
               {lang === "fr" ? "Guide" : "Guide"}
