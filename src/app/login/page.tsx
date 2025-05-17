@@ -49,14 +49,7 @@ export default function DiscordAuthPage() {
 
   const handleLoginWithDiscord = () => {
     setIsLoading(true);
-    
-    // Redirect to Discord OAuth
-    // Replace these values with your actual Discord application details
-    const CLIENT_ID = "YOUR_DISCORD_CLIENT_ID";
-    const REDIRECT_URI = encodeURIComponent(window.location.origin + "/login");
-    const SCOPE = encodeURIComponent("identify email");
-    
-    window.location.href = `https://discord.com/api/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=${SCOPE}`;
+    window.location.href = `https://discord.com/oauth2/authorize?client_id=1372493195891703838&redirect_uri=https://rematchguidebackend.onrender.com/oauth/callback&response_type=code&scope=identify%20email%20guilds`;
   };
 
   const toggleLanguage = () => {

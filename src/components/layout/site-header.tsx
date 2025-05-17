@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { useEffect, useState, useRef } from "react"
 import { useTheme } from "next-themes"
+import { usePathname } from "next/navigation"
 
 export function SiteHeader() {
   const [isOpen, setIsOpen] = useState(false)
@@ -16,6 +17,14 @@ export function SiteHeader() {
   const dropdownRef = useRef(null)
   const { theme, setTheme } = useTheme()
   const [isEmbeddedRematchFrance, setIsEmbeddedRematchFrance] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const pathname = usePathname();
+
+  // Check login status function - reusable
+  const checkLoginStatus = () => {
+    const loginStatus = localStorage.getItem("isLoggedIn")
+    setIsLoggedIn(loginStatus === "true")
+  }
 
   useEffect(() => {
     setMounted(true)
@@ -25,6 +34,8 @@ export function SiteHeader() {
       setLang(storedLang)
     }
     
+    // Initial login status check
+    checkLoginStatus()
 
     if (window.top !== window.self) {
 
@@ -66,6 +77,12 @@ export function SiteHeader() {
     }
   }, [])
 
+  // Add this effect to check login status on route changes
+  useEffect(() => {
+    // Check login status again when pathname changes
+    checkLoginStatus()
+  }, [pathname])
+
   const toggleLang = () => {
     const newLang = lang === "fr" ? "en" : "fr"
     setLang(newLang)
@@ -96,6 +113,11 @@ export function SiteHeader() {
   // Add donate link only if not embedded
   if (!isEmbeddedRematchFrance) {
     mainRoutes.push({ href: "/donate", label: lang === "fr" ? "Soutiens-moi" : "Support me" })
+  }
+
+  // Add login link if user is not logged in and site is not embedded in RematchFrance
+  if (!isLoggedIn && !isEmbeddedRematchFrance) {
+    mainRoutes.push({ href: "/login", label: lang === "fr" ? "Connexion" : "Login" })
   }
 
   return (
