@@ -9,17 +9,24 @@ import {
   CheckCircle, 
   Zap,
   X,
-  Trophy
+  Trophy,
+  Lock,
+  LogIn
 } from "lucide-react";
 import Footer from "@/components/Footer";
+import { useRouter } from "next/navigation";
 
 export default function Routines() {
   const [calendarView, setCalendarView] = useState(false);
-const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
-const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-interface TrainingHistory {
-  [date: string]: { id: string; title: string; level: string; xp: number }[];
-}
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const router = useRouter();
+  
+  interface TrainingHistory {
+    [date: string]: { id: string; title: string; level: string; xp: number }[];
+  }
 
 
 
@@ -498,176 +505,295 @@ const openVideoModal = (id: string, title: string) => {
     xpToNext = nextRank.threshold - totalXP;
   }
 
+  // Add the checkLoginStatus function
+  const checkLoginStatus = () => {
+    const loginStatus = localStorage.getItem("isLoggedIn");
+    setIsLoggedIn(loginStatus === "true");
+    
+    // If not logged in, show the login modal
+    if (loginStatus !== "true") {
+      setShowLoginModal(true);
+    }
+  };
+
+  // Add this to your existing useEffect
+  useEffect(() => {
+    // Check login status when component mounts
+    checkLoginStatus();
+    
+    // Your existing code...
+    const storedLang = localStorage.getItem("lang");
+    if (storedLang) {
+      setLang(storedLang as "en" | "fr");
+    }
+
+    // Check and update daily reset of routines
+    const today = new Date().toDateString();
+    const storedLastActiveDate = localStorage.getItem("lastActiveDate");
+    
+    if (storedLastActiveDate) {
+      setLastActiveDate(storedLastActiveDate);
+      
+      // Calculate the time difference between the last active date and today
+      const lastActive = new Date(storedLastActiveDate);
+      const currentDate = new Date(today);
+      const timeDiff = currentDate.getTime() - lastActive.getTime();
+      const dayDiff = Math.floor(timeDiff / (1000 * 3600 * 24));
+      
+      if (dayDiff === 1) {
+        // User returned the next day - maintain streak
+        const storedStreak = localStorage.getItem("streakDays");
+        const newStreak = storedStreak ? parseInt(storedStreak) + 1 : 1;
+        setStreakDays(newStreak);
+        localStorage.setItem("streakDays", newStreak.toString());
+      } else if (dayDiff > 1) {
+        // User skipped a day - reset streak
+        setStreakDays(1);
+        localStorage.setItem("streakDays", "1");
+      } else {
+        // Same day - maintain current streak
+        const storedStreak = localStorage.getItem("streakDays");
+        if (storedStreak) {
+          setStreakDays(parseInt(storedStreak));
+        }
+      }
+      
+      // If it's a new day, reset completed routines
+      if (storedLastActiveDate !== today) {
+        setCompletedRoutines([]);
+        localStorage.removeItem("completedRoutines");
+      } else {
+        // Same day, load completed routines
+        const storedCompleted = localStorage.getItem("completedRoutines");
+        if (storedCompleted) {
+          setCompletedRoutines(JSON.parse(storedCompleted));
+        }
+      }
+    } else {
+      // First visit
+      setStreakDays(1);
+      localStorage.setItem("streakDays", "1");
+    }
+    
+    // Update last active date to today
+    setLastActiveDate(today);
+    localStorage.setItem("lastActiveDate", today);
+
+    const storedHistory = localStorage.getItem("trainingHistory");
+    if (storedHistory) {
+      setTrainingHistory(JSON.parse(storedHistory));
+    }
+  }, []);
+
+  // Function to redirect to login page
+  const redirectToLogin = () => {
+    router.push("/login");
+  };
+
+  // Only render the main content if logged in
   return (
     <div className="flex flex-col min-h-screen">
-      <main className="flex-1">
-        <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-b from-blue-50 to-white dark:from-blue-950 dark:to-background">
-          <div className="container px-4 md:px-6">
-            <div className="flex flex-col items-center space-y-4 text-center">
-              <div className="space-y-2">
-                <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl">
-                  {t.pageTitle}
-                </h1>
-                <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">
-                  {t.pageDescription}
-                </p>
-                <p className="mx-auto max-w-[800px] text-gray-500 md:text-lg dark:text-gray-400 mt-4">
-                  {t.routinesDescription}
-                </p>
+      {/* Login Required Modal */}
+      {showLoginModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
+          <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-md mx-4 p-6 shadow-xl">
+            <div className="text-center mb-6">
+              <div className="bg-red-100 dark:bg-red-900/30 p-3 rounded-full inline-flex items-center justify-center mb-4">
+                <Lock className="h-8 w-8 text-red-600 dark:text-red-400" />
               </div>
+              <h3 className="text-xl font-bold mb-2">
+                {lang === "en" ? "Login Required" : "Connexion Requise"}
+              </h3>
+              <p className="text-gray-500 dark:text-gray-400">
+                {lang === "en" 
+                  ? "You must be logged in to access training routines and track your progress. (Discord login)"
+                  : "Vous devez être connecté pour accéder aux routines d'entraînement et suivre votre progression."}
+              </p>
+            </div>
+            <div className="flex justify-center">
+              <Button 
+                className="bg-blue-600 hover:bg-blue-700 flex items-center space-x-2"
+                onClick={redirectToLogin}
+              >
+                <LogIn className="h-4 w-4" />
+                <span>{lang === "en" ? "Go to Login" : "Aller à la Connexion"}</span>
+              </Button>
             </div>
           </div>
-        </section>
+        </div>
+      )}
 
-        <section className="w-full py-12 md:py-24 bg-white dark:bg-gray-900">
-          <div className="container px-4 md:px-6">
-            <div className="grid gap-10 md:grid-cols-3 lg:gap-12">
-              {/* Stats Panel */}
-              <div className="md:col-span-1">
-                <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg shadow-sm">
-                  <h3 className="text-xl font-bold mb-4">{t.statsTitle}</h3>
-                  
-                  <div className="grid grid-cols-3 gap-4 mb-6">
-                    <div className="bg-white dark:bg-gray-700 p-4 rounded-md">
-                      <div className="flex items-center space-x-2">
-                        <CheckCircle className="h-5 w-5 text-green-500" />
-                        <span className="text-sm text-gray-500 dark:text-gray-400">{t.routinesCompleted}</span>
-                      </div>
-                      <p className="text-2xl font-bold mt-1">{totalCompleted}</p>
-                    </div>
-                    
-                    <div className="bg-white dark:bg-gray-700 p-4 rounded-md">
-                      <div className="flex items-center space-x-2">
-                        <Calendar className="h-5 w-5 text-blue-500" />
-                        <span className="text-sm text-gray-500 dark:text-gray-400">{t.streakDays}</span>
-                      </div>
-                      <p className="text-2xl font-bold mt-1">{streakDays}</p>
-                    </div>
-                    
-                    <div className="bg-white dark:bg-gray-700 p-4 rounded-md">
-                      <div className="flex items-center space-x-2">
-                        <Zap className="h-5 w-5 text-purple-500" />
-                        <span className="text-sm text-gray-500 dark:text-gray-400">{t.points}</span>
-                      </div>
-                      <p className="text-2xl font-bold mt-1">{totalXP}</p>
-                    </div>
-                  </div>
-                  
-                  {/* Player Rank Section */}
-                  <div className="bg-white dark:bg-gray-700 p-4 rounded-md mb-6">
-                    <div className="flex items-center space-x-2 mb-2">
-                      <Trophy className="h-5 w-5 text-yellow-500" />
-                      <span className="text-sm text-gray-500 dark:text-gray-400">{t.playerRank}</span>
-                    </div>
-                    <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400 mb-2">{currentRank.title}</p>
-                    
-                    {nextRank && (
-                      <>
-                        <div className="flex justify-between items-center text-sm mb-1">
-                          <span>{t.nextRank}: {nextRank.title}</span>
-                          <span>{xpToNext} {t.xpToNext}</span>
-                        </div>
-                        <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2.5">
-                          <div 
-                            className="bg-yellow-500 h-2.5 rounded-full" 
-                            style={{ width: `${progressPercent}%` }}
-                          ></div>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                  
-                  {/* Full Player Rank Progression */}
-                  <div className="bg-white dark:bg-gray-700 p-4 rounded-md">
-                    <h4 className="font-medium mb-3">Rank Progression</h4>
-                    <div className="space-y-3">
-                      {playerRanks.map((rank, index) => (
-                        <div key={rank.title} className="flex items-center">
-                          <div 
-                            className={`w-4 h-4 rounded-full mr-3 ${
-                              currentRankIndex >= index ? 'bg-yellow-500' : 'bg-gray-300 dark:bg-gray-600'
-                            }`}
-                          ></div>
-                          <div className="flex-1">
-                            <div className="flex justify-between">
-                              <span 
-                                className={`font-medium ${
-                                  currentRankIndex === index ? 'text-yellow-600 dark:text-yellow-400' : ''
-                                }`}
-                              >
-                                {rank.title}
-                              </span>
-                              <span className="text-sm text-gray-500">{rank.threshold} XP</span>
-                            </div>
-                            {index < playerRanks.length - 1 && (
-                              <div className="w-0.5 h-4 bg-gray-300 dark:bg-gray-600 ml-2"></div>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+      {/* Only render the main content if logged in */}
+      {!showLoginModal && (
+        <>
+          <main className="flex-1">
+            <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-b from-blue-50 to-white dark:from-blue-950 dark:to-background">
+              <div className="container px-4 md:px-6">
+                <div className="flex flex-col items-center space-y-4 text-center">
+                  <div className="space-y-2">
+                    <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl">
+                      {t.pageTitle}
+                    </h1>
+                    <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">
+                      {t.pageDescription}
+                    </p>
+                    <p className="mx-auto max-w-[800px] text-gray-500 md:text-lg dark:text-gray-400 mt-4">
+                      {t.routinesDescription}
+                    </p>
                   </div>
                 </div>
               </div>
+            </section>
 
-              {/* Routines Panel */}
-              <div className="md:col-span-2">
-                <div className="bg-gray-50 dark:bg-gray-800 rounded-lg shadow-sm p-6">
-                  <h3 className="text-xl font-bold mb-6">{t.levelTitle}</h3>
-                  
-                  {/* Level tabs */}
-                  <div className="flex space-x-2 mb-6">
-                    <Button 
-                      onClick={() => setActiveTab("beginner")}
-                      variant={activeTab === "beginner" ? "default" : "outline"}
-                      className={activeTab === "beginner" ? "bg-green-600" : ""}
-                    >
-                      {t.beginnerTab}
-                    </Button>
-                    <Button 
-                      onClick={() => setActiveTab("intermediate")}
-                      variant={activeTab === "intermediate" ? "default" : "outline"}
-                      className={activeTab === "intermediate" ? "bg-blue-600" : ""}
-                    >
-                      {t.intermediateTab}
-                    </Button>
-                    <Button 
-                      onClick={() => setActiveTab("advanced")}
-                      variant={activeTab === "advanced" ? "default" : "outline"}
-                      className={activeTab === "advanced" ? "bg-red-600" : ""}
-                    >
-                      {t.advancedTab}
-                    </Button>
+            <section className="w-full py-12 md:py-24 bg-white dark:bg-gray-900">
+              <div className="container px-4 md:px-6">
+                <div className="grid gap-10 md:grid-cols-3 lg:gap-12">
+                  {/* Stats Panel */}
+                  <div className="md:col-span-1">
+                    <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+                      <h3 className="text-xl font-bold mb-4">{t.statsTitle}</h3>
+                      
+                      <div className="grid grid-cols-3 gap-4 mb-6">
+                        <div className="bg-white dark:bg-gray-700 p-4 rounded-md">
+                          <div className="flex items-center space-x-2">
+                            <CheckCircle className="h-5 w-5 text-green-500" />
+                            <span className="text-sm text-gray-500 dark:text-gray-400">{t.routinesCompleted}</span>
+                          </div>
+                          <p className="text-2xl font-bold mt-1">{totalCompleted}</p>
+                        </div>
+                        
+                        <div className="bg-white dark:bg-gray-700 p-4 rounded-md">
+                          <div className="flex items-center space-x-2">
+                            <Calendar className="h-5 w-5 text-blue-500" />
+                            <span className="text-sm text-gray-500 dark:text-gray-400">{t.streakDays}</span>
+                          </div>
+                          <p className="text-2xl font-bold mt-1">{streakDays}</p>
+                        </div>
+                        
+                        <div className="bg-white dark:bg-gray-700 p-4 rounded-md">
+                          <div className="flex items-center space-x-2">
+                            <Zap className="h-5 w-5 text-purple-500" />
+                            <span className="text-sm text-gray-500 dark:text-gray-400">{t.points}</span>
+                          </div>
+                          <p className="text-2xl font-bold mt-1">{totalXP}</p>
+                        </div>
+                      </div>
+                      
+                      {/* Player Rank Section */}
+                      <div className="bg-white dark:bg-gray-700 p-4 rounded-md mb-6">
+                        <div className="flex items-center space-x-2 mb-2">
+                          <Trophy className="h-5 w-5 text-yellow-500" />
+                          <span className="text-sm text-gray-500 dark:text-gray-400">{t.playerRank}</span>
+                        </div>
+                        <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400 mb-2">{currentRank.title}</p>
+                        
+                        {nextRank && (
+                          <>
+                            <div className="flex justify-between items-center text-sm mb-1">
+                              <span>{t.nextRank}: {nextRank.title}</span>
+                              <span>{xpToNext} {t.xpToNext}</span>
+                            </div>
+                            <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2.5">
+                              <div 
+                                className="bg-yellow-500 h-2.5 rounded-full" 
+                                style={{ width: `${progressPercent}%` }}
+                              ></div>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                      
+                      {/* Full Player Rank Progression */}
+                      <div className="bg-white dark:bg-gray-700 p-4 rounded-md">
+                        <h4 className="font-medium mb-3">Rank Progression</h4>
+                        <div className="space-y-3">
+                          {playerRanks.map((rank, index) => (
+                            <div key={rank.title} className="flex items-center">
+                              <div 
+                                className={`w-4 h-4 rounded-full mr-3 ${
+                                  currentRankIndex >= index ? 'bg-yellow-500' : 'bg-gray-300 dark:bg-gray-600'
+                                }`}
+                              ></div>
+                              <div className="flex-1">
+                                <div className="flex justify-between">
+                                  <span 
+                                    className={`font-medium ${
+                                      currentRankIndex === index ? 'text-yellow-600 dark:text-yellow-400' : ''
+                                    }`}
+                                  >
+                                    {rank.title}
+                                  </span>
+                                  <span className="text-sm text-gray-500">{rank.threshold} XP</span>
+                                </div>
+                                {index < playerRanks.length - 1 && (
+                                  <div className="w-0.5 h-4 bg-gray-300 dark:bg-gray-600 ml-2"></div>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  
-                  {/* Dynamically render routines based on active tab */}
-                  <div className="space-y-4">
-                  {routinesByLevel[activeTab].map((routine) => (
-                  <RoutineCard
-                    key={routine.id}
-                    id={routine.id}
-                    title={getTranslationValue(t, routine.titleKey)}
-                    description={getTranslationValue(t, routine.descKey)}
-                    duration={getTranslationValue(t, routine.durationKey)}
-                    points={getTranslationValue(t, routine.pointsKey)}
-                    startButtonText={t.startButton}
-                    completeButtonText={completedRoutines.includes(routine.id) ? t.completedButton : t.completeButton}
-                    isCompleted={completedRoutines.includes(routine.id)}
-                    onComplete={() => markAsCompleted(routine.id)}
-                    onWatch={() => openVideoModal(routine.id, getTranslationValue(t, routine.titleKey))}
-                  />
-                ))}
-                  </div>
-                  
-                </div>
-                  {/* Ronaldo Quote */}
-                  <br />
+
+                  {/* Routines Panel */}
+                  <div className="md:col-span-2">
+                    <div className="bg-gray-50 dark:bg-gray-800 rounded-lg shadow-sm p-6">
+                      <h3 className="text-xl font-bold mb-6">{t.levelTitle}</h3>
+                      
+                      {/* Level tabs */}
+                      <div className="flex space-x-2 mb-6">
+                        <Button 
+                          onClick={() => setActiveTab("beginner")}
+                          variant={activeTab === "beginner" ? "default" : "outline"}
+                          className={activeTab === "beginner" ? "bg-green-600" : ""}
+                        >
+                          {t.beginnerTab}
+                        </Button>
+                        <Button 
+                          onClick={() => setActiveTab("intermediate")}
+                          variant={activeTab === "intermediate" ? "default" : "outline"}
+                          className={activeTab === "intermediate" ? "bg-blue-600" : ""}
+                        >
+                          {t.intermediateTab}
+                        </Button>
+                        <Button 
+                          onClick={() => setActiveTab("advanced")}
+                          variant={activeTab === "advanced" ? "default" : "outline"}
+                          className={activeTab === "advanced" ? "bg-red-600" : ""}
+                        >
+                          {t.advancedTab}
+                        </Button>
+                      </div>
+                      
+                      {/* Dynamically render routines based on active tab */}
+                      <div className="space-y-4">
+                      {routinesByLevel[activeTab].map((routine) => (
+                      <RoutineCard
+                        key={routine.id}
+                        id={routine.id}
+                        title={getTranslationValue(t, routine.titleKey)}
+                        description={getTranslationValue(t, routine.descKey)}
+                        duration={getTranslationValue(t, routine.durationKey)}
+                        points={getTranslationValue(t, routine.pointsKey)}
+                        startButtonText={t.startButton}
+                        completeButtonText={completedRoutines.includes(routine.id) ? t.completedButton : t.completeButton}
+                        isCompleted={completedRoutines.includes(routine.id)}
+                        onComplete={() => markAsCompleted(routine.id)}
+                        onWatch={() => openVideoModal(routine.id, getTranslationValue(t, routine.titleKey))}
+                      />
+                    ))}
+                      </div>
+                      
+                    </div>
+                      {/* Ronaldo Quote */}
+                      <br />
   <p className="text-center italic text-gray-500 dark:text-gray-400 mb-6">
     "Training makes Perfect" - Cristiano Ronaldo
   </p>
-              </div>
-              
-              <div className="flex justify-center mt-6">
+                  </div>
+                  
+                  <div className="flex justify-center mt-6">
   <Button
     onClick={() => setCalendarView(!calendarView)}
     variant="outline"
@@ -749,59 +875,13 @@ const openVideoModal = (id: string, title: string) => {
     </div>
   </div>
 )}
-            </div>
-          </div>
-        </section>
-      </main>
-
-      {/* Video Modal */}
-      {videoModal.isOpen && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
-    <div 
-      ref={modalContentRef}
-      className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-4xl mx-4"
-    >
-      <div className="p-4 flex justify-between items-center border-b border-gray-200 dark:border-gray-700">
-        <h3 className="text-xl font-bold">{t.watchingRoutine} {videoModal.title}</h3>
-        <Button variant="ghost" size="icon" onClick={closeVideoModal}>
-          <X className="h-5 w-5" />
-        </Button>
-      </div>
-      <div className="p-4">
-        <div className="w-full aspect-video bg-black rounded-md">
-        {videoModal.videoType === "Clip" ? (
-
-        <iframe 
-            width="100%"
-            height="100%"
-            src={videoModal.videoId}
-            title="YouTube video player" 
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-            allowFullScreen>
-          </iframe>
-          ) : (
-
-          <iframe
-            width="100%"
-            height="100%"
-            src={`https://www.youtube.com/embed/${videoModal.videoId}?autoplay=1`}
-            title={videoModal.title}
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          ></iframe>)}
-        </div>
-      </div>
-      <div className="p-4 border-t border-gray-200 dark:border-gray-700 flex justify-end">
-        <Button variant="outline" onClick={closeVideoModal}>
-          {t.closeButton}
-        </Button>
-      </div>
-    </div>
-  </div>
-)}
-      
-      <Footer />
+                </div>
+              </div>
+            </section>
+          </main>
+          <Footer />
+        </>
+      )}
     </div>
   );
 }
