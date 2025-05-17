@@ -23,6 +23,25 @@ export function SiteHeader() {
   // Check login status function - reusable
   const checkLoginStatus = () => {
     const loginStatus = localStorage.getItem("isLoggedIn")
+    const loginTime = localStorage.getItem("loginTime")
+    
+    // If user has logged in before (loginTime exists)
+    if (loginTime && loginStatus === "true") {
+      const loginTimeStamp = parseInt(loginTime)
+      const currentTime = Date.now()
+      const twoHoursInMs = 2 * 60 * 60 * 1000 // 2 hours in milliseconds
+      
+      // Check if more than 2 hours have passed since login
+      if (currentTime - loginTimeStamp > twoHoursInMs) {
+        // Auto logout if session expired
+        localStorage.setItem("isLoggedIn", "false")
+        // Reload page to apply logout changes
+        window.location.reload()
+        return // Exit function early after triggering reload
+      }
+    }
+    
+    // Continue with regular login status check
     setIsLoggedIn(loginStatus === "true")
   }
 
