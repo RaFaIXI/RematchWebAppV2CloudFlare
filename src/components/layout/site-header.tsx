@@ -27,12 +27,19 @@ export function SiteHeader() {
     
     // If user has logged in before (loginTime exists)
     if (loginTime && loginStatus === "true") {
-      const loginTimeStamp = parseInt(loginTime)
+      console.log("Login time found:", loginTime)
+      console.log("user is logged in")
+      
+      // Use Date.parse for ISO strings or ensure loginTime is stored as milliseconds
+      const loginTimeStamp = Date.parse(loginTime) || parseInt(loginTime)
       const currentTime = Date.now()
       const twoHoursInMs = 2 * 60 * 60 * 1000 // 2 hours in milliseconds
+      console.log("Current time:", currentTime)
+      console.log("Time difference:", currentTime - loginTimeStamp)
       
       // Check if more than 2 hours have passed since login
       if (currentTime - loginTimeStamp > twoHoursInMs) {
+        console.log("Session expired, logging out...")
         // Auto logout if session expired
         localStorage.setItem("isLoggedIn", "false")
         // Reload page to apply logout changes
