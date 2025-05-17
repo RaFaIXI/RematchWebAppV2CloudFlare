@@ -22,6 +22,8 @@ export default function Routines() {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [isEmbedded, setIsEmbedded] = useState(false);
+  const [isEmbeddedRematchFrance, setIsEmbeddedRematchFrance] = useState(false);
   const router = useRouter();
   
   interface TrainingHistory {
@@ -505,20 +507,52 @@ const openVideoModal = (id: string, title: string) => {
     xpToNext = nextRank.threshold - totalXP;
   }
 
-  // Add the checkLoginStatus function
+  // Check embedding status
+  useEffect(() => {
+    // Check if the page is being displayed in an iframe
+    if (window.top !== window.self) {
+      setIsEmbedded(true);
+      
+      try {
+        // Try to get the URL of the parent (embedding) page
+        const embedderURL = document.referrer;
+        console.log("Page is embedded in an iframe by:", embedderURL);
+        
+        // Check if the embedder is specifically rematchfrance.fr
+        if (embedderURL && embedderURL.includes("rematchfrance.fr")) {
+          console.log("Embedded specifically on rematchfrance.fr");
+          setIsEmbeddedRematchFrance(true);
+        } else {
+          setIsEmbeddedRematchFrance(false);
+        }
+      } catch (error) {
+        // If we can't access parent information due to same-origin policy
+        console.log("Page is embedded in an iframe but cannot determine embedder due to security restrictions");
+        setIsEmbeddedRematchFrance(false);
+      }
+    } else {
+      setIsEmbedded(false);
+      setIsEmbeddedRematchFrance(false);
+      console.log("Page is not embedded.");
+    }
+  }, []);
+
+  // Modify the checkLoginStatus function
   const checkLoginStatus = () => {
     const loginStatus = localStorage.getItem("isLoggedIn");
     setIsLoggedIn(loginStatus === "true");
     
-    // If not logged in, show the login modal
-    if (loginStatus !== "true") {
+    // If not logged in AND not embedded on rematchfrance.fr, show the login modal
+    if (loginStatus !== "true" && !isEmbeddedRematchFrance) {
       setShowLoginModal(true);
+    } else {
+      setShowLoginModal(false);
     }
   };
 
   // Add this to your existing useEffect
   useEffect(() => {
-    // Check login status when component mounts
+    // Check login status when component mounts or when embedding status changes
     checkLoginStatus();
     
     // Your existing code...
@@ -583,7 +617,7 @@ const openVideoModal = (id: string, title: string) => {
     if (storedHistory) {
       setTrainingHistory(JSON.parse(storedHistory));
     }
-  }, []);
+  }, [isEmbeddedRematchFrance]);
 
   // Function to redirect to login page
   const redirectToLogin = () => {
