@@ -89,6 +89,77 @@ const [trainingHistory, setTrainingHistory] = useState<TrainingHistory>({});
   const videoRef = useRef<HTMLVideoElement>(null);
   const modalContentRef = useRef<HTMLDivElement>(null);
 
+  // Add these API functions at the top of your component, after state declarations
+const loadTrainingHistoryFromAPI = async (userId: string) => {
+  try {
+    const response = await fetch(`https://rematchguidebackend.onrender.com/api/user/history?user_id=${userId}`);
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status}`);
+    }
+    const data = await response.json();
+    
+    // Convert API response to our TrainingHistory format
+    const formattedHistory: TrainingHistory = {};
+    
+    if (
+      typeof data === "object" &&
+      data !== null &&
+      "history" in data &&
+      Array.isArray((data as any).history)
+    ) {
+      (data as { history: any[] }).history.forEach((item: any) => {
+        const dateStr = item.date;
+        if (!formattedHistory[dateStr]) {
+          formattedHistory[dateStr] = [];
+        }
+        formattedHistory[dateStr].push({
+          id: item.routine_id,
+          title: item.title,
+          level: item.level,
+          xp: item.xp
+        });
+      });
+    }
+    
+    return formattedHistory;
+  } catch (error) {
+    console.error("Failed to load training history from API:", error);
+    // Fall back to localStorage if API fails
+    const storedHistory = localStorage.getItem("trainingHistory");
+    return storedHistory ? JSON.parse(storedHistory) : {};
+  }
+};
+
+const saveTrainingHistoryToAPI = async (userId: string, routineId: string, title: string, level: string, xp: number) => {
+  try {
+    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+    
+    const response = await fetch('https://rematchguidebackend.onrender.com/api/user/history/add', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        user_id: userId,
+        date: today,
+        routine_id: routineId,
+        title: title,
+        level: level,
+        xp: xp
+      }),
+    });
+    
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error("Failed to save training to API:", error);
+    return { success: false, error: String(error) };
+  }
+};
+
   useEffect(() => {
     const storedLang = localStorage.getItem("lang");
     if (storedLang) {
@@ -147,6 +218,7 @@ const [trainingHistory, setTrainingHistory] = useState<TrainingHistory>({});
     setLastActiveDate(today);
     localStorage.setItem("lastActiveDate", today);
 
+    // Load training history - will be updated after we check embedding status
     const storedHistory = localStorage.getItem("trainingHistory");
     if (storedHistory) {
       setTrainingHistory(JSON.parse(storedHistory));
@@ -214,16 +286,18 @@ const [trainingHistory, setTrainingHistory] = useState<TrainingHistory>({});
       newCompletedRoutines.push(routineId);
       
       // Find routine details
-      let routineDetails = null;
-      Object.keys(routinesByLevel).forEach(level => {
-        const found = routinesByLevel[level as keyof typeof routinesByLevel].find(r => r.id === routineId);
+      let routineDetails: { id: string; title: string; level: string; xp: number } | null = null;
+      let routineLevel = "";
+      Object.keys(routinesByLevel).forEach((level: string) => {
+        const found = (routinesByLevel as any)[level].find((r: any) => r.id === routineId);
         if (found) {
           routineDetails = {
             id: routineId,
-            title: t[found.titleKey as keyof typeof t],
+            title: getTranslationValue(t, found.titleKey),
             level,
             xp: routineXP[routineId as keyof typeof routineXP]
           };
+          routineLevel = level;
         }
       });
       
@@ -233,6 +307,20 @@ const [trainingHistory, setTrainingHistory] = useState<TrainingHistory>({});
       }
       if (routineDetails) {
         newTrainingHistory[today].push(routineDetails);
+        
+        // If not embedded on rematchfrance.fr and user is logged in, save to API
+        if (!isEmbeddedRematchFrance && isLoggedIn) {
+          const userId = localStorage.getItem("userId");
+          if (userId) {
+            saveTrainingHistoryToAPI(
+              userId,
+              routineId,
+              (routineDetails as { id: string; title: string; level: string; xp: number }).title,
+              routineLevel,
+              (routineDetails as { id: string; title: string; level: string; xp: number }).xp
+            );
+          }
+        }
       }
     }
     
@@ -613,11 +701,39 @@ const openVideoModal = (id: string, title: string) => {
     setLastActiveDate(today);
     localStorage.setItem("lastActiveDate", today);
 
+    // Load training history - will be updated after we check embedding status
     const storedHistory = localStorage.getItem("trainingHistory");
     if (storedHistory) {
       setTrainingHistory(JSON.parse(storedHistory));
     }
-  }, [isEmbeddedRematchFrance]);
+  }, []);
+
+  // Add a new useEffect to handle loading data based on embed status
+  useEffect(() => {
+    // Only attempt to load from API if we know the embedding status and user login status
+    if (isEmbeddedRematchFrance !== undefined && isLoggedIn !== undefined) {
+      const loadData = async () => {
+        // If not embedded on rematchfrance.fr and user is logged in, load from API
+        if (!isEmbeddedRematchFrance && isLoggedIn) {
+          const userId = localStorage.getItem("userId");
+          if (userId) {
+            const apiHistory = await loadTrainingHistoryFromAPI(userId);
+            setTrainingHistory(apiHistory);
+            
+            // Update completed routines for today based on API data
+            const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+            if (apiHistory[today]) {
+                const todaysCompletedRoutines: string[] = (apiHistory[today] as { id: string }[]).map((item: { id: string }) => item.id);
+              setCompletedRoutines(todaysCompletedRoutines);
+              localStorage.setItem("completedRoutines", JSON.stringify(todaysCompletedRoutines));
+            }
+          }
+        }
+      };
+      
+      loadData();
+    }
+  }, [isEmbeddedRematchFrance, isLoggedIn]);
 
   // Function to redirect to login page
   const redirectToLogin = () => {
