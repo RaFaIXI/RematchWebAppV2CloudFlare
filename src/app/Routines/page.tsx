@@ -160,13 +160,86 @@ const saveTrainingHistoryToAPI = async (userId: string, routineId: string, title
   }
 };
 
-  useEffect(() => {
-    const storedLang = localStorage.getItem("lang");
-    if (storedLang) {
-      setLang(storedLang as "en" | "fr");
+const calculateStreakFromHistory = (history: TrainingHistory): number => {
+  // Get all dates from the history and sort them in descending order (newest first)
+  const dates = Object.keys(history).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
+  
+  if (dates.length === 0) return 0;
+  
+  // Get today's date in YYYY-MM-DD format
+  const today = new Date().toISOString().split('T')[0];
+  
+  // Start with current streak of 1 for most recent training day
+  let streak = 1;
+  
+  // If most recent training was today, start from that day
+  // Otherwise, check if most recent training was yesterday
+  const mostRecentDate = dates[0];
+  const mostRecentDateTime = new Date(mostRecentDate).getTime();
+  
+  if (mostRecentDate !== today) {
+    // If most recent training wasn't today, check if it was yesterday
+    const yesterdayDate = new Date();
+    yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+    const yesterday = yesterdayDate.toISOString().split('T')[0];
+    
+    if (mostRecentDate !== yesterday) {
+      // If most recent training wasn't yesterday, streak is broken
+      return 0;
     }
+  }
+  
+  // Check for consecutive days in the history
+  for (let i = 0; i < dates.length - 1; i++) {
+    const currentDate = new Date(dates[i]);
+    const nextDate = new Date(dates[i + 1]);
+    
+    // Calculate day difference
+    currentDate.setHours(0, 0, 0, 0);
+    nextDate.setHours(0, 0, 0, 0);
+    
+    const dayDiff = Math.floor((currentDate.getTime() - nextDate.getTime()) / (1000 * 3600 * 24));
+    
+    if (dayDiff === 1) {
+      // Days are consecutive, increase streak
+      streak++;
+    } else {
+      // Gap in the streak, stop counting
+      break;
+    }
+  }
+  
+  return streak;
+};
 
-    // Check and update daily reset of routines
+// Replace your existing useEffect for streak calculation
+useEffect(() => {
+  const storedLang = localStorage.getItem("lang");
+  if (storedLang) {
+    setLang(storedLang as "en" | "fr");
+  }
+
+  // Different streak calculation based on embedding status
+  if (!isEmbeddedRematchFrance && isLoggedIn) {
+    // Calculate streak from API history data
+    const streak = calculateStreakFromHistory(trainingHistory);
+    setStreakDays(streak);
+    
+    // Still store in localStorage as a fallback
+    localStorage.setItem("streakDays", streak.toString());
+    
+    // Handle completed routines for today
+    const today = new Date().toISOString().split('T')[0];
+    if (trainingHistory[today]) {
+      const todaysRoutines = trainingHistory[today].map(item => item.id);
+      setCompletedRoutines(todaysRoutines);
+      localStorage.setItem("completedRoutines", JSON.stringify(todaysRoutines));
+    } else {
+      setCompletedRoutines([]);
+      localStorage.removeItem("completedRoutines");
+    }
+  } else {
+    // Original localStorage-based streak calculation for embedded usage
     const today = new Date().toDateString();
     const storedLastActiveDate = localStorage.getItem("lastActiveDate");
     
@@ -217,13 +290,16 @@ const saveTrainingHistoryToAPI = async (userId: string, routineId: string, title
     // Update last active date to today
     setLastActiveDate(today);
     localStorage.setItem("lastActiveDate", today);
+  }
 
-    // Load training history - will be updated after we check embedding status
+  // Load training history from localStorage if not already loaded
+  if (Object.keys(trainingHistory).length === 0) {
     const storedHistory = localStorage.getItem("trainingHistory");
     if (storedHistory) {
       setTrainingHistory(JSON.parse(storedHistory));
     }
-  }, []);
+  }
+}, [isEmbeddedRematchFrance, isLoggedIn, trainingHistory]);
 
   // Effect to handle autoplay when video modal opens
   useEffect(() => {
