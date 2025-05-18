@@ -24,7 +24,7 @@ export default function TacticalBoardPage() {
   const [selectedLineColor, setSelectedLineColor] = useState("#ffffff");
   const [lineWidth, setLineWidth] = useState(3); 
   const [drawingTool, setDrawingTool] = useState<"freehand" | "line" | "arrow" | "text">("freehand");
-  const [teamSize, setTeamSize] = useState<4 | 5>(5);
+  const [teamSize, setTeamSize] = useState<3 | 4 | 5>(5);
   const [startPoint, setStartPoint] = useState<{x: number, y: number} | null>(null);
   const [isTextMode, setIsTextMode] = useState(false);
   const [currentText, setCurrentText] = useState("");
@@ -117,7 +117,8 @@ export default function TacticalBoardPage() {
       text: "Text",
       addText: "Add Text",
       enterText: "Enter text...",
-      placeText: "Click on the field to place text"
+      placeText: "Click on the field to place text",
+      format3v3: "3v3 Format",
     },
     fr: {
       title: "Tableau Tactique",
@@ -134,6 +135,7 @@ export default function TacticalBoardPage() {
       clearLines: "Effacer",
       lineColor: "Couleur",
       lineWidth: "Épaisseur",
+      format3v3: "Format 3v3",
       format4v4: "Format 4v4",
       format5v5: "Format 5v5",
       drawingTools: "Outils de Dessin",
@@ -172,7 +174,7 @@ export default function TacticalBoardPage() {
           { id: "b4", team: "b", x: 100, y: fieldHeight - 250, color: "#ef4444" },  // Top left
           { id: "b5", team: "b", x: 200, y: fieldHeight - 250, color: "#ef4444" },  // Top right
         ];
-      } else {
+      } else if (teamSize === 4) {
         // Team A (blue) - 4 players in portrait mode
         teamA = [
           { id: "a1", team: "a", x: 90, y: 100, color: "#3b82f6" },   // Top left
@@ -187,6 +189,20 @@ export default function TacticalBoardPage() {
           { id: "b2", team: "b", x: 210, y: fieldHeight - 100, color: "#ef4444" },  // Bottom right
           { id: "b3", team: "b", x: 90, y: fieldHeight - 200, color: "#ef4444" },   // Top left
           { id: "b4", team: "b", x: 210, y: fieldHeight - 200, color: "#ef4444" },  // Top right
+        ];
+      } else {
+        // Team A (blue) - 3 players in portrait mode
+        teamA = [
+          { id: "a1", team: "a", x: 90, y: 100, color: "#3b82f6" },   // Top left
+          { id: "a2", team: "a", x: 210, y: 100, color: "#3b82f6" },  // Top right
+          { id: "a3", team: "a", x: 150, y: 200, color: "#3b82f6" },  // Bottom center
+        ];
+        
+        // Team B (red) - 3 players in portrait mode
+        teamB = [
+          { id: "b1", team: "b", x: 90, y: fieldHeight - 100, color: "#ef4444" },   // Bottom left
+          { id: "b2", team: "b", x: 210, y: fieldHeight - 100, color: "#ef4444" },  // Bottom right
+          { id: "b3", team: "b", x: 150, y: fieldHeight - 200, color: "#ef4444" },  // Top center
         ];
       }
       
@@ -213,7 +229,7 @@ export default function TacticalBoardPage() {
           { id: "b4", team: "b", x: 400, y: 380, color: "#ef4444" },  // Right forward
           { id: "b5", team: "b", x: 500, y: 300, color: "#ef4444" },  // Right back
         ];
-      } else {
+      } else if (teamSize === 4) {
         // Team A (blue) - 4 players
         teamA = [
           { id: "a1", team: "a", x: 100, y: 170, color: "#3b82f6" },  // Left back
@@ -229,10 +245,21 @@ export default function TacticalBoardPage() {
           { id: "b3", team: "b", x: 400, y: 330, color: "#ef4444" },  // Right forward
           { id: "b4", team: "b", x: 500, y: 330, color: "#ef4444" },  // Right back
         ];
+      } else {
+        // Team A (blue) - 3 players
+        teamA = [
+          { id: "a1", team: "a", x: 100, y: 250, color: "#3b82f6" },  // Back
+          { id: "a2", team: "a", x: 200, y: 170, color: "#3b82f6" },  // Top forward
+          { id: "a3", team: "a", x: 200, y: 330, color: "#3b82f6" },  // Bottom forward
+        ];
+        
+        // Team B (red) - 3 players
+        teamB = [
+          { id: "b1", team: "b", x: 500, y: 250, color: "#ef4444" },  // Back
+          { id: "b2", team: "b", x: 400, y: 170, color: "#ef4444" },  // Top forward
+          { id: "b3", team: "b", x: 400, y: 330, color: "#ef4444" },  // Bottom forward
+        ];
       }
-      
-      // Ball in the middle for landscape
-      const ball = { id: "ball", team: "ball", x: 300, y: 250, color: "#ffffff" };
     }
     
     // Add the ball to the appropriate position based on orientation
@@ -1015,6 +1042,16 @@ export default function TacticalBoardPage() {
             
             <div className="space-y-4">
               <div className="flex gap-2">
+                <button 
+                  onClick={() => setTeamSize(3)}
+                  className={`flex-1 py-2 px-3 rounded-lg transition-colors ${
+                    teamSize === 3 
+                      ? 'bg-blue-600 text-white' 
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  }`}
+                >
+                  {t.format3v3}
+                </button>
                 <button 
                   onClick={() => setTeamSize(4)}
                   className={`flex-1 py-2 px-3 rounded-lg transition-colors ${
