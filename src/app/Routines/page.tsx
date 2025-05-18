@@ -913,6 +913,52 @@ const openVideoModal = (id: string, title: string) => {
               </div>
             </section>
           </main>
+
+          {/* Video Modal */}
+          {videoModal.isOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
+              <div 
+                ref={modalContentRef}
+                className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-4xl mx-4"
+              >
+                <div className="p-4 flex justify-between items-center border-b border-gray-200 dark:border-gray-700">
+                  <h3 className="text-xl font-bold">{t.watchingRoutine} {videoModal.title}</h3>
+                  <Button variant="ghost" size="icon" onClick={closeVideoModal}>
+                    <X className="h-5 w-5" />
+                  </Button>
+                </div>
+                <div className="p-4">
+                  <div className="w-full aspect-video bg-black rounded-md">
+                  {videoModal.videoType === "Clip" ? (
+                    <iframe 
+                      width="100%"
+                      height="100%"
+                      src={videoModal.videoId}
+                      title="YouTube video player" 
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                      allowFullScreen>
+                    </iframe>
+                    ) : (
+                    <iframe
+                      width="100%"
+                      height="100%"
+                      src={`https://www.youtube.com/embed/${videoModal.videoId}?autoplay=1`}
+                      title={videoModal.title}
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    ></iframe>)}
+                  </div>
+                </div>
+                <div className="p-4 border-t border-gray-200 dark:border-gray-700 flex justify-end">
+                  <Button variant="outline" onClick={closeVideoModal}>
+                    {t.closeButton}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+          
           <Footer />
         </>
       )}
