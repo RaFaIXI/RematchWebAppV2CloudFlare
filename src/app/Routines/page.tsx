@@ -129,7 +129,24 @@ const loadTrainingHistoryFromAPI = async (userId: string) => {
     return storedHistory ? JSON.parse(storedHistory) : {};
   }
 };
+const calculateTotalXpFromHistory = (history: TrainingHistory): number => {
+  let totalXp = 0;
+  Object.values(history).forEach(dayEntries => {
+    dayEntries.forEach(entry => {
+      totalXp += entry.xp;
+    });
+  });
+  return totalXp;
+};
 
+const countCompletedRoutinesFromHistory = (history: TrainingHistory): number => {
+  // This counts all routine completions, including repeats
+  let totalRoutines = 0;
+  Object.values(history).forEach(dayEntries => {
+    totalRoutines += dayEntries.length;
+  });
+  return totalRoutines;
+};
 const saveTrainingHistoryToAPI = async (userId: string, routineId: string, title: string, level: string, xp: number) => {
   try {
     const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
@@ -632,13 +649,16 @@ const openVideoModal = (id: string, title: string) => {
   const t = translations[lang];
 
   // Calculate stats
-  const totalCompleted = completedRoutines.length;
-  
+const totalCompleted = !isEmbeddedRematchFrance && isLoggedIn 
+  ? countCompletedRoutinesFromHistory(trainingHistory)
+  : completedRoutines.length;
+
   // Fixed XP calculation
-  const totalXP = completedRoutines.reduce((acc, routineId) => {
-    // Use the routineXP lookup object instead of trying to parse from translations
-    return acc + (routineXP[routineId as keyof typeof routineXP] || 0);
-  }, 0);
+const totalXP = !isEmbeddedRematchFrance && isLoggedIn
+  ? calculateTotalXpFromHistory(trainingHistory)
+  : completedRoutines.reduce((acc, routineId) => {
+      return acc + (routineXP[routineId as keyof typeof routineXP] || 0);
+    }, 0);
 
   // Define player ranks and XP thresholds
   const playerRanks = [
