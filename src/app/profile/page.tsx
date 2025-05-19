@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { User, Users, PlusCircle, ExternalLink, Shield, LogOut, Check, X, Bell, UserPlus } from "lucide-react";
+import { User, Users, PlusCircle, ExternalLink, Shield, LogOut, Check, X, Bell } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -20,14 +20,14 @@ export default function ProfilePage() {
   const [createTeamOpen, setCreateTeamOpen] = useState(false);
   const [viewTeamOpen, setViewTeamOpen] = useState(false);
   const [selectedTeam, setSelectedTeam] = useState<any>(null);
-  const [discordUsername, setDiscordUsername] = useState("");
-  const [showInviteInput, setShowInviteInput] = useState(false);
-  const [inviteMessage, setInviteMessage] = useState({ text: "", type: "" });
   const [user, setUser] = useState({
     username: "",
-    avatar: "/api/placeholder/100/100",
+    avatar: "",
     joinDate: ""
   });
+  const [newTeamName, setNewTeamName] = useState("");
+  const [newTeamDescription, setNewTeamDescription] = useState("");
+  const [newTeamLogo, setNewTeamLogo] = useState("");
   
   useEffect(() => {
     // Check if the page is embedded in an iframe
@@ -96,19 +96,13 @@ export default function ProfilePage() {
       createNewTeam: "Create New Team",
       create: "Create",
       cancel: "Cancel",
-      teamLogo: "Team Logo",
-      uploadLogo: "Upload Logo",
+      teamLogo: "Team Logo URL",
+      enterLogoUrl: "Enter logo URL",
       teamDetails: "Team Details",
       members: "Members",
       kickMember: "Remove",
       settings: "Settings",
-      teamCreatedOn: "Team created on",
-      invite: "Invite Player",
-      discordUsername: "Discord Username",
-      send: "Send",
-      inviteSuccess: "Invitation sent!",
-      inviteError: "Failed to send invitation",
-      enterDiscordName: "Enter Discord username"
+      teamCreatedOn: "Team created on"
     },
     fr: {
       title: "Profil",
@@ -135,19 +129,13 @@ export default function ProfilePage() {
       createNewTeam: "Créer une Nouvelle Équipe",
       create: "Créer",
       cancel: "Annuler",
-      teamLogo: "Logo de l'Équipe",
-      uploadLogo: "Télécharger un Logo",
+      teamLogo: "URL du Logo d'Équipe",
+      enterLogoUrl: "Entrez l'URL du logo",
       teamDetails: "Détails de l'Équipe",
       members: "Membres",
       kickMember: "Retirer",
       settings: "Paramètres",
-      teamCreatedOn: "Équipe créée le",
-      invite: "Inviter Joueur",
-      discordUsername: "Nom d'utilisateur Discord",
-      send: "Envoyer",
-      inviteSuccess: "Invitation envoyée !",
-      inviteError: "Échec de l'envoi de l'invitation",
-      enterDiscordName: "Entrez le nom d'utilisateur Discord"
+      teamCreatedOn: "Équipe créée le"
     }
   };
 
@@ -204,25 +192,62 @@ export default function ProfilePage() {
     }
   ];
 
-  const handleInvite = () => {
-    if (!discordUsername.trim()) return;
-    
-    // Here you would implement the actual API call to send the invitation
-    // This is just a mock implementation for demonstration
-    console.log(`Sending invite to ${discordUsername} for team ${selectedTeam?.name}`);
-    
-    // Show success message
-    setInviteMessage({ 
-      text: t.inviteSuccess, 
-      type: "success" 
-    });
-    
-    // Reset input and hide after delay
-    setTimeout(() => {
-      setDiscordUsername("");
-      setShowInviteInput(false);
-      setInviteMessage({ text: "", type: "" });
-    }, 2000);
+  const handleCreateTeam = async () => {
+    try {
+      if (!newTeamName.trim()) {
+        alert(lang === "en" ? "Team name is required" : "Le nom de l'équipe est requis");
+        return;
+      }
+      
+      const userId = localStorage.getItem("userId");
+      if (!userId) {
+        alert(lang === "en" ? "You must be logged in" : "Vous devez être connecté");
+        return;
+      }
+      
+      // Fetch user's discord ID
+      const userResponse = await fetch(`https://rematchguidebackend.onrender.com/api/user/data?user_id=${userId}`);
+      const userData = await userResponse.json() as { user?: { discord_id?: string } };
+      
+      if (!userData.user?.discord_id) {
+        alert(lang === "en" ? "Discord ID not found" : "ID Discord non trouvé");
+        return;
+      }
+      
+      // Create team using API
+      const response = await fetch("https://rematchguidebackend.onrender.com/api/teams/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          teamname: newTeamName,
+          Team_Description: newTeamDescription,
+          Team_Image_Url: newTeamLogo,
+          captain_discordId: userData.user.discord_id
+        }),
+      });
+      
+      const data = await response.json() as { success?: boolean; message?: string };
+      
+      if (data.success) {
+        // Reset form and close dialog
+        setNewTeamName("");
+        setNewTeamDescription("");
+        setNewTeamLogo("");
+        setCreateTeamOpen(false);
+        
+        // Refresh teams (you would implement this function)
+        // fetchTeams(userData.user.discord_id);
+        
+        alert(lang === "en" ? "Team created successfully!" : "Équipe créée avec succès !");
+      } else {
+        alert(data.message || (lang === "en" ? "Failed to create team" : "Échec de la création de l'équipe"));
+      }
+    } catch (error) {
+      console.error("Error creating team:", error);
+      alert(lang === "en" ? "An error occurred" : "Une erreur s'est produite");
+    }
   };
 
   return (
@@ -292,19 +317,25 @@ export default function ProfilePage() {
                       <div className="flex flex-col items-center gap-4 mb-2">
                         <div className="relative">
                           <Image 
-                            src="/api/placeholder/100/100"
+                            src={newTeamLogo}
                             alt="Team Logo" 
                             width={100} 
                             height={100} 
                             className="rounded-lg border-2 border-gray-300 dark:border-gray-600"
                           />
-                          <button className="absolute bottom-0 right-0 bg-blue-500 text-white p-1 rounded-full">
-                            <PlusCircle size={16} />
-                          </button>
                         </div>
-                        <span className="text-sm text-gray-500 dark:text-gray-400">
-                          {t.teamLogo}
-                        </span>
+                        <div className="w-full">
+                          <label className="block text-sm font-medium mb-1">
+                            {t.teamLogo}
+                          </label>
+                          <input 
+                            type="text"
+                            value={newTeamLogo}
+                            onChange={(e) => setNewTeamLogo(e.target.value)}
+                            placeholder={t.enterLogoUrl}
+                            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                          />
+                        </div>
                       </div>
                       
                       <div className="grid gap-4">
@@ -314,6 +345,8 @@ export default function ProfilePage() {
                           </label>
                           <input 
                             type="text"
+                            value={newTeamName}
+                            onChange={(e) => setNewTeamName(e.target.value)}
                             className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
                           />
                         </div>
@@ -324,6 +357,8 @@ export default function ProfilePage() {
                           </label>
                           <textarea 
                             rows={3}
+                            value={newTeamDescription}
+                            onChange={(e) => setNewTeamDescription(e.target.value)}
                             className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
                           ></textarea>
                         </div>
@@ -332,12 +367,18 @@ export default function ProfilePage() {
                       <div className="flex justify-end gap-3 mt-4">
                         <button 
                           className="px-4 py-2 bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
-                          onClick={() => setCreateTeamOpen(false)}
+                          onClick={() => {
+                            setCreateTeamOpen(false);
+                            setNewTeamName("");
+                            setNewTeamDescription("");
+                            setNewTeamLogo("");
+                          }}
                         >
                           {t.cancel}
                         </button>
                         <button 
                           className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                          onClick={handleCreateTeam}
                         >
                           {t.create}
                         </button>
@@ -471,53 +512,11 @@ export default function ProfilePage() {
                               
                               <div className="flex justify-end gap-3 mt-2">
                                 {team.role === "captain" && (
-                                  <>
-                                    {!showInviteInput ? (
-                                      <button 
-                                        className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                                        onClick={() => setShowInviteInput(true)}
-                                      >
-                                        <UserPlus size={16} className="mr-2" />
-                                        {t.invite}
-                                      </button>
-                                    ) : (
-                                      <div className="flex flex-col w-full">
-                                        {inviteMessage.text && (
-                                          <div className={`text-sm p-2 mb-2 rounded ${
-                                            inviteMessage.type === "success" 
-                                              ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200" 
-                                              : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
-                                          }`}>
-                                            {inviteMessage.text}
-                                          </div>
-                                        )}
-                                        <div className="flex items-center gap-2">
-                                          <input
-                                            type="text"
-                                            value={discordUsername}
-                                            onChange={(e) => setDiscordUsername(e.target.value)}
-                                            placeholder={t.enterDiscordName}
-                                            className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                                          />
-                                          <button
-                                            onClick={handleInvite}
-                                            className="px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-                                          >
-                                            {t.send}
-                                          </button>
-                                          <button
-                                            onClick={() => {
-                                              setShowInviteInput(false);
-                                              setDiscordUsername("");
-                                            }}
-                                            className="px-3 py-2 bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
-                                          >
-                                            {t.cancel}
-                                          </button>
-                                        </div>
-                                      </div>
-                                    )}
-                                  </>
+                                  <button 
+                                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                                  >
+                                    {t.settings}
+                                  </button>
                                 )}
                                 <button 
                                   className="px-4 py-2 bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
