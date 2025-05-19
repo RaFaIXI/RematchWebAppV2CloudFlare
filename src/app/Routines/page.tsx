@@ -820,7 +820,7 @@ const openVideoModal = (id: string, title: string) => {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Login Required Modal */}
-      {showLoginModal && (
+    {showLoginModal && !isEmbeddedRematchFrance && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
           <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-md mx-4 p-6 shadow-xl">
             <div className="text-center mb-6">
