@@ -60,8 +60,6 @@ export default function ProfilePage() {
       noInvitations: "You don't have any pending invitations.",
       accept: "Accept",
       decline: "Decline",
-      invitedBy: "Invited by",
-      invitedOn: "Invited on",
       teamName: "Team Name",
       teamDescription: "Team Description",
       createNewTeam: "Create New Team",
@@ -96,8 +94,6 @@ export default function ProfilePage() {
       noInvitations: "Vous n'avez pas d'invitations en attente.",
       accept: "Accepter",
       decline: "Refuser",
-      invitedBy: "Invité par",
-      invitedOn: "Invité le",
       teamName: "Nom de l'Équipe",
       teamDescription: "Description de l'Équipe",
       createNewTeam: "Créer une Nouvelle Équipe",
@@ -165,16 +161,12 @@ export default function ProfilePage() {
       id: 101,
       teamName: "Tactical Squad",
       teamLogo: "/api/placeholder/50/50",
-      invitedBy: "NovaX",
-      invitedOn: "2025-05-15",
       memberCount: 12
     },
     {
       id: 102,
       teamName: "Victory Esports",
       teamLogo: "/api/placeholder/50/50",
-      invitedBy: "EliteGamer42",
-      invitedOn: "2025-05-17",
       memberCount: 7
     }
   ];
@@ -477,13 +469,6 @@ export default function ProfilePage() {
                           <div>
                             <h4 className="font-medium text-gray-800 dark:text-white">{invitation.teamName}</h4>
                             <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-3 text-xs text-gray-500 dark:text-gray-400">
-                              <span>
-                                {t.invitedBy}: {invitation.invitedBy}
-                              </span>
-                              <span className="hidden sm:inline">•</span>
-                              <span>
-                                {t.invitedOn}: {new Date(invitation.invitedOn).toLocaleDateString()}
-                              </span>
                               <span className="hidden sm:inline">•</span>
                               <span className="flex items-center">
                                 <Users size={12} className="mr-1" /> 
