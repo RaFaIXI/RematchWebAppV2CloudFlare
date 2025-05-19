@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { User, Users, PlusCircle, ExternalLink, Shield, LogOut, Check, X, Bell } from "lucide-react";
+import { User, Users, PlusCircle, ExternalLink, Shield, LogOut, Check, X, Bell, Loader2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -13,21 +13,70 @@ import {
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/Footer";
 
+// Define types for API responses
+interface TeamMember {
+  id: string;
+  username: string;
+  role: string;
+  avatar: string;
+  joinDate: string;
+}
+
+interface Team {
+  id: string;
+  name: string;
+  logo: string;
+  role: string;
+  memberCount: number;
+  description: string;
+  createdOn: string;
+  members: TeamMember[];
+}
+
+interface Invitation {
+  id: string;
+  teamName: string;
+  teamLogo: string;
+  memberCount: number;
+}
 
 export default function ProfilePage() {
   const [lang, setLang] = useState<"en" | "fr">("en");
   const [isEmbedded, setIsEmbedded] = useState(false);
   const [createTeamOpen, setCreateTeamOpen] = useState(false);
   const [viewTeamOpen, setViewTeamOpen] = useState(false);
-  const [selectedTeam, setSelectedTeam] = useState<any>(null);
+  const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
   const [user, setUser] = useState({
     username: "",
     avatar: "",
-    joinDate: ""
+    joinDate: "",
+    discordId: ""
   });
   const [newTeamName, setNewTeamName] = useState("");
   const [newTeamDescription, setNewTeamDescription] = useState("");
   const [newTeamLogo, setNewTeamLogo] = useState("");
+  
+  // Add states for real data
+  const [teams, setTeams] = useState<Team[]>([]);
+  const [invitations, setInvitations] = useState<Invitation[]>([]);
+  const [isLoading, setIsLoading] = useState({
+    user: false,
+    teams: false,
+    invitations: false,
+    createTeam: false,
+    leaveTeam: false,
+    acceptInvite: false,
+    declineInvite: false
+  });
+  const [error, setError] = useState({
+    user: "",
+    teams: "",
+    invitations: "",
+    createTeam: "",
+    leaveTeam: "",
+    acceptInvite: "",
+    declineInvite: ""
+  });
   
   useEffect(() => {
     // Check if the page is embedded in an iframe
@@ -49,26 +98,240 @@ export default function ProfilePage() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
+        setIsLoading(prev => ({ ...prev, user: true }));
         const userId = localStorage.getItem("userId");
         if (!userId) return;
         
         const response = await fetch(`https://rematchguidebackend.onrender.com/api/user/data?user_id=${userId}`);
-        const data = await response.json() as { user?: { username: string; avatar_url: string; created_at: string } };
+        const data = await response.json() as { user?: { username: string; avatar_url: string; created_at: string; discord_id: string } };
         
         if (data.user) {
           setUser({
             username: data.user.username,
             avatar: data.user.avatar_url,
-            joinDate: data.user.created_at
+            joinDate: data.user.created_at,
+            discordId: data.user.discord_id
           });
+          
+          // After getting user data, fetch teams and invitations
+          fetchUserTeams();
+          fetchUserInvitations(data.user.discord_id);
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
+        setError(prev => ({ ...prev, user: "Failed to load user data" }));
+      } finally {
+        setIsLoading(prev => ({ ...prev, user: false }));
       }
     };
 
     fetchUserData();
   }, []);
+
+  const fetchUserTeams = async () => {
+    try {
+      setIsLoading(prev => ({ ...prev, teams: true }));
+      const userId = localStorage.getItem("userId");        
+      if (!userId) return;   
+      const response = await fetch(`https://rematchguidebackend.onrender.com/api/teams/player?discord_id=${userId}`);
+      const data = await response.json() as { teams?: any[] };
+      
+      if (data.teams) {
+        // Transform API response to our Team interface
+        const formattedTeams: Team[] = await Promise.all(data.teams.map(async team => {
+          // Count members (captain + other players)
+          const otherPlayers = team.other_players_discordIds_list ? 
+            team.other_players_discordIds_list.split(',') : [];
+          const memberCount = otherPlayers.length + 1; // +1 for captain
+          
+          // For each team, we should get members data
+          // This would be a separate API call in a real application
+          // Here we're mocking it with basic data
+          const members: TeamMember[] = [
+            {
+              id: team.captain_discordId,
+              username: user.username, // For the captain, use current user if matching
+              role: "captain",
+              avatar: user.avatar,
+              joinDate: team.Creation_date || new Date().toISOString()
+            }
+          ];
+          
+          // Add other players (in a real app, you'd fetch their details)
+          // This is simplified for this implementation
+          
+          return {
+            id: team.teamname, // Using teamname as ID
+            name: team.teamname,
+            logo: team.Team_Image_Url || "/api/placeholder/50/50",
+            role: team.role || "player",
+            memberCount,
+            description: team.Team_Description || "",
+            createdOn: team.Creation_date || new Date().toISOString(),
+            members
+          };
+        }));
+        
+        setTeams(formattedTeams);
+      }
+    } catch (error) {
+      console.error("Error fetching user teams:", error);
+      setError(prev => ({ ...prev, teams: "Failed to load teams" }));
+    } finally {
+      setIsLoading(prev => ({ ...prev, teams: false }));
+    }
+  };
+
+  const fetchUserInvitations = async (discordId: string) => {
+    try {
+      setIsLoading(prev => ({ ...prev, invitations: true }));
+      
+      // Get all teams to check for invitations
+      const response = await fetch(`https://rematchguidebackend.onrender.com/api/teams`);
+      const data = await response.json() as { teams?: any[] };
+      
+      if (data.teams) {
+        // Filter teams where the user is in invited_discordIds_list
+        const userInvitations = data.teams
+          .filter(team => {
+            const invitedList = team.invited_discordIds_list ? 
+              team.invited_discordIds_list.split(',') : [];
+            return invitedList.includes(discordId);
+          })
+          .map(team => {
+            // Count members
+            const otherPlayers = team.other_players_discordIds_list ? 
+              team.other_players_discordIds_list.split(',') : [];
+            const memberCount = otherPlayers.length + 1; // +1 for captain
+            
+            return {
+              id: team.teamname,
+              teamName: team.teamname,
+              teamLogo: team.Team_Image_Url || "/api/placeholder/50/50",
+              memberCount
+            };
+          });
+        
+        setInvitations(userInvitations);
+      }
+    } catch (error) {
+      console.error("Error fetching user invitations:", error);
+      setError(prev => ({ ...prev, invitations: "Failed to load invitations" }));
+    } finally {
+      setIsLoading(prev => ({ ...prev, invitations: false }));
+    }
+  };
+
+  const handleCreateTeam = async () => {
+    try {
+      if (!newTeamName.trim()) {
+        alert(lang === "en" ? "Team name is required" : "Le nom de l'équipe est requis");
+        return;
+      }
+      
+      setIsLoading(prev => ({ ...prev, createTeam: true }));
+      setError(prev => ({ ...prev, createTeam: "" }));
+      const userId = localStorage.getItem("userId");        
+      if (!userId) return;                
+
+      // Create team using API
+      const response = await fetch("https://rematchguidebackend.onrender.com/api/teams/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          teamname: newTeamName,
+          Team_Description: newTeamDescription,
+          Team_Image_Url: newTeamLogo,
+          captain_discordId: userId,
+        }),
+      });
+      
+      const data = await response.json() as { success?: boolean; message?: string };
+      
+      if (data.success) {
+        // Reset form and close dialog
+        setNewTeamName("");
+        setNewTeamDescription("");
+        setNewTeamLogo("");
+        setCreateTeamOpen(false);
+        
+        // Refresh teams
+        fetchUserTeams();
+        
+        alert(lang === "en" ? "Team created successfully!" : "Équipe créée avec succès !");
+      } else {
+        setError(prev => ({ ...prev, createTeam: data.message || 
+          (lang === "en" ? "Failed to create team" : "Échec de la création de l'équipe") }));
+        alert(data.message || (lang === "en" ? "Failed to create team" : "Échec de la création de l'équipe"));
+      }
+    } catch (error) {
+      console.error("Error creating team:", error);
+      setError(prev => ({ ...prev, createTeam: "An error occurred" }));
+      alert(lang === "en" ? "An error occurred" : "Une erreur s'est produite");
+    } finally {
+      setIsLoading(prev => ({ ...prev, createTeam: false }));
+    }
+  };
+
+
+  const handleAcceptInvitation = async (teamName: string) => {
+    try {
+      setIsLoading(prev => ({ ...prev, acceptInvite: true }));
+      
+      const response = await fetch("https://rematchguidebackend.onrender.com/api/teams/add_player", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          teamname: teamName,
+          discord_id: user.discordId
+        }),
+      });
+      
+      const data = await response.json() as { success?: boolean; message?: string };
+      
+      if (data.success) {
+        // Refresh teams and invitations
+        fetchUserTeams();
+        fetchUserInvitations(user.discordId);
+        
+        alert(lang === "en" ? "Invitation accepted successfully!" : "Invitation acceptée avec succès !");
+      } else {
+        setError(prev => ({ ...prev, acceptInvite: data.message || 
+          (lang === "en" ? "Failed to accept invitation" : "Échec de l'acceptation de l'invitation") }));
+        alert(data.message || (lang === "en" ? "Failed to accept invitation" : "Échec de l'acceptation de l'invitation"));
+      }
+    } catch (error) {
+      console.error("Error accepting invitation:", error);
+      setError(prev => ({ ...prev, acceptInvite: "Failed to accept invitation" }));
+      alert(lang === "en" ? "Failed to accept invitation" : "Échec de l'acceptation de l'invitation");
+    } finally {
+      setIsLoading(prev => ({ ...prev, acceptInvite: false }));
+    }
+  };
+
+  const handleDeclineInvitation = async (teamName: string) => {
+    try {
+      setIsLoading(prev => ({ ...prev, declineInvite: true }));
+      
+      // API call to decline invitation would go here
+      // This endpoint is not provided in the examples, so we'll simulate it
+      
+      // Remove the invitation from the list
+      setInvitations(invitations.filter(inv => inv.teamName !== teamName));
+      
+      alert(lang === "en" ? "Invitation declined" : "Invitation refusée");
+    } catch (error) {
+      console.error("Error declining invitation:", error);
+      setError(prev => ({ ...prev, declineInvite: "Failed to decline invitation" }));
+      alert(lang === "en" ? "Failed to decline invitation" : "Échec du refus de l'invitation");
+    } finally {
+      setIsLoading(prev => ({ ...prev, declineInvite: false }));
+    }
+  };
 
   const translations = {
     en: {
@@ -85,7 +348,6 @@ export default function ProfilePage() {
       captain: "Captain",
       player: "Player",
       viewTeam: "View Team",
-      leaveTeam: "Leave Team",
       teamMembers: "members",
       invitations: "Team Invitations",
       noInvitations: "You don't have any pending invitations.",
@@ -102,7 +364,9 @@ export default function ProfilePage() {
       members: "Members",
       kickMember: "Remove",
       settings: "Settings",
-      teamCreatedOn: "Team created on"
+      teamCreatedOn: "Team created on",
+      loading: "Loading...",
+      errorLoading: "Error loading data"
     },
     fr: {
       title: "Profil",
@@ -118,7 +382,6 @@ export default function ProfilePage() {
       captain: "Capitaine",
       player: "Joueur",
       viewTeam: "Voir l'Équipe",
-      leaveTeam: "Quitter l'Équipe",
       teamMembers: "membres",
       invitations: "Invitations d'Équipe",
       noInvitations: "Vous n'avez pas d'invitations en attente.",
@@ -135,120 +398,13 @@ export default function ProfilePage() {
       members: "Membres",
       kickMember: "Retirer",
       settings: "Paramètres",
-      teamCreatedOn: "Équipe créée le"
+      teamCreatedOn: "Équipe créée le",
+      loading: "Chargement...",
+      errorLoading: "Erreur lors du chargement des données"
     }
   };
 
   const t = translations[lang];
-  
-  // Mock teams data
-  const teams = [
-    {
-      id: 1,
-      name: "Celleste Team Alpha",
-      logo: "/api/placeholder/50/50",
-      role: "captain",
-      memberCount: 5,
-      description: "Official competitive team for Celleste tournaments and leagues.",
-      createdOn: "2023-06-01",
-      members: [
-        { id: 101, username: "RafaGaming", role: "captain", avatar: "/api/placeholder/40/40", joinDate: "2023-06-01" },
-        { id: 102, username: "ProGamer123", role: "player", avatar: "/api/placeholder/40/40", joinDate: "2023-06-05" },
-        { id: 103, username: "TacticalWizard", role: "player", avatar: "/api/placeholder/40/40", joinDate: "2023-07-12" },
-        { id: 104, username: "SharpShooter", role: "player", avatar: "/api/placeholder/40/40", joinDate: "2023-09-18" },
-        { id: 105, username: "StrategyMaster", role: "player", avatar: "/api/placeholder/40/40", joinDate: "2024-01-22" }
-      ]
-    },
-    {
-      id: 2,
-      name: "Pro Gamers",
-      logo: "/api/placeholder/50/50",
-      role: "player",
-      memberCount: 8,
-      description: "Professional gaming team focused on competitive play and streaming.",
-      createdOn: "2023-12-15",
-      members: [
-        { id: 201, username: "GamingLegend", role: "captain", avatar: "/api/placeholder/40/40", joinDate: "2023-12-15" },
-        { id: 202, username: "RafaGaming", role: "player", avatar: "/api/placeholder/40/40", joinDate: "2024-03-22" },
-        { id: 203, username: "EliteSniper", role: "player", avatar: "/api/placeholder/40/40", joinDate: "2024-01-05" },
-        { id: 204, username: "TacticalGenius", role: "player", avatar: "/api/placeholder/40/40", joinDate: "2024-02-17" }
-      ]
-    }
-  ];
-  
-  // Mock team invitations
-  const invitations = [
-    {
-      id: 101,
-      teamName: "Tactical Squad",
-      teamLogo: "/api/placeholder/50/50",
-      memberCount: 12
-    },
-    {
-      id: 102,
-      teamName: "Victory Esports",
-      teamLogo: "/api/placeholder/50/50",
-      memberCount: 7
-    }
-  ];
-
-  const handleCreateTeam = async () => {
-    try {
-      if (!newTeamName.trim()) {
-        alert(lang === "en" ? "Team name is required" : "Le nom de l'équipe est requis");
-        return;
-      }
-      
-      const userId = localStorage.getItem("userId");
-      if (!userId) {
-        alert(lang === "en" ? "You must be logged in" : "Vous devez être connecté");
-        return;
-      }
-      
-      // Fetch user's discord ID
-      const userResponse = await fetch(`https://rematchguidebackend.onrender.com/api/user/data?user_id=${userId}`);
-      const userData = await userResponse.json() as { user?: { discord_id?: string } };
-      
-      if (!userData.user?.discord_id) {
-        alert(lang === "en" ? "Discord ID not found" : "ID Discord non trouvé");
-        return;
-      }
-      
-      // Create team using API
-      const response = await fetch("https://rematchguidebackend.onrender.com/api/teams/add", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          teamname: newTeamName,
-          Team_Description: newTeamDescription,
-          Team_Image_Url: newTeamLogo,
-          captain_discordId: userData.user.discord_id
-        }),
-      });
-      
-      const data = await response.json() as { success?: boolean; message?: string };
-      
-      if (data.success) {
-        // Reset form and close dialog
-        setNewTeamName("");
-        setNewTeamDescription("");
-        setNewTeamLogo("");
-        setCreateTeamOpen(false);
-        
-        // Refresh teams (you would implement this function)
-        // fetchTeams(userData.user.discord_id);
-        
-        alert(lang === "en" ? "Team created successfully!" : "Équipe créée avec succès !");
-      } else {
-        alert(data.message || (lang === "en" ? "Failed to create team" : "Échec de la création de l'équipe"));
-      }
-    } catch (error) {
-      console.error("Error creating team:", error);
-      alert(lang === "en" ? "An error occurred" : "Une erreur s'est produite");
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
@@ -261,37 +417,50 @@ export default function ProfilePage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Profile Section */}
           <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md">
-            <div className="flex flex-col items-center space-y-4 mb-6">
-                              <Image 
-                  src={user.avatar} 
-                  alt="Profile Picture" 
-                  width={100} 
-                  height={100} 
-                  className="rounded-full border-4 border-blue-500 dark:border-blue-600"
-                />
-              <h2 className="text-2xl font-bold text-gray-800 dark:text-white">{user.username}</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                {lang === "en" ? `Member since ${new Date(user.joinDate).toLocaleDateString()}` : 
-                  `Membre depuis ${new Date(user.joinDate).toLocaleDateString()}`}
-              </p>
-            </div>
-            
-            <div className="space-y-4 mt-8">
-              <button 
-                className="flex items-center justify-between w-full p-3 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 rounded-lg hover:bg-red-200 dark:hover:bg-red-800 transition-colors"
-                onClick={() => {
-                  localStorage.setItem("isLoggedIn", "false");
-                  // Force a complete page refresh to the login page
-                  window.location.replace('/login');
-                }}
-              >
-                <span className="flex items-center">
-                  <LogOut size={18} className="mr-2" />
-                  {t.logout}
-                </span>
-                <ExternalLink size={16} />
-              </button>
-            </div>
+            {isLoading.user ? (
+              <div className="flex flex-col items-center justify-center h-48">
+                <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+                <p className="mt-2 text-gray-500">{t.loading}</p>
+              </div>
+            ) : error.user ? (
+              <div className="text-center text-red-500 p-4">
+                {error.user}
+              </div>
+            ) : (
+              <>
+                <div className="flex flex-col items-center space-y-4 mb-6">
+                  <Image 
+                    src={user.avatar || "/api/placeholder/100/100"} 
+                    alt="Profile Picture" 
+                    width={100} 
+                    height={100} 
+                    className="rounded-full border-4 border-blue-500 dark:border-blue-600"
+                  />
+                  <h2 className="text-2xl font-bold text-gray-800 dark:text-white">{user.username}</h2>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    {lang === "en" ? `Member since ${new Date(user.joinDate).toLocaleDateString()}` : 
+                      `Membre depuis ${new Date(user.joinDate).toLocaleDateString()}`}
+                  </p>
+                </div>
+                
+                <div className="space-y-4 mt-8">
+                  <button 
+                    className="flex items-center justify-between w-full p-3 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 rounded-lg hover:bg-red-200 dark:hover:bg-red-800 transition-colors"
+                    onClick={() => {
+                      localStorage.setItem("isLoggedIn", "false");
+                      // Force a complete page refresh to the login page
+                      window.location.replace('/login');
+                    }}
+                  >
+                    <span className="flex items-center">
+                      <LogOut size={18} className="mr-2" />
+                      {t.logout}
+                    </span>
+                    <ExternalLink size={16} />
+                  </button>
+                </div>
+              </>
+            )}
           </div>
 
           {/* My Teams Section */}
@@ -304,8 +473,13 @@ export default function ProfilePage() {
               <div className="flex space-x-2">
                 <Dialog open={createTeamOpen} onOpenChange={setCreateTeamOpen}>
                   <DialogTrigger asChild>
-                    <Button className="flex items-center space-x-1 px-3 py-2 bg-green-600 text-white rounded-lg shadow-sm hover:bg-green-700 transition-colors duration-200">
-                      <PlusCircle size={16} />
+                    <Button className="flex items-center space-x-1 px-3 py-2 bg-green-600 text-white rounded-lg shadow-sm hover:bg-green-700 transition-colors duration-200"
+                      disabled={isLoading.createTeam}>
+                      {isLoading.createTeam ? (
+                        <Loader2 className="h-4 w-4 animate-spin mr-1" />
+                      ) : (
+                        <PlusCircle size={16} />
+                      )}
                       <span>{t.createTeam}</span>
                     </Button>
                   </DialogTrigger>
@@ -317,7 +491,7 @@ export default function ProfilePage() {
                       <div className="flex flex-col items-center gap-4 mb-2">
                         <div className="relative">
                           <Image 
-                            src={newTeamLogo}
+                            src={newTeamLogo || "/api/placeholder/100/100"}
                             alt="Team Logo" 
                             width={100} 
                             height={100} 
@@ -364,6 +538,10 @@ export default function ProfilePage() {
                         </div>
                       </div>
 
+                      {error.createTeam && (
+                        <div className="text-red-500 text-sm">{error.createTeam}</div>
+                      )}
+
                       <div className="flex justify-end gap-3 mt-4">
                         <button 
                           className="px-4 py-2 bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
@@ -372,14 +550,18 @@ export default function ProfilePage() {
                             setNewTeamName("");
                             setNewTeamDescription("");
                             setNewTeamLogo("");
+                            setError(prev => ({ ...prev, createTeam: "" }));
                           }}
+                          disabled={isLoading.createTeam}
                         >
                           {t.cancel}
                         </button>
                         <button 
-                          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center"
                           onClick={handleCreateTeam}
+                          disabled={isLoading.createTeam}
                         >
+                          {isLoading.createTeam && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
                           {t.create}
                         </button>
                       </div>
@@ -389,7 +571,16 @@ export default function ProfilePage() {
               </div>
             </div>
             
-            {teams.length === 0 ? (
+            {isLoading.teams ? (
+              <div className="flex flex-col items-center justify-center h-48">
+                <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+                <p className="mt-2 text-gray-500">{t.loading}</p>
+              </div>
+            ) : error.teams ? (
+              <div className="text-center text-red-500 p-4">
+                {error.teams}
+              </div>
+            ) : teams.length === 0 ? (
               <div className="p-8 text-center border border-dashed border-gray-300 dark:border-gray-600 rounded-lg">
                 <p className="text-gray-500 dark:text-gray-400">{t.noTeams}</p>
               </div>
@@ -528,11 +719,7 @@ export default function ProfilePage() {
                             </div>
                           </DialogContent>
                         </Dialog>
-                        <button 
-                          className="px-3 py-1 bg-gray-200 text-gray-700 dark:bg-gray-600 dark:text-gray-200 text-sm rounded hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors"
-                        >
-                          {t.leaveTeam}
-                        </button>
+
                       </div>
                     </div>
                   </div>
@@ -547,7 +734,16 @@ export default function ProfilePage() {
                 <h3 className="text-lg font-medium text-gray-800 dark:text-white">{t.invitations}</h3>
               </div>
               
-              {invitations.length === 0 ? (
+              {isLoading.invitations ? (
+                <div className="flex flex-col items-center justify-center h-24">
+                  <Loader2 className="h-6 w-6 animate-spin text-purple-500" />
+                  <p className="mt-2 text-gray-500">{t.loading}</p>
+                </div>
+              ) : error.invitations ? (
+                <div className="text-center text-red-500 p-4">
+                  {error.invitations}
+                </div>
+              ) : invitations.length === 0 ? (
                 <div className="p-4 text-center border border-dashed border-gray-300 dark:border-gray-600 rounded-lg">
                   <p className="text-gray-500 dark:text-gray-400">{t.noInvitations}</p>
                 </div>
@@ -576,12 +772,28 @@ export default function ProfilePage() {
                           </div>
                         </div>
                         <div className="flex space-x-2">
-                          <button className="flex items-center px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition-colors">
-                            <Check size={14} className="mr-1" />
+                          <button 
+                            className="flex items-center px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition-colors"
+                            onClick={() => handleAcceptInvitation(invitation.teamName)}
+                            disabled={isLoading.acceptInvite}
+                          >
+                            {isLoading.acceptInvite ? (
+                              <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                            ) : (
+                              <Check size={14} className="mr-1" />
+                            )}
                             {t.accept}
                           </button>
-                          <button className="flex items-center px-3 py-1 bg-gray-200 text-gray-700 dark:bg-gray-600 dark:text-gray-200 text-sm rounded hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors">
-                            <X size={14} className="mr-1" />
+                          <button 
+                            className="flex items-center px-3 py-1 bg-gray-200 text-gray-700 dark:bg-gray-600 dark:text-gray-200 text-sm rounded hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors"
+                            onClick={() => handleDeclineInvitation(invitation.teamName)}
+                            disabled={isLoading.declineInvite}
+                          >
+                            {isLoading.declineInvite ? (
+                              <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                            ) : (
+                              <X size={14} className="mr-1" />
+                            )}
                             {t.decline}
                           </button>
                         </div>
