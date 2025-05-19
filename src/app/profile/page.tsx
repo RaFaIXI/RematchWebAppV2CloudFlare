@@ -20,6 +20,11 @@ export default function ProfilePage() {
   const [createTeamOpen, setCreateTeamOpen] = useState(false);
   const [viewTeamOpen, setViewTeamOpen] = useState(false);
   const [selectedTeam, setSelectedTeam] = useState<any>(null);
+  const [user, setUser] = useState({
+    username: "",
+    avatar: "/api/placeholder/100/100",
+    joinDate: ""
+  });
   
   useEffect(() => {
     // Check if the page is embedded in an iframe
@@ -36,6 +41,30 @@ export default function ProfilePage() {
         setLang(storedLang);
       }
     }
+  }, []);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const userId = localStorage.getItem("userId");
+        if (!userId) return;
+        
+        const response = await fetch(`https://rematchguidebackend.onrender.com/api/user/data?user_id=${userId}`);
+        const data = await response.json() as { user?: { username: string; avatar_url: string; created_at: string } };
+        
+        if (data.user) {
+          setUser({
+            username: data.user.username,
+            avatar: data.user.avatar_url,
+            joinDate: data.user.created_at
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUserData();
   }, []);
 
   const translations = {
@@ -108,13 +137,6 @@ export default function ProfilePage() {
   };
 
   const t = translations[lang];
-  
-  // Mock user data
-  const user = {
-    username: "RafaGaming",
-    avatar: "/api/placeholder/100/100",
-    joinDate: "2023-05-15"
-  };
   
   // Mock teams data
   const teams = [
@@ -196,6 +218,11 @@ export default function ProfilePage() {
             <div className="space-y-4 mt-8">
               <button 
                 className="flex items-center justify-between w-full p-3 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 rounded-lg hover:bg-red-200 dark:hover:bg-red-800 transition-colors"
+                onClick={() => {
+                  localStorage.setItem("isLoggedIn", "false");
+                  // Force a complete page refresh to the login page
+                  window.location.replace('/login');
+                }}
               >
                 <span className="flex items-center">
                   <LogOut size={18} className="mr-2" />
