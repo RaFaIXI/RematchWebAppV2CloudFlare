@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { User, Users, PlusCircle, ExternalLink, Shield, LogOut, Check, X, Bell } from "lucide-react";
+import { User, Users, PlusCircle, ExternalLink, Shield, LogOut, Check, X, Bell, UserPlus } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -20,6 +20,9 @@ export default function ProfilePage() {
   const [createTeamOpen, setCreateTeamOpen] = useState(false);
   const [viewTeamOpen, setViewTeamOpen] = useState(false);
   const [selectedTeam, setSelectedTeam] = useState<any>(null);
+  const [discordUsername, setDiscordUsername] = useState("");
+  const [showInviteInput, setShowInviteInput] = useState(false);
+  const [inviteMessage, setInviteMessage] = useState({ text: "", type: "" });
   const [user, setUser] = useState({
     username: "",
     avatar: "/api/placeholder/100/100",
@@ -99,7 +102,13 @@ export default function ProfilePage() {
       members: "Members",
       kickMember: "Remove",
       settings: "Settings",
-      teamCreatedOn: "Team created on"
+      teamCreatedOn: "Team created on",
+      invite: "Invite Player",
+      discordUsername: "Discord Username",
+      send: "Send",
+      inviteSuccess: "Invitation sent!",
+      inviteError: "Failed to send invitation",
+      enterDiscordName: "Enter Discord username"
     },
     fr: {
       title: "Profil",
@@ -132,7 +141,13 @@ export default function ProfilePage() {
       members: "Membres",
       kickMember: "Retirer",
       settings: "Paramètres",
-      teamCreatedOn: "Équipe créée le"
+      teamCreatedOn: "Équipe créée le",
+      invite: "Inviter Joueur",
+      discordUsername: "Nom d'utilisateur Discord",
+      send: "Envoyer",
+      inviteSuccess: "Invitation envoyée !",
+      inviteError: "Échec de l'envoi de l'invitation",
+      enterDiscordName: "Entrez le nom d'utilisateur Discord"
     }
   };
 
@@ -188,6 +203,27 @@ export default function ProfilePage() {
       memberCount: 7
     }
   ];
+
+  const handleInvite = () => {
+    if (!discordUsername.trim()) return;
+    
+    // Here you would implement the actual API call to send the invitation
+    // This is just a mock implementation for demonstration
+    console.log(`Sending invite to ${discordUsername} for team ${selectedTeam?.name}`);
+    
+    // Show success message
+    setInviteMessage({ 
+      text: t.inviteSuccess, 
+      type: "success" 
+    });
+    
+    // Reset input and hide after delay
+    setTimeout(() => {
+      setDiscordUsername("");
+      setShowInviteInput(false);
+      setInviteMessage({ text: "", type: "" });
+    }, 2000);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
@@ -435,11 +471,53 @@ export default function ProfilePage() {
                               
                               <div className="flex justify-end gap-3 mt-2">
                                 {team.role === "captain" && (
-                                  <button 
-                                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                                  >
-                                    {t.settings}
-                                  </button>
+                                  <>
+                                    {!showInviteInput ? (
+                                      <button 
+                                        className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                                        onClick={() => setShowInviteInput(true)}
+                                      >
+                                        <UserPlus size={16} className="mr-2" />
+                                        {t.invite}
+                                      </button>
+                                    ) : (
+                                      <div className="flex flex-col w-full">
+                                        {inviteMessage.text && (
+                                          <div className={`text-sm p-2 mb-2 rounded ${
+                                            inviteMessage.type === "success" 
+                                              ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200" 
+                                              : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
+                                          }`}>
+                                            {inviteMessage.text}
+                                          </div>
+                                        )}
+                                        <div className="flex items-center gap-2">
+                                          <input
+                                            type="text"
+                                            value={discordUsername}
+                                            onChange={(e) => setDiscordUsername(e.target.value)}
+                                            placeholder={t.enterDiscordName}
+                                            className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                                          />
+                                          <button
+                                            onClick={handleInvite}
+                                            className="px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                                          >
+                                            {t.send}
+                                          </button>
+                                          <button
+                                            onClick={() => {
+                                              setShowInviteInput(false);
+                                              setDiscordUsername("");
+                                            }}
+                                            className="px-3 py-2 bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                                          >
+                                            {t.cancel}
+                                          </button>
+                                        </div>
+                                      </div>
+                                    )}
+                                  </>
                                 )}
                                 <button 
                                   className="px-4 py-2 bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
