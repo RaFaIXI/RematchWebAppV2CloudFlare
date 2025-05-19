@@ -50,7 +50,6 @@ export default function ProfilePage() {
       editProfile: "Edit Profile",
       logout: "Logout",
       teamRole: "Role",
-      memberSince: "Member since",
       captain: "Captain",
       player: "Player",
       viewTeam: "View Team",
@@ -84,7 +83,6 @@ export default function ProfilePage() {
       editProfile: "Modifier le Profil",
       logout: "Déconnexion",
       teamRole: "Rôle",
-      memberSince: "Membre depuis",
       captain: "Capitaine",
       player: "Joueur",
       viewTeam: "Voir l'Équipe",
@@ -125,7 +123,6 @@ export default function ProfilePage() {
       name: "Celleste Team Alpha",
       logo: "/api/placeholder/50/50",
       role: "captain",
-      memberSince: "2023-06-10",
       memberCount: 5,
       description: "Official competitive team for Celleste tournaments and leagues.",
       createdOn: "2023-06-01",
@@ -142,7 +139,6 @@ export default function ProfilePage() {
       name: "Pro Gamers",
       logo: "/api/placeholder/50/50",
       role: "player",
-      memberSince: "2024-03-22",
       memberCount: 8,
       description: "Professional gaming team focused on competitive play and streaming.",
       createdOn: "2023-12-15",
@@ -312,9 +308,7 @@ export default function ProfilePage() {
                             <Users size={14} className="mr-1" /> 
                             {team.memberCount} {t.teamMembers}
                           </span>
-                          <span className="text-sm text-gray-500 dark:text-gray-400">
-                            {t.memberSince}: {new Date(team.memberSince).toLocaleDateString()}
-                          </span>
+
                         </div>
                       </div>
                     </div>
@@ -398,7 +392,7 @@ export default function ProfilePage() {
                                             {member.username}
                                           </p>
                                           <p className="text-xs text-gray-500 dark:text-gray-400">
-                                            {member.role === "captain" ? t.captain : t.player} • {t.memberSince} {new Date(member.joinDate).toLocaleDateString()}
+                                            {member.role === "captain" ? t.captain : t.player}
                                           </p>
                                         </div>
                                       </div>
