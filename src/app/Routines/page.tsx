@@ -850,7 +850,7 @@ const openVideoModal = (id: string, title: string) => {
       )}
 
       {/* Only render the main content if logged in */}
-      {!showLoginModal && (
+    {(!showLoginModal || isEmbeddedRematchFrance) && (
         <>
           <main className="flex-1">
             <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-b from-blue-50 to-white dark:from-blue-950 dark:to-background">
