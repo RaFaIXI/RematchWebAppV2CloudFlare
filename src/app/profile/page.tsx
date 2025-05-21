@@ -45,6 +45,7 @@ export default function ProfilePage() {
   const [isEmbedded, setIsEmbedded] = useState(false);
   const [createTeamOpen, setCreateTeamOpen] = useState(false);
   const [viewTeamOpen, setViewTeamOpen] = useState(false);
+  const [invitePlayerOpen, setInvitePlayerOpen] = useState(false);
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
   const [user, setUser] = useState({
     username: "",
@@ -55,6 +56,7 @@ export default function ProfilePage() {
   const [newTeamName, setNewTeamName] = useState("");
   const [newTeamDescription, setNewTeamDescription] = useState("");
   const [newTeamLogo, setNewTeamLogo] = useState("");
+  const [playerDiscordId, setPlayerDiscordId] = useState("");
   
   // Add states for real data
   const [teams, setTeams] = useState<Team[]>([]);
@@ -66,7 +68,9 @@ export default function ProfilePage() {
     createTeam: false,
     leaveTeam: false,
     acceptInvite: false,
-    declineInvite: false
+    declineInvite: false,
+    invitePlayer: false,
+    fetchMembers: false
   });
   const [error, setError] = useState({
     user: "",
@@ -75,7 +79,8 @@ export default function ProfilePage() {
     createTeam: "",
     leaveTeam: "",
     acceptInvite: "",
-    declineInvite: ""
+    declineInvite: "",
+    invitePlayer: ""
   });
   
   useEffect(() => {
@@ -115,7 +120,7 @@ export default function ProfilePage() {
           
           // After getting user data, fetch teams and invitations
           fetchUserTeams();
-          fetchUserInvitations(data.user.discord_id);
+          fetchUserInvitations(); // Modified: No need to pass discordId as param
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -182,9 +187,145 @@ export default function ProfilePage() {
     }
   };
 
-  const fetchUserInvitations = async (discordId: string) => {
+  // Modified: Fetch detailed user data for each team member with improved ID handling
+  const fetchTeamMembers = async (teamData: Team) => {
+    try {
+      setIsLoading(prev => ({ ...prev, fetchMembers: true }));
+      console.log("Fetching members for team:", teamData.name);
+      
+      // Get the team details including members
+      const response = await fetch(`https://rematchguidebackend.onrender.com/api/teams`);
+      const data = await response.json() as { teams?: any[] };
+      
+      if (data.teams) {
+        const team = data.teams.find(t => t.teamname === teamData.id);
+        
+        if (team) {
+          console.log("Found team in API data:", team.teamname);
+          // Array to hold all updated members
+          let updatedMembers: TeamMember[] = [];
+          
+          // Get captain info with detailed user data - ALWAYS treat ID as string
+          try {
+            const captainId = String(team.captain_discordId).trim();
+            console.log("Captain ID as string:", captainId);
+            const captainData = await fetchUserById(captainId);
+            updatedMembers.push({
+              id: captainId,
+              username: captainData?.username || captainId,
+              role: "captain",
+              avatar: captainData?.avatar || "/api/placeholder/32/32",
+              joinDate: team.Creation_date || new Date().toISOString()
+            });
+            console.log("Added captain to members list");
+          } catch (error) {
+            console.error("Error fetching captain data:", error);
+            // Add placeholder captain data on error
+            updatedMembers.push({
+              id: String(team.captain_discordId),
+              username: "Captain",
+              role: "captain",
+              avatar: "/api/placeholder/32/32",
+              joinDate: team.Creation_date || new Date().toISOString()
+            });
+          }
+          
+          // Add other players with detailed user data
+          const otherPlayers = team.other_players_discordIds_list ? 
+            team.other_players_discordIds_list.split(',').map((id: string) => String(id).trim()) : [];
+          
+          console.log("Other players count:", otherPlayers.length);
+          
+          if (otherPlayers.length > 0) {
+            // Fetch user data for each player in parallel
+            const otherMembersPromises = otherPlayers.map(async (playerId: string) => {
+              try {
+                console.log("Fetching player with ID:", playerId);
+                const playerData = await fetchUserById(playerId);
+                return {
+                  id: playerId,
+                  username: playerData?.username || playerId,
+                  role: "player",
+                  avatar: playerData?.avatar || "/api/placeholder/32/32",
+                  joinDate: team.Creation_date || new Date().toISOString()
+                };
+              } catch (error) {
+                console.error(`Error fetching data for player ${playerId}:`, error);
+                return {
+                  id: playerId,
+                  username: playerId,
+                  role: "player",
+                  avatar: "/api/placeholder/32/32",
+                  joinDate: team.Creation_date || new Date().toISOString()
+                };
+              }
+            });
+            
+            const otherMembers = await Promise.all(otherMembersPromises);
+            console.log("Fetched other members:", otherMembers.length);
+            updatedMembers = [...updatedMembers, ...otherMembers];
+          }
+          
+          console.log("Total members to display:", updatedMembers.length);
+          
+          // IMPORTANT: Always update the selected team state, don't conditionally check IDs
+          // This ensures we always get the fresh member data
+          setSelectedTeam({
+            ...teamData,
+            members: updatedMembers
+          });
+          
+          console.log("Updated selected team with members:", updatedMembers.length);
+        } else {
+          console.error("Team not found in API data:", teamData.id);
+        }
+      } else {
+        console.error("No teams data returned from API");
+      }
+    } catch (error) {
+      console.error("Error fetching team members:", error);
+    } finally {
+      setIsLoading(prev => ({ ...prev, fetchMembers: false }));
+    }
+  };
+
+  // Helper function to fetch user data by userId with improved string handling
+  const fetchUserById = async (userId: string) => {
+    try {
+      // Ensure userId is a string and properly trimmed
+      const cleanUserId = String(userId).trim();
+      console.log("Fetching user data for ID:", cleanUserId); // Debugging
+      
+      const response = await fetch(`https://rematchguidebackend.onrender.com/api/user/data?user_id=${cleanUserId}`);
+      
+      if (!response.ok) {
+        throw new Error(`Server responded with status: ${response.status}`);
+      }
+      
+      const data = await response.json() as { user?: { username: string; avatar_url: string; created_at: string; discord_id: string } };
+      
+      if (data.user) {
+        return {
+          username: data.user.username,
+          avatar: data.user.avatar_url,
+          joinDate: data.user.created_at,
+          discordId: data.user.discord_id
+        };
+      }
+      return null;
+    } catch (error) {
+      console.error(`Error fetching user data for ID ${userId}:`, error);
+      return null;
+    }
+  };
+
+  // Modified: Fetch invitations using userId from localStorage
+  const fetchUserInvitations = async () => {
     try {
       setIsLoading(prev => ({ ...prev, invitations: true }));
+      
+      const userId = localStorage.getItem("userId");
+      if (!userId) return;
       
       // Get all teams to check for invitations
       const response = await fetch(`https://rematchguidebackend.onrender.com/api/teams`);
@@ -196,7 +337,7 @@ export default function ProfilePage() {
           .filter(team => {
             const invitedList = team.invited_discordIds_list ? 
               team.invited_discordIds_list.split(',') : [];
-            return invitedList.includes(discordId);
+            return invitedList.includes(userId);
           })
           .map(team => {
             // Count members
@@ -280,6 +421,10 @@ export default function ProfilePage() {
     try {
       setIsLoading(prev => ({ ...prev, acceptInvite: true }));
       
+      const userId = localStorage.getItem("userId");
+      if (!userId) return;
+      
+      // First add the player to the team
       const response = await fetch("https://rematchguidebackend.onrender.com/api/teams/add_player", {
         method: "POST",
         headers: {
@@ -287,16 +432,31 @@ export default function ProfilePage() {
         },
         body: JSON.stringify({
           teamname: teamName,
-          discord_id: user.discordId
+          discord_id: userId
         }),
       });
       
       const data = await response.json() as { success?: boolean; message?: string };
       
       if (data.success) {
+        // Also explicitly remove the invitation from the backend
+        const removeInviteResponse = await fetch("https://rematchguidebackend.onrender.com/api/teams/del_invite", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            teamname: teamName,
+            discord_id: userId
+          }),
+        });
+        
+        // Remove invitation from the list
+        setInvitations(invitations.filter(inv => inv.teamName !== teamName));
+        
         // Refresh teams and invitations
         fetchUserTeams();
-        fetchUserInvitations(user.discordId);
+        fetchUserInvitations();
         
         alert(lang === "en" ? "Invitation accepted successfully!" : "Invitation acceptée avec succès !");
       } else {
@@ -317,19 +477,121 @@ export default function ProfilePage() {
     try {
       setIsLoading(prev => ({ ...prev, declineInvite: true }));
       
-      // API call to decline invitation would go here
-      // This endpoint is not provided in the examples, so we'll simulate it
+      const userId = localStorage.getItem("userId");
+      if (!userId) return;
       
-      // Remove the invitation from the list
-      setInvitations(invitations.filter(inv => inv.teamName !== teamName));
+      const response = await fetch("https://rematchguidebackend.onrender.com/api/teams/del_invite", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          teamname: teamName,
+          discord_id: userId // Using userId from localStorage instead of user.discordId
+        }),
+      });
       
-      alert(lang === "en" ? "Invitation declined" : "Invitation refusée");
+      const data = await response.json() as { success?: boolean; message?: string };
+      
+      if (data.success) {
+        // Remove invitation from the list
+        setInvitations(invitations.filter(inv => inv.teamName !== teamName));
+        
+        alert(lang === "en" ? "Invitation declined" : "Invitation refusée");
+      } else {
+        setError(prev => ({ ...prev, declineInvite: data.message || 
+          (lang === "en" ? "Failed to decline invitation" : "Échec du refus de l'invitation") }));
+        alert(data.message || (lang === "en" ? "Failed to decline invitation" : "Échec du refus de l'invitation"));
+      }
     } catch (error) {
       console.error("Error declining invitation:", error);
       setError(prev => ({ ...prev, declineInvite: "Failed to decline invitation" }));
       alert(lang === "en" ? "Failed to decline invitation" : "Échec du refus de l'invitation");
     } finally {
       setIsLoading(prev => ({ ...prev, declineInvite: false }));
+    }
+  };
+
+  const handleInvitePlayer = async () => {
+    try {
+      if (!playerDiscordId.trim() || !selectedTeam) {
+        alert(lang === "en" ? "Discord ID is required" : "L'ID Discord est requis");
+        return;
+      }
+      
+      setIsLoading(prev => ({ ...prev, invitePlayer: true }));
+      setError(prev => ({ ...prev, invitePlayer: "" }));
+      
+      // Ensure we're sending the Discord ID as a string
+      const stringDiscordId = String(playerDiscordId).trim();
+      console.log("Inviting player with ID:", stringDiscordId); // Debugging
+
+      const response = await fetch("https://rematchguidebackend.onrender.com/api/teams/add_player_invite", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          teamname: selectedTeam.name,
+          discord_id: stringDiscordId
+        }),
+      });
+      
+      const data = await response.json() as { success?: boolean; message?: string };
+      
+      if (data.success) {
+        // Reset form and close dialog
+        setPlayerDiscordId("");
+        setInvitePlayerOpen(false);
+        
+        alert(lang === "en" ? "Player invited successfully!" : "Joueur invité avec succès !");
+      } else {
+        setError(prev => ({ ...prev, invitePlayer: data.message || 
+          (lang === "en" ? "Failed to invite player" : "Échec de l'invitation du joueur") }));
+        alert(data.message || (lang === "en" ? "Failed to invite player" : "Échec de l'invitation du joueur"));
+      }
+    } catch (error) {
+      console.error("Error inviting player:", error);
+      setError(prev => ({ ...prev, invitePlayer: "An error occurred" }));
+      alert(lang === "en" ? "An error occurred" : "Une erreur s'est produite");
+    } finally {
+      setIsLoading(prev => ({ ...prev, invitePlayer: false }));
+    }
+  };
+
+  const handleKickMember = async (teamName: string, discordId: string) => {
+    try {
+      // Ensure we're sending the Discord ID as a string
+      const stringDiscordId = String(discordId).trim();
+      console.log("Kicking member with ID:", stringDiscordId); // Debugging
+
+      const response = await fetch("https://rematchguidebackend.onrender.com/api/teams/del_player", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          teamname: teamName,
+          discord_id: stringDiscordId
+        }),
+      });
+      
+      const data = await response.json() as { success?: boolean; message?: string };
+      
+      if (data.success) {
+        // Refresh team members
+        const team = teams.find(t => t.name === teamName);
+        if (team) {
+          fetchTeamMembers(team);
+        }
+        
+        alert(lang === "en" ? "Player removed successfully!" : "Joueur retiré avec succès !");
+      } else {
+        alert(data.message || (lang === "en" ? "Failed to remove player" : "Échec de la suppression du joueur"));
+      }
+    } catch (error) {
+      console.error("Error removing player:", error);
+      alert(lang === "en" ? "An error occurred" : "Une erreur s'est produite");
     }
   };
 
@@ -366,7 +628,11 @@ export default function ProfilePage() {
       settings: "Settings",
       teamCreatedOn: "Team created on",
       loading: "Loading...",
-      errorLoading: "Error loading data"
+      errorLoading: "Error loading data",
+      invitePlayer: "Invite Player",
+      playerDiscordId: "Player Discord ID",
+      enterDiscordId: "Enter Discord ID",
+      invite: "Invite",
     },
     fr: {
       title: "Profil",
@@ -400,7 +666,11 @@ export default function ProfilePage() {
       settings: "Paramètres",
       teamCreatedOn: "Équipe créée le",
       loading: "Chargement...",
-      errorLoading: "Erreur lors du chargement des données"
+      errorLoading: "Erreur lors du chargement des données",
+      invitePlayer: "Inviter un Joueur",
+      playerDiscordId: "ID Discord du Joueur",
+      enterDiscordId: "Entrer l'ID Discord",
+      invite: "Inviter",
     }
   };
 
@@ -621,18 +891,39 @@ export default function ProfilePage() {
                       </div>
                       <div className="flex space-x-2">
                         <Dialog 
-                          open={viewTeamOpen && selectedTeam?.id === team.id} 
+                          open={viewTeamOpen && selectedTeam?.id === team.id}
                           onOpenChange={(open) => {
-                            setViewTeamOpen(open);
-                            if (open) setSelectedTeam(team);
+                            if (open) {
+                              // First clear any existing data to avoid showing stale data
+                              setSelectedTeam(prevTeam => {
+                                if (prevTeam?.id !== team.id) {
+                                  // If switching teams, reset member data to avoid showing old members
+                                  return {
+                                    ...team,
+                                    members: [] // Clear members to avoid showing stale data
+                                  };
+                                }
+                                return prevTeam;
+                              });
+                              setViewTeamOpen(true);
+                              // Important: Pass the full team object directly to the fetch function
+                              // This prevents issues with state not being updated in time
+                              fetchTeamMembers(team);
+                            } else {
+                              setViewTeamOpen(false);
+                            }
                           }}
                         >
                           <DialogTrigger asChild>
                             <button 
                               className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors"
                               onClick={() => {
-                                setSelectedTeam(team);
-                                setViewTeamOpen(true);
+                                // When clicking, we prepare by setting the current team info immediately
+                                // This ensures we display at least basic team info while member details load
+                                setSelectedTeam({
+                                  ...team,
+                                  members: [] // Start with empty members array, will be populated by API call
+                                });
                               }}
                             >
                               {t.viewTeam}
@@ -668,46 +959,106 @@ export default function ProfilePage() {
                               
                               <div>
                                 <h3 className="text-lg font-medium mb-2">{t.members}</h3>
-                                <div className="space-y-2 max-h-60 overflow-y-auto pr-2">
-                                  {team.members.map((member) => (
-                                    <div 
-                                      key={member.id} 
-                                      className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg"
-                                    >
-                                      <div className="flex items-center space-x-3">
-                                        <Image 
-                                          src={member.avatar} 
-                                          alt={member.username} 
-                                          width={32} 
-                                          height={32} 
-                                          className="rounded-full"
-                                        />
-                                        <div>
-                                          <p className="font-medium text-gray-800 dark:text-white">
-                                            {member.username}
-                                          </p>
-                                          <p className="text-xs text-gray-500 dark:text-gray-400">
-                                            {member.role === "captain" ? t.captain : t.player}
-                                          </p>
+                                {isLoading.fetchMembers ? (
+                                  <div className="flex items-center justify-center h-40">
+                                    <Loader2 className="h-6 w-6 animate-spin text-blue-500" />
+                                  </div>
+                                ) : (
+                                  <div className="space-y-2 max-h-60 overflow-y-auto pr-2">
+                                    {selectedTeam?.members.map((member) => (
+                                      <div 
+                                        key={member.id} 
+                                        className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg"
+                                      >
+                                        <div className="flex items-center space-x-3">
+                                          <Image 
+                                            src={member.avatar} 
+                                            alt={member.username} 
+                                            width={32} 
+                                            height={32} 
+                                            className="rounded-full"
+                                          />
+                                          <div>
+                                            <p className="font-medium text-gray-800 dark:text-white">
+                                              {member.username}
+                                            </p>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                                              {member.role === "captain" ? t.captain : t.player}
+                                            </p>
+                                          </div>
                                         </div>
+                                        {team.role === "captain" && member.role !== "captain" && (
+                                          <button 
+                                            className="px-2 py-1 text-xs bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200 rounded hover:bg-red-200 dark:hover:bg-red-800 transition-colors"
+                                            onClick={() => handleKickMember(team.name, member.id)}
+                                          >
+                                            {t.kickMember}
+                                          </button>
+                                        )}
                                       </div>
-                                      {team.role === "captain" && member.role !== "captain" && (
-                                        <button className="px-2 py-1 text-xs bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200 rounded hover:bg-red-200 dark:hover:bg-red-800 transition-colors">
-                                          {t.kickMember}
-                                        </button>
-                                      )}
-                                    </div>
-                                  ))}
-                                </div>
+                                    ))}
+                                  </div>
+                                )}
                               </div>
                               
                               <div className="flex justify-end gap-3 mt-2">
                                 {team.role === "captain" && (
-                                  <button 
-                                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                                  >
-                                    {t.settings}
-                                  </button>
+                                  <Dialog open={invitePlayerOpen} onOpenChange={setInvitePlayerOpen}>
+                                    <DialogTrigger asChild>
+                                      <button 
+                                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                                      >
+                                        {t.invitePlayer}
+                                      </button>
+                                    </DialogTrigger>
+                                    <DialogContent className="sm:max-w-[500px]">
+                                      <DialogHeader>
+                                        <DialogTitle>{t.invitePlayer}</DialogTitle>
+                                      </DialogHeader>
+                                      <div className="grid gap-6 py-4">
+                                        <div className="grid gap-4">
+                                          <div>
+                                            <label className="block text-sm font-medium mb-1">
+                                              {t.playerDiscordId}
+                                            </label>
+                                            <input 
+                                              type="text"
+                                              value={playerDiscordId}
+                                              onChange={(e) => setPlayerDiscordId(e.target.value)}
+                                              placeholder={t.enterDiscordId}
+                                              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                                            />
+                                          </div>
+                                        </div>
+
+                                        {error.invitePlayer && (
+                                          <div className="text-red-500 text-sm">{error.invitePlayer}</div>
+                                        )}
+
+                                        <div className="flex justify-end gap-3 mt-4">
+                                          <button 
+                                            className="px-4 py-2 bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                                            onClick={() => {
+                                              setInvitePlayerOpen(false);
+                                              setPlayerDiscordId("");
+                                              setError(prev => ({ ...prev, invitePlayer: "" }));
+                                            }}
+                                            disabled={isLoading.invitePlayer}
+                                          >
+                                            {t.cancel}
+                                          </button>
+                                          <button 
+                                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center"
+                                            onClick={handleInvitePlayer}
+                                            disabled={isLoading.invitePlayer}
+                                          >
+                                            {isLoading.invitePlayer && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+                                            {t.invite}
+                                          </button>
+                                        </div>
+                                      </div>
+                                    </DialogContent>
+                                  </Dialog>
                                 )}
                                 <button 
                                   className="px-4 py-2 bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
