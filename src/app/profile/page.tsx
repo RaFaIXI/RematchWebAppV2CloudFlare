@@ -697,7 +697,7 @@ export default function ProfilePage() {
       unlisted: "Private",
       makePublic: "Make Public",
       makePrivate: "Make Private",
-      teamVisibilityPublicDesc: "Your team is visible to other players.",
+      teamVisibilityPublicDesc: "Your team is visible to other players. (like in Scrim Finder)",
       teamVisibilityPrivateDesc: "Your team is not visible to other players.",
     },
     fr: {
@@ -744,7 +744,7 @@ export default function ProfilePage() {
       unlisted: "Privée",
       makePublic: "Rendre Publique",
       makePrivate: "Rendre Privée",
-      teamVisibilityPublicDesc: "Votre équipe est visible pour les autres joueurs.",
+      teamVisibilityPublicDesc: "Votre équipe est visible pour les autres joueurs. (comme sur le Scrim Finder)",
       teamVisibilityPrivateDesc: "Votre équipe n'est pas visible pour les autres joueurs.",
     }
   };
