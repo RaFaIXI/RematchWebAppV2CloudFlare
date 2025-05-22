@@ -65,7 +65,7 @@ export function SiteHeader() {
       // Use Date.parse for ISO strings or ensure loginTime is stored as milliseconds
       const loginTimeStamp = Date.parse(loginTime) || parseInt(loginTime)
       const currentTime = Date.now()
-      const twoHoursInMs = 2 * 60 * 60 * 1000 // 2 hours in milliseconds
+      const twoHoursInMs = 24 * 60 * 60 * 1000 // 2 hours in milliseconds
       console.log("Current time:", currentTime)
       console.log("Time difference:", currentTime - loginTimeStamp)
       
