@@ -132,9 +132,13 @@ export function SiteHeader() {
   // Main routes (excluding the ones in the dropdown)
   const mainRoutes = [
     // Removing Home link as users can click on the title
-    { href: "/Routines", label: lang === "fr" ? "Routines" : "Routines" },
     { href: "/TacticalBoard", label: lang === "fr" ? "Tableau Tactique" : "Tactical Board" },
   ]
+  
+  // Add Routines link only if not embedded in RematchFrance
+  if (!isEmbeddedRematchFrance) {
+    mainRoutes.unshift({ href: "/Routines", label: lang === "fr" ? "Routines" : "Routines" });
+  }
   
   // Add donate link only if not embedded
   if (!isEmbeddedRematchFrance) {
