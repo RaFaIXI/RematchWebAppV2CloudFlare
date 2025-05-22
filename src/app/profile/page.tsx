@@ -642,6 +642,8 @@ export default function ProfilePage() {
       playerDiscordId: "Player Discord ID",
       enterDiscordId: "Enter Discord ID",
       invite: "Invite",
+      discordIdHelp: "Need help finding a Discord ID?", // Add this
+      discordIdLink: "View Discord's tutorial", // Add this
     },
     fr: {
       title: "Profil",
@@ -680,6 +682,8 @@ export default function ProfilePage() {
       playerDiscordId: "ID Discord du Joueur",
       enterDiscordId: "Entrer l'ID Discord",
       invite: "Inviter",
+      discordIdHelp: "Besoin d'aide pour trouver un ID Discord ?", // Add this
+      discordIdLink: "Voir le tutoriel Discord", // Add this
     }
   };
 
@@ -1037,6 +1041,18 @@ export default function ProfilePage() {
                                               placeholder={t.enterDiscordId}
                                               className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
                                             />
+                                            <div className="mt-2 text-xs text-gray-500 dark:text-gray-400 flex items-center">
+                                              <span>{t.discordIdHelp}</span>
+                                              <a 
+                                                href="https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID" 
+                                                target="_blank" 
+                                                rel="noopener noreferrer"
+                                                className="ml-1 text-blue-500 hover:text-blue-600 flex items-center"
+                                              >
+                                                {t.discordIdLink}
+                                                <ExternalLink size={12} className="ml-1" />
+                                              </a>
+                                            </div>
                                           </div>
                                         </div>
 
