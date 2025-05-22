@@ -13,6 +13,7 @@ interface Team {
   captain_discordId: string;
   other_players_discordIds_list: string;
   Creation_date: string | null;
+  islisted?: boolean; // Add this new property
 }
 
 interface CaptainInfo {
@@ -62,9 +63,11 @@ export default function ScrimPage() {
         const data = await response.json() as { teams?: Team[] };
         
         if (data.teams) {
-          setTeams(data.teams);
-          // Initialize captain info fetching for each team
-          const captainIds = data.teams.map((team: Team) => team.captain_discordId);
+          // Filter out teams where islisted is false
+          const listedTeams = data.teams.filter(team => team.islisted !== false);
+          setTeams(listedTeams);
+          // Initialize captain info fetching for each listed team
+          const captainIds = listedTeams.map((team: Team) => team.captain_discordId);
           fetchCaptainsInfo(captainIds);
         } else {
           setError("No teams data available");

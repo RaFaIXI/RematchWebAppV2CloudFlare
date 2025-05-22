@@ -31,6 +31,7 @@ interface Team {
   description: string;
   createdOn: string;
   members: TeamMember[];
+  isListed?: boolean; // Add isListed property
 }
 
 interface Invitation {
@@ -173,7 +174,8 @@ export default function ProfilePage() {
             memberCount,
             description: team.Team_Description || "",
             createdOn: team.Creation_date || new Date().toISOString(),
-            members
+            members,
+            isListed: team.islisted // Add isListed property
           };
         }));
         
@@ -269,13 +271,14 @@ export default function ProfilePage() {
           console.log("Total members to display:", updatedMembers.length);
           
           // IMPORTANT: Always update the selected team state, don't conditionally check IDs
-          // This ensures we always get the fresh member data
+          // This ensures we always get the fresh member data and visibility status
           setSelectedTeam({
             ...teamData,
-            members: updatedMembers
+            members: updatedMembers,
+            isListed: team.islisted // Ensure we update the isListed property with the latest value from the API
           });
           
-          console.log("Updated selected team with members:", updatedMembers.length);
+          console.log("Updated selected team with members:", updatedMembers.length, "Visibility:", team.islisted ? "Public" : "Private");
         } else {
           console.error("Team not found in API data:", teamData.id);
         }
@@ -604,6 +607,51 @@ export default function ProfilePage() {
     }
   };
 
+  // Add function to toggle team listed status
+  const handleToggleTeamListed = async (teamName: string) => {
+    try {
+      const response = await fetch("https://rematchguidebackend.onrender.com/api/teams/switch_listed", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          teamname: teamName
+        }),
+      });
+      
+      const data = await response.json() as { success?: boolean; message?: string; islisted?: boolean };
+      
+      if (data.success) {
+        // Update the team's listed status in the teams state
+        setTeams(teams.map(team => {
+          if (team.name === teamName) {
+            return {
+              ...team,
+              isListed: data.islisted
+            };
+          }
+          return team;
+        }));
+        
+        // Also update the selected team if it's the one being modified
+        if (selectedTeam && selectedTeam.name === teamName) {
+          setSelectedTeam({
+            ...selectedTeam,
+            isListed: data.islisted
+          });
+        }
+        
+        alert(data.message || (lang === "en" ? "Team visibility updated" : "Visibilité de l'équipe mise à jour"));
+      } else {
+        alert(data.message || (lang === "en" ? "Failed to update team visibility" : "Échec de la mise à jour de la visibilité de l'équipe"));
+      }
+    } catch (error) {
+      console.error("Error toggling team visibility:", error);
+      alert(lang === "en" ? "An error occurred" : "Une erreur s'est produite");
+    }
+  };
+
   const translations = {
     en: {
       title: "Profile",
@@ -644,6 +692,13 @@ export default function ProfilePage() {
       invite: "Invite",
       discordIdHelp: "Need help finding a Discord ID?", // Add this
       discordIdLink: "View Discord's tutorial", // Add this
+      teamVisibility: "Team Visibility",
+      listed: "Public",
+      unlisted: "Private",
+      makePublic: "Make Public",
+      makePrivate: "Make Private",
+      teamVisibilityPublicDesc: "Your team is visible to other players.",
+      teamVisibilityPrivateDesc: "Your team is not visible to other players.",
     },
     fr: {
       title: "Profil",
@@ -684,6 +739,13 @@ export default function ProfilePage() {
       invite: "Inviter",
       discordIdHelp: "Besoin d'aide pour trouver un ID Discord ?", // Add this
       discordIdLink: "Voir le tutoriel Discord", // Add this
+      teamVisibility: "Visibilité de l'Équipe",
+      listed: "Publique",
+      unlisted: "Privée",
+      makePublic: "Rendre Publique",
+      makePrivate: "Rendre Privée",
+      teamVisibilityPublicDesc: "Votre équipe est visible pour les autres joueurs.",
+      teamVisibilityPrivateDesc: "Votre équipe n'est pas visible pour les autres joueurs.",
     }
   };
 
@@ -1014,6 +1076,39 @@ export default function ProfilePage() {
                                 )}
                               </div>
                               
+                              {/* Add team visibility section for captains */}
+                              {team.role === "captain" && (
+                                <div className="mt-4 border-t pt-4">
+                                  <h3 className="text-lg font-medium mb-2">{t.teamVisibility}</h3>
+                                  <div className="flex items-center justify-between">
+                                    <div>
+                                      <div className="flex items-center">
+                                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                          team.isListed ? 
+                                            "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200" : 
+                                            "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
+                                        }`}>
+                                          {team.isListed ? t.listed : t.unlisted}
+                                        </span>
+                                      </div>
+                                      <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                        {team.isListed ? t.teamVisibilityPublicDesc : t.teamVisibilityPrivateDesc}
+                                      </p>
+                                    </div>
+                                    <button 
+                                      className={`px-3 py-1 text-sm rounded transition-colors ${
+                                        team.isListed ? 
+                                          "bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600" : 
+                                          "bg-green-600 text-white hover:bg-green-700"
+                                      }`}
+                                      onClick={() => handleToggleTeamListed(team.name)}
+                                    >
+                                      {team.isListed ? t.makePrivate : t.makePublic}
+                                    </button>
+                                  </div>
+                                </div>
+                              )}
+
                               <div className="flex justify-end gap-3 mt-2">
                                 {team.role === "captain" && (
                                   <Dialog open={invitePlayerOpen} onOpenChange={setInvitePlayerOpen}>
