@@ -168,7 +168,7 @@ export default function ProfilePage() {
           return {
             id: team.teamname, // Using teamname as ID
             name: team.teamname,
-            logo: team.Team_Image_Url || "/api/placeholder/50/50",
+            logo: team.Team_Image_Url || "/assets/logo-placeholder-image.png",
             role: team.role || "player",
             memberCount,
             description: team.Team_Description || "",
@@ -348,7 +348,7 @@ export default function ProfilePage() {
             return {
               id: team.teamname,
               teamName: team.teamname,
-              teamLogo: team.Team_Image_Url || "/api/placeholder/50/50",
+              teamLogo: team.Team_Image_Url || "/assets/logo-placeholder-image.png",
               memberCount
             };
           });
@@ -389,7 +389,7 @@ export default function ProfilePage() {
         }),
       });
       
-      const data = await response.json() as { success?: boolean; message?: string };
+      const data = await response.json() as { success?: boolean; message?: string; error?: string };
       
       if (data.success) {
         // Reset form and close dialog
@@ -403,9 +403,18 @@ export default function ProfilePage() {
         
         alert(lang === "en" ? "Team created successfully!" : "Équipe créée avec succès !");
       } else {
-        setError(prev => ({ ...prev, createTeam: data.message || 
-          (lang === "en" ? "Failed to create team" : "Échec de la création de l'équipe") }));
-        alert(data.message || (lang === "en" ? "Failed to create team" : "Échec de la création de l'équipe"));
+        // Check for duplicate team name error
+        if (data.error && data.error.includes("duplicate key value violates unique constraint")) {
+          const errorMessage = lang === "en" 
+            ? `Team name "${newTeamName}" already exists. Please choose another name.` 
+            : `Le nom d'équipe "${newTeamName}" existe déjà. Veuillez choisir un autre nom.`;
+          setError(prev => ({ ...prev, createTeam: errorMessage }));
+          alert(errorMessage);
+        } else {
+          setError(prev => ({ ...prev, createTeam: data.message || 
+            (lang === "en" ? "Failed to create team" : "Échec de la création de l'équipe") }));
+          alert(data.message || (lang === "en" ? "Failed to create team" : "Échec de la création de l'équipe"));
+        }
       }
     } catch (error) {
       console.error("Error creating team:", error);
@@ -761,7 +770,7 @@ export default function ProfilePage() {
                       <div className="flex flex-col items-center gap-4 mb-2">
                         <div className="relative">
                           <Image 
-                            src={newTeamLogo || "/api/placeholder/100/100"}
+                            src={newTeamLogo || "/assets/logo-placeholder-image.png"}
                             alt="Team Logo" 
                             width={100} 
                             height={100} 
