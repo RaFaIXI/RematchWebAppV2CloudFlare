@@ -213,7 +213,6 @@ export default function ScrimPage() {
       copyName: "Copy Discord Name",
       copied: "Copied!",
       players: "players",
-      // New translations
       noTeamMessage: "You need to be on a team to check scrims",
       goToProfile: "Go to Profile",
       createJoinTeam: "to create or join a team : "
@@ -234,7 +233,6 @@ export default function ScrimPage() {
       copyName: "Copier le Nom Discord",
       copied: "Copié!",
       players: "joueurs",
-      // New translations
       noTeamMessage: "Vous devez faire partie d'une équipe pour consulter les scrims",
       goToProfile: "Aller au Profil",
       createJoinTeam: "pour créer ou rejoindre une équipe : "
