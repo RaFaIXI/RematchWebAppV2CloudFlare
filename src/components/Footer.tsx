@@ -47,8 +47,8 @@ export default function Footer() {
   // Translations based on the selected language
   const translations = {
     en: {
-      copyrightText: `© ${new Date().getFullYear()} Master Rematch`,
-      copyrightText2: `© ${new Date().getFullYear()} Rematch France`,
+      copyrightText: `© ${new Date().getFullYear()} Master Rematch by RaFa`,
+      copyrightText2: `© ${new Date().getFullYear()} Rematch France by RaFa`,
 
       discordAriaLabel: "Tech ideas go →",
       credits: "Credits",
