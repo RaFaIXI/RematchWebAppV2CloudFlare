@@ -19,6 +19,38 @@ export function SiteHeader() {
   const [isEmbeddedRematchFrance, setIsEmbeddedRematchFrance] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const pathname = usePathname();
+  const [isLoading, setIsLoading] = useState(false);
+  const [userData, setUserData] = useState<{
+    username: string;
+    avatar: string;
+    joinDate: string;
+    discordId: string;
+  } | null>(null);
+
+  // Fetch user data function
+  const fetchUserData = async () => {
+    try {
+      setIsLoading(true);
+      const userId = localStorage.getItem("userId");
+      if (!userId) return;
+      
+      const response = await fetch(`https://rematchguidebackend.onrender.com/api/user/data?user_id=${userId}`);
+      const data = await response.json() as { user?: { username: string; avatar_url: string; created_at: string; discord_id: string } };
+      
+      if (data.user) {
+        setUserData({
+          username: data.user.username,
+          avatar: data.user.avatar_url,
+          joinDate: data.user.created_at,
+          discordId: data.user.discord_id
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // Check login status function - reusable
   const checkLoginStatus = () => {
@@ -50,6 +82,11 @@ export function SiteHeader() {
     
     // Continue with regular login status check
     setIsLoggedIn(loginStatus === "true")
+    
+    // Fetch user data if logged in
+    if (loginStatus === "true") {
+      fetchUserData();
+    }
   }
 
   useEffect(() => {
@@ -221,6 +258,29 @@ export function SiteHeader() {
               {lang === "fr" ? "🇬🇧 English" : "🇫🇷 Français"}
             </Button>
           )}
+          
+          {/* User Profile Avatar Button */}
+          {!isEmbeddedRematchFrance && isLoggedIn && userData && (
+            <Link href="/profile">
+              <Button 
+                variant="ghost" 
+                className="p-0 h-8 w-8 rounded-full overflow-hidden"
+                aria-label="Profile"
+              >
+                {userData.avatar ? (
+                  <img 
+                    src={userData.avatar} 
+                    alt={userData.username} 
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <div className="h-full w-full bg-primary/10 flex items-center justify-center text-xs font-medium">
+                    {userData.username?.charAt(0).toUpperCase() || 'U'}
+                  </div>
+                )}
+              </Button>
+            </Link>
+          )}
         </nav>
 
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -279,6 +339,30 @@ export function SiteHeader() {
                 <Button variant="ghost" onClick={toggleLang}>
                   {lang === "fr" ? "🇬🇧 English" : "🇫🇷 Français"}
                 </Button>
+              )}
+
+              {/* Add user profile link to mobile menu */}
+              {!isEmbeddedRematchFrance && isLoggedIn && userData && (
+                <Link
+                  href="/profile"
+                  className="text-lg font-medium flex items-center space-x-2"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <div className="h-6 w-6 rounded-full overflow-hidden">
+                    {userData.avatar ? (
+                      <img 
+                        src={userData.avatar} 
+                        alt={userData.username} 
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <div className="h-full w-full bg-primary/10 flex items-center justify-center text-xs font-medium">
+                        {userData.username?.charAt(0).toUpperCase() || 'U'}
+                      </div>
+                    )}
+                  </div>
+                  <span>{lang === "fr" ? "Profil" : "Profile"}</span>
+                </Link>
               )}
             </div>
           </SheetContent>
