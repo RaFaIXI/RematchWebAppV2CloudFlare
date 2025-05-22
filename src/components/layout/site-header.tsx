@@ -177,6 +177,11 @@ export function SiteHeader() {
     mainRoutes.unshift({ href: "/Routines", label: lang === "fr" ? "Routines" : "Routines" });
   }
   
+  // Add Scrim Finder link only if not embedded in RematchFrance
+  if (!isEmbeddedRematchFrance) {
+    mainRoutes.push({ href: "/scrim", label: lang === "fr" ? "Recherche de Scrims" : "Scrim Finder" });
+  }
+  
   // Add donate link only if not embedded
   if (!isEmbeddedRematchFrance) {
     mainRoutes.push({ href: "/donate", label: lang === "fr" ? "Soutiens-moi" : "Support me" })
