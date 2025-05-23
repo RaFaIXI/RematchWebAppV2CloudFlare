@@ -413,7 +413,14 @@ export default function ProfilePage() {
             : `Le nom d'équipe "${newTeamName}" existe déjà. Veuillez choisir un autre nom.`;
           setError(prev => ({ ...prev, createTeam: errorMessage }));
           alert(errorMessage);
-        } else {
+        } 
+        if (data.error && data.error.includes("You have reached the maximum limit of 3 teams per user")) {
+          const errorMessage = lang === "en" 
+            ? `You have reached the maximum limit of 3 teams per user.` 
+            : `il y a un maximum de 3 équipes par utilisateurs.`;
+          setError(prev => ({ ...prev, createTeam: errorMessage }));
+          alert(errorMessage);
+        }else {
           setError(prev => ({ ...prev, createTeam: data.message || 
             (lang === "en" ? "Failed to create team" : "Échec de la création de l'équipe") }));
           alert(data.message || (lang === "en" ? "Failed to create team" : "Échec de la création de l'équipe"));
