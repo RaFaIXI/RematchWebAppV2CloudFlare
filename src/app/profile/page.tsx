@@ -71,7 +71,8 @@ export default function ProfilePage() {
     acceptInvite: false,
     declineInvite: false,
     invitePlayer: false,
-    fetchMembers: false
+    fetchMembers: false,
+    deleteTeam: false  // Add new loading state for delete team
   });
   const [error, setError] = useState({
     user: "",
@@ -81,7 +82,8 @@ export default function ProfilePage() {
     leaveTeam: "",
     acceptInvite: "",
     declineInvite: "",
-    invitePlayer: ""
+    invitePlayer: "",
+    deleteTeam: ""  // Add new error state for delete team
   });
   
   useEffect(() => {
@@ -659,6 +661,56 @@ export default function ProfilePage() {
     }
   };
 
+  // Add function to handle team deletion
+  const handleDeleteTeam = async (teamName: string) => {
+    // Ask for confirmation before deletion
+    const confirmMessage = lang === "en" 
+      ? `Are you sure you want to delete the team "${teamName}"? This action cannot be undone.`
+      : `Êtes-vous sûr de vouloir supprimer l'équipe "${teamName}" ? Cette action ne peut pas être annulée.`;
+    
+    if (!confirm(confirmMessage)) {
+      return; // User canceled the operation
+    }
+    
+    try {
+      setIsLoading(prev => ({ ...prev, deleteTeam: true }));
+      setError(prev => ({ ...prev, deleteTeam: "" }));
+      
+      const response = await fetch("https://rematchguidebackend.onrender.com/api/teams/remove", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          teamname: teamName
+        }),
+      });
+      
+      const data = await response.json() as { success?: boolean; message?: string };
+      
+      if (data.success) {
+        // Close the dialog
+        setViewTeamOpen(false);
+        
+        // Remove the team from the teams list
+        setTeams(teams.filter(team => team.name !== teamName));
+        
+        // Show success message
+        alert(lang === "en" ? "Team deleted successfully!" : "Équipe supprimée avec succès !");
+      } else {
+        setError(prev => ({ ...prev, deleteTeam: data.message || 
+          (lang === "en" ? "Failed to delete team" : "Échec de la suppression de l'équipe") }));
+        alert(data.message || (lang === "en" ? "Failed to delete team" : "Échec de la suppression de l'équipe"));
+      }
+    } catch (error) {
+      console.error("Error deleting team:", error);
+      setError(prev => ({ ...prev, deleteTeam: "An error occurred" }));
+      alert(lang === "en" ? "An error occurred" : "Une erreur s'est produite");
+    } finally {
+      setIsLoading(prev => ({ ...prev, deleteTeam: false }));
+    }
+  };
+
   const translations = {
     en: {
       title: "Profile",
@@ -706,6 +758,10 @@ export default function ProfilePage() {
       makePrivate: "Make Private",
       teamVisibilityPublicDesc: "Your team is visible to other players. (like in Scrim Finder)",
       teamVisibilityPrivateDesc: "Your team is not visible to other players.",
+      deleteTeam: "Delete Team",
+      deleteConfirmation: "Are you sure? This cannot be undone.",
+      teamDeleted: "Team deleted successfully!",
+      failedToDelete: "Failed to delete team",
     },
     fr: {
       title: "Profil",
@@ -753,6 +809,10 @@ export default function ProfilePage() {
       makePrivate: "Rendre Privée",
       teamVisibilityPublicDesc: "Votre équipe est visible pour les autres joueurs. (comme sur le Scrim Finder)",
       teamVisibilityPrivateDesc: "Votre équipe n'est pas visible pour les autres joueurs.",
+      deleteTeam: "Supprimer l'Équipe",
+      deleteConfirmation: "Êtes-vous sûr ? Cette action ne peut pas être annulée.",
+      teamDeleted: "Équipe supprimée avec succès !",
+      failedToDelete: "Échec de la suppression de l'équipe",
     }
   };
 
@@ -1118,74 +1178,90 @@ export default function ProfilePage() {
 
                               <div className="flex justify-end gap-3 mt-2">
                                 {team.role === "captain" && (
-                                  <Dialog open={invitePlayerOpen} onOpenChange={setInvitePlayerOpen}>
-                                    <DialogTrigger asChild>
-                                      <button 
-                                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                                      >
-                                        {t.invitePlayer}
-                                      </button>
-                                    </DialogTrigger>
-                                    <DialogContent className="sm:max-w-[500px]">
-                                      <DialogHeader>
-                                        <DialogTitle>{t.invitePlayer}</DialogTitle>
-                                      </DialogHeader>
-                                      <div className="grid gap-6 py-4">
-                                        <div className="grid gap-4">
-                                          <div>
-                                            <label className="block text-sm font-medium mb-1">
-                                              {t.playerDiscordId}
-                                            </label>
-                                            <input 
-                                              type="text"
-                                              value={playerDiscordId}
-                                              onChange={(e) => setPlayerDiscordId(e.target.value)}
-                                              placeholder={t.enterDiscordId}
-                                              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                                            />
-                                            <div className="mt-2 text-xs text-gray-500 dark:text-gray-400 flex items-center">
-                                              <span>{t.discordIdHelp}</span>
-                                              <a 
-                                                href="https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID" 
-                                                target="_blank" 
-                                                rel="noopener noreferrer"
-                                                className="ml-1 text-blue-500 hover:text-blue-600 flex items-center"
-                                              >
-                                                {t.discordIdLink}
-                                                <ExternalLink size={12} className="ml-1" />
-                                              </a>
+                                  <>
+                                    <Dialog open={invitePlayerOpen} onOpenChange={setInvitePlayerOpen}>
+                                      <DialogTrigger asChild>
+                                        <button 
+                                          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                                        >
+                                          {t.invitePlayer}
+                                        </button>
+                                      </DialogTrigger>
+                                      <DialogContent className="sm:max-w-[500px]">
+                                        <DialogHeader>
+                                          <DialogTitle>{t.invitePlayer}</DialogTitle>
+                                        </DialogHeader>
+                                        <div className="grid gap-6 py-4">
+                                          <div className="grid gap-4">
+                                            <div>
+                                              <label className="block text-sm font-medium mb-1">
+                                                {t.playerDiscordId}
+                                              </label>
+                                              <input 
+                                                type="text"
+                                                value={playerDiscordId}
+                                                onChange={(e) => setPlayerDiscordId(e.target.value)}
+                                                placeholder={t.enterDiscordId}
+                                                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                                              />
+                                              <div className="mt-2 text-xs text-gray-500 dark:text-gray-400 flex items-center">
+                                                <span>{t.discordIdHelp}</span>
+                                                <a 
+                                                  href="https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID" 
+                                                  target="_blank" 
+                                                  rel="noopener noreferrer"
+                                                  className="ml-1 text-blue-500 hover:text-blue-600 flex items-center"
+                                                >
+                                                  {t.discordIdLink}
+                                                  <ExternalLink size={12} className="ml-1" />
+                                                </a>
+                                              </div>
                                             </div>
                                           </div>
-                                        </div>
 
-                                        {error.invitePlayer && (
-                                          <div className="text-red-500 text-sm">{error.invitePlayer}</div>
-                                        )}
+                                          {error.invitePlayer && (
+                                            <div className="text-red-500 text-sm">{error.invitePlayer}</div>
+                                          )}
 
-                                        <div className="flex justify-end gap-3 mt-4">
-                                          <button 
-                                            className="px-4 py-2 bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
-                                            onClick={() => {
-                                              setInvitePlayerOpen(false);
-                                              setPlayerDiscordId("");
-                                              setError(prev => ({ ...prev, invitePlayer: "" }));
-                                            }}
-                                            disabled={isLoading.invitePlayer}
-                                          >
-                                            {t.cancel}
-                                          </button>
-                                          <button 
-                                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center"
-                                            onClick={handleInvitePlayer}
-                                            disabled={isLoading.invitePlayer}
-                                          >
-                                            {isLoading.invitePlayer && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
-                                            {t.invite}
-                                          </button>
+                                          <div className="flex justify-end gap-3 mt-4">
+                                            <button 
+                                              className="px-4 py-2 bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                                              onClick={() => {
+                                                setInvitePlayerOpen(false);
+                                                setPlayerDiscordId("");
+                                                setError(prev => ({ ...prev, invitePlayer: "" }));
+                                              }}
+                                              disabled={isLoading.invitePlayer}
+                                            >
+                                              {t.cancel}
+                                            </button>
+                                            <button 
+                                              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center"
+                                              onClick={handleInvitePlayer}
+                                              disabled={isLoading.invitePlayer}
+                                            >
+                                              {isLoading.invitePlayer && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+                                              {t.invite}
+                                            </button>
+                                          </div>
                                         </div>
-                                      </div>
-                                    </DialogContent>
-                                  </Dialog>
+                                      </DialogContent>
+                                    </Dialog>
+                                    
+                                    {/* Add delete team button for captains */}
+                                    <button 
+                                      className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center"
+                                      onClick={() => handleDeleteTeam(team.name)}
+                                      disabled={isLoading.deleteTeam}
+                                    >
+                                      {isLoading.deleteTeam ? (
+                                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                                      ) : (
+                                        <X size={16} className="mr-2" />
+                                      )}
+                                      {t.deleteTeam}
+                                    </button>
+                                  </>
                                 )}
                                 <button 
                                   className="px-4 py-2 bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
