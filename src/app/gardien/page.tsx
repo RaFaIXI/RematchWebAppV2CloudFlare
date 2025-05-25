@@ -68,6 +68,11 @@ const translations = {
         description: "its a no look pass for goalkeepers",
         fullDescription: "you need to look somewhere and passing with moving key on the other side",
       },
+      {
+        title: "Dash Dive",
+        description: "Dash befor diving to increase speed and distance of the dive",
+        fullDescription: "Dash befor diving to increase speed and distance of the dive"
+      }
     ],
   },
   fr: {
@@ -111,10 +116,16 @@ const translations = {
         title: "Arrêt basique",
         description: "Technique d'arrêt de base",
         fullDescription: "Remarque : tu peux faire un dash avant de plonger pour aller plus vite.",
-      },      {
+      },      
+      {
         title: "Anti-Cheese Passe",
         description: "C’est une passe sans regarder, utilisée par les gardiens de but",
         fullDescription: "Il faut regarder dans une direction et faire la passe en maintenant la touche de déplacement de l’autre côté."
+      },
+      {
+        title: "Plongeon Sprinté",
+        description: "Sprinte avant de plonger pour gagner en vitesse et en distance.",
+        fullDescription: "Effectue un sprint juste avant de plonger pour augmenter ta vitesse et la distance parcourue — idéal pour atteindre le ballon plus vite ou réaliser des arrêts spectaculaires.",
       }
     ],
   },
@@ -179,6 +190,13 @@ export default function GardienPage() {
     {
       id: 6,
       videoUrl: "https://youtu.be/vIeHd7XpNOY",
+      videoType: "youtubemuted" as const,
+      difficulty: 2,
+      utility: 5,
+    },
+    {
+      id: 7,
+      videoUrl: "https://youtu.be/UCFsVb29jWM",
       videoType: "youtubemuted" as const,
       difficulty: 2,
       utility: 5,

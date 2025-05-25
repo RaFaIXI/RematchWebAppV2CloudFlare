@@ -153,7 +153,13 @@ const translations = {
         title: "Feinte d'Arc-en-Ciel",
         description: "(Clavier) La feinte d'arc-en-ciel est une technique qui permet à votre joueur d’exécuter l’animation du flick vers l’avant tout en envoyant le ballon dans une direction totalement différente, pour tromper l’adversaire.",
         fullDescription: "Il suffit de lancer un arc-en-ciel vers l’avant et, pendant que l’animation se joue, de bouger rapidement la caméra vers la direction dans laquelle vous voulez réellement envoyer le ballon."
+      },
+      {
+        title: "Jump Dribble",
+        description: "Use a header jump to control and dribble the ball.",
+        fullDescription: "Master the art of dribbling by using a header jump to keep control of the ball while staying agile in the air.",
       }
+
 
 
     ],
@@ -297,7 +303,13 @@ const translations = {
           description: "(Keyboard) The rainbow flick fake is a tech that allows your character to do the forward flick animation, while flicking the ball in a totally different direction, faking your opponent.",
           fullDescription:
             "You simply start a rainbow flick forward and while the animation is playing, quickly flick your camera in the direction you want the flick to actually go.",
-        }
+      },
+      {
+        title: "Jump Dribble",
+        description: "you can use header jump to dribble the ball",
+        fullDescription:
+          "you can use header jump to dribble the ball",
+      }
     ],
   },
 }
@@ -348,6 +360,7 @@ export default function DriblesPage() {
     { id: 19, videoUrl: "https://youtu.be/un1iAaaMDVA", videoType: "youtubemuted", difficulty: 5, utility: 2 },
     { id: 20, videoUrl: "https://youtu.be/9xGmC0ZJfPk", videoType: "youtubemuted", difficulty: 3, utility: 5 },
     { id: 21, videoUrl: "https://youtu.be/7t31Ej_30VE", videoType: "youtubemuted", difficulty: 5, utility: 3 },
+    { id: 22, videoUrl: "https://youtu.be/txopR66-Bw8", videoType: "youtubemuted", difficulty: 4, utility: 2 },
 
   ]
   // Combine technique data with translations
