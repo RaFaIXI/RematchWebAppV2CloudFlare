@@ -200,7 +200,7 @@ export function SiteHeader() {
             <img src="/assets/favicon-32x32.png" alt="" />
           )}
           <span className="font-bold">
-            {lang === "fr" ? "Maîtrisez Rematch" : "Master Rematch"}
+            {lang === "fr" ? "Rematch Guide" : "Rematch Guide"}
           </span>
         </Link>
 
