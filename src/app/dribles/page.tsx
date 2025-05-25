@@ -133,7 +133,29 @@ const translations = {
         description: "Dash sur la balle en regardant dans une autre dirrection",
         fullDescription:
           "Dash sur la balle en regardant dans une autre dirrection pour pouvoir bouger plus vite car tu skip l'annimation où le personnage se retourne. avec le dash  si vous regardez par exemple devant vous et que vous dashé sur une balle, votre personnage attrapera la balle et convertira tous vos mouvements dans la direction de la caméra, c'est un peu délicat à faire, mais c'est de loin la meilleure façon de changer de direction avec la balle",
+      },
+      {
+        title: "Virgule Aérienne",
+        description: "Leurre l’adversaire avec une virgule ou un coup de tête en l'air",
+        fullDescription: "Mettez le ballon en l’air avec un arc-en-ciel ou une petite passe lobée, puis effectuez la commande de l’arc-en-ciel dans une direction, puis recommencez dans une autre direction. Le joueur réalisera une virgule aérienne."
+      },
+      {
+        title: "Petit Pont en Plongeant",
+        description: "Plongez à travers l’adversaire et le ballon pour forcer un petit pont",
+        fullDescription: "Lorsque l’Effort Supplémentaire est activé en direction d’un adversaire, le ballon est libéré avec une vitesse qui empêche momentanément le contrôle immédiat. Si le joueur effectue ensuite une plongée à travers l’adversaire pendant cette courte fenêtre, le ballon passe proprement entre ses jambes."
+      },
+      {
+        title: "Petit Pont en Sprint",
+        description: "Sprint Bleu à travers l’adversaire et le ballon pour forcer un petit pont",
+        fullDescription: "Activer l’Effort Supplémentaire face à un adversaire qui tacle peut forcer le ballon (et vous) à passer à travers lui. Le timing est difficile, et si l’adversaire ne tacle pas, il interceptera probablement le ballon."
+      },
+      {
+        title: "Feinte d'Arc-en-Ciel",
+        description: "(Clavier) La feinte d'arc-en-ciel est une technique qui permet à votre joueur d’exécuter l’animation du flick vers l’avant tout en envoyant le ballon dans une direction totalement différente, pour tromper l’adversaire.",
+        fullDescription: "Il suffit de lancer un arc-en-ciel vers l’avant et, pendant que l’animation se joue, de bouger rapidement la caméra vers la direction dans laquelle vous voulez réellement envoyer le ballon."
       }
+
+
     ],
   },
   en: {
@@ -251,7 +273,31 @@ const translations = {
         description: "Dash on the ball while loooking away",
         fullDescription:
           "Dash on the ball while loooking away to be able to move faster cause you skip the turn annimation. With the dash, if you looking for example infront of you and dash into a loose ball behind you, your character will snatch the ball and convert all your movement into the direction of the camera it is a bit tricky to do, but it is by far the best way to change direction with the ball",
-      }
+      },
+      {
+        title: "Air Elastico",
+        description: "Bait the opponent with a header or lob elastico in air",
+        fullDescription:
+          "Put the ball in air wait a rainbow flick or short lob pass then do the rainbow flick input toward a dirrection and redoo it toward another position the player will do an air elastico",
+      },
+      {
+        title: "Diving Nutmeg",
+        description: "Dive through the opponent and the ball to force the ball through them",
+        fullDescription:
+          "When Extra Effort is activated toward an opponent, the ball is released with a speed that briefly prevents immediate control. If the player then performs a dive through the opponent during this narrow window, the ball is forced cleanly through them. ",
+      },
+      {
+        title: "Sprinting Nutmeg",
+        description: "Blue Sprint through the opponent and the ball to force the ball through them",
+        fullDescription:
+          "Activating Extra Effort in front of a tackling opponent can force the ball (and you) through them. The timing is difficult, and if the opponent is not tackling, they will likely stop and steal the ball.",
+      },
+      {
+          title: "fake Rainbow flick",
+          description: "(Keyboard) The rainbow flick fake is a tech that allows your character to do the forward flick animation, while flicking the ball in a totally different direction, faking your opponent.",
+          fullDescription:
+            "You simply start a rainbow flick forward and while the animation is playing, quickly flick your camera in the direction you want the flick to actually go.",
+        }
     ],
   },
 }
@@ -298,8 +344,12 @@ export default function DriblesPage() {
     { id: 15, videoUrl: "https://youtu.be/bvqvwub7s_c", videoType: "youtubemuted", difficulty: 2, utility: 2 },
     { id: 16, videoUrl: "https://www.youtube.com/embed/mjie8ekJ5Yg?si=jpaif3_u733zHyHa&amp;clip=UgkxCb4_JrFA1w2ZtT5_-IuS2AQH7tPxcoOa&amp;clipt=EM2CAhit1wU", videoType: "youtubeclip", difficulty: 1, utility: 5 },
     { id: 17, videoUrl: "https://youtu.be/jZrw-aZaKOY", videoType: "youtubemuted", difficulty: 3, utility: 4 },
-  ]
+    { id: 18, videoUrl: "https://youtu.be/aPYuLq0PX08", videoType: "youtubemuted", difficulty: 2, utility: 4 },
+    { id: 19, videoUrl: "https://youtu.be/un1iAaaMDVA", videoType: "youtubemuted", difficulty: 5, utility: 2 },
+    { id: 20, videoUrl: "https://youtu.be/9xGmC0ZJfPk", videoType: "youtubemuted", difficulty: 3, utility: 5 },
+    { id: 21, videoUrl: "https://youtu.be/7t31Ej_30VE", videoType: "youtubemuted", difficulty: 5, utility: 3 },
 
+  ]
   // Combine technique data with translations
   const techniques = t.techniques.map((tech, index) => ({
     ...tech,

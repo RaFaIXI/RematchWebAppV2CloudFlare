@@ -150,6 +150,12 @@ const translations = {
         fullDescription:
           "Quick Side Rainbowflick then do a Small Lob Pass then blue Sprint then do an instant Shot. You can do it but toward other sides",
       },
+      {
+        title: "Instant Backshot",
+        description: "Do a back drible, keep the back key pressed and shoot",
+        fullDescription:
+          "Do a back drible, keep the back key pressed and shoot, it will bait goalkeepers and defenders, it is a very effective technique.",
+      },
     ],
   },
   fr: {
@@ -279,7 +285,13 @@ const translations = {
         description: "Arc en ciel latéral rapide puis petite passe lobée suivie d'un tir en sprint bleu",
         fullDescription: "Arc en ciel latéral rapide puis petite passe lobée suivie d'un tir en sprint blue. Tu peut faire cette technique dans différente dirrections"
 
+      },
+      {
+        title: "Tir Instantané en Reculant",
+        description: "Faites un dribble en arrière, gardez la touche arrière enfoncée et tirez",
+        fullDescription: "Faites un dribble en arrière, gardez la touche arrière enfoncée et tirez. Cela trompe les gardiens et les défenseurs, c’est une technique très efficace."
       }
+
     ],
   },
 }
@@ -436,6 +448,13 @@ export default function TirPage() {
       videoUrl: "https://youtu.be/GwKe0I-9QBQ",
       videoType: "youtubemuted" as const,
       difficulty: 3,
+      utility: 3,
+    },
+    {
+      id: 20,
+      videoUrl: "https://youtu.be/wfmEsqZd0Po",
+      videoType: "youtubemuted" as const,
+      difficulty: 1,
       utility: 3,
     }
   ]

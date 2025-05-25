@@ -63,6 +63,11 @@ const translations = {
         description: "Basic saving technique",
         fullDescription: "Note: You can dash before diving to increase speed.",
       },
+      {
+        title: "Anti Cheese Pass",
+        description: "its a no look pass for goalkeepers",
+        fullDescription: "you need to look somewhere and passing with moving key on the other side",
+      },
     ],
   },
   fr: {
@@ -106,7 +111,11 @@ const translations = {
         title: "Arrêt basique",
         description: "Technique d'arrêt de base",
         fullDescription: "Remarque : tu peux faire un dash avant de plonger pour aller plus vite.",
-      },
+      },      {
+        title: "Anti-Cheese Passe",
+        description: "C’est une passe sans regarder, utilisée par les gardiens de but",
+        fullDescription: "Il faut regarder dans une direction et faire la passe en maintenant la touche de déplacement de l’autre côté."
+      }
     ],
   },
 }
@@ -167,8 +176,14 @@ export default function GardienPage() {
       difficulty: 2,
       utility: 5,
     },
+    {
+      id: 6,
+      videoUrl: "https://youtu.be/vIeHd7XpNOY",
+      videoType: "youtubemuted" as const,
+      difficulty: 2,
+      utility: 5,
+    },
   ]
-
   // Combine technique data with translations
   const techniques = t.techniques.map((tech, index) => ({
     ...tech,
