@@ -133,8 +133,8 @@ const translations = {
           "If you press the shot button for a shorter time, you'll make a weaker shot but with more spin, which can confuse the goalkeeper. If you press the shot button longer, you'll make a more powerful shot but with less spin."
       },
       {
-        title: "Movements and Shots",
-        description: "Moving changes shot trajectories",
+        title: "Movements and Shots Effects",
+        description: "Moving changes shot Effects",
         fullDescription:
           "Every movement changes the shot trajectory. Pay attention to the ball's direction and speed for accurate shots. Also, consider the player's position: in the air or on the ground, it affects the shot trajectory. Practice not only while stationary but also while moving.",
       },
@@ -263,8 +263,8 @@ const translations = {
           "si tu appuie moins longtemps sur le bouton de tir, tu vas faire un tir plus faible mais avec un effet plus prononcé. ce qui permet des effets qui embrouille le gardien. si tu appuie plus longtemps sur le bouton de tir, tu vas faire un tir plus puissant mais avec moins d'effet.",
       },
       {
-        title: "Mouvements et Tirs",
-        description: "bouger change les trajectoires de tir",
+        title: "Mouvements et Effets de Tirs",
+        description: "bouger change les effets de tir",
         fullDescription:
           "Chaque mouvement change la trajectoire de tirs, il faut bien faire attention à la direction de la balle et de la vitesse de la balle pour bien tirer. Il faut aussi faire attention à la position du joueur, si le joueur est en l'air ou au sol, cela change aussi la trajectoire du tir. et s'entrainer pas uniquement sans bouger mais aussi en bougeant.",
       },
