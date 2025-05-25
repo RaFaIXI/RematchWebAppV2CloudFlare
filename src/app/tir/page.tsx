@@ -156,6 +156,22 @@ const translations = {
         fullDescription:
           "Do a back drible, keep the back key pressed and shoot, it will bait goalkeepers and defenders, it is a very effective technique.",
       },
+       {
+        title: "Side Backboard",
+        description: "Shoot on the site of the board to feint the keeper",
+        fullDescription: "Shoot on the site of the board to feint the keeper, more high is the backboard more it goes far toward you"
+      },
+      {
+        title: "Air combo",
+        description: "Control the ball in the air, lob then shoot",
+        fullDescription: "Control the ball in the air, lob (short pass lob, blue sprint) then shoot"
+      },
+      {
+        title: "Movements and Shots Trajectory",
+        description: "Moving changes shot Trajectory",
+        fullDescription:
+          "if you dont move : shoot aim on the middle of the cursor and pass aim on the left of the cursor, if you move shoot aim on the right of the cursor and pass still at left of the cursor"
+      }
     ],
   },
   fr: {
@@ -290,7 +306,23 @@ const translations = {
         title: "Tir Instantané en Reculant",
         description: "Faites un dribble en arrière, gardez la touche arrière enfoncée et tirez",
         fullDescription: "Faites un dribble en arrière, gardez la touche arrière enfoncée et tirez. Cela trompe les gardiens et les défenseurs, c’est une technique très efficace."
+      },
+      {
+        title: "Side Backboard",
+        description: "Tirez sur le côté du panneau pour feinter le gardien",
+        fullDescription: "Tirez sur le côté du panneau pour feinter le gardien. Plus le panneau est haut, plus le ballon revient loin vers vous."
+      },
+      {
+        title: "Air combo",
+        description: "Controle la balle en l'air, lob puis tir",
+        fullDescription: "Controle la balle en l'air, lob (avec une petite passe lobée, sprint bleu) puis tir"
+      },
+      {
+        title: "Mouvements et Trajectoire des Tirs",
+        description: "Se déplacer change la trajectoire du tir",
+        fullDescription: "Si tu ne bouges pas, la passe part à gauche du viseur et le tir se déclenche au centre du curseur. En revanche, si tu bouges, le tir partira légèrement à droite, voire complètement à droite du viseur selon la force appliquée, tandis que la passe reste toujours dirigée vers la gauche."
       }
+
 
     ],
   },
@@ -456,7 +488,28 @@ export default function TirPage() {
       videoType: "youtubemuted" as const,
       difficulty: 1,
       utility: 3,
-    }
+    },
+    {
+      id: 21,
+      videoUrl: "https://youtu.be/_aSBrfkzOEQ",
+      videoType: "youtubemuted" as const,
+      difficulty: 3,
+      utility: 4,
+    },
+    {
+      id: 22,
+      videoUrl: "https://youtu.be/UQkVnNKitZ4",
+      videoType: "youtubemuted" as const,
+      difficulty: 3,
+      utility: 3,
+    },
+    {
+      id: 23,
+      videoUrl: "https://youtu.be/qN4fW_d99do",
+      videoType: "youtubemuted" as const,
+      difficulty: 1,
+      utility: 5,
+    },
   ]
 
   // Combine technique data with translations
