@@ -43,7 +43,7 @@ const translations = {
         title: "Contrôle",
         description: "Contrôle qui pousse la balle",
         fullDescription:
-          "Fais ta touche pour pousser la balle et appuie sur le bouton pousser la balle quand elle atterrit proche de toi pour faire un contrôle.",
+          "Fais ta touche pour pousser la balle et appuie sur le bouton pousser la balle quand elle atterrit proche de toi pour faire un contrôle. pour battre les joueurs qui spamme les têtes il suffit juste de faire un controle",
       },
       {
         title: "Contrôle parfait",
@@ -91,7 +91,7 @@ const translations = {
         title: "Pousser la balle",
         description: "Pousser la balle est un outil indispensable",
         fullDescription:
-          "Pousser la balle à l'opposé permet de feinter un adversaire. Aussi, en poussant la balle puis en courant, on va plus vite qu'en l'ayant dans les pieds. Faire le sprint bleu permet d'instantanément pousser la balle. tu peux choisir la puissance de la poussée, si tu cours la balle ira plus loin que si tu ne cours pas. Donc pour plus de contrôle, tu devrais pousser la balle sans courir puis courir puis re-pousser la balle sans courir.",
+          "Pousser la balle à l'opposé permet de feinter un adversaire. Aussi, en poussant la balle puis en courant, on va plus vite qu'en l'ayant dans les pieds. Faire le sprint bleu permet d'instantanément pousser la balle. tu peux choisir la puissance de la poussée, si tu cours la balle ira plus loin que si tu ne cours pas. Donc pour plus de contrôle, tu devrais pousser la balle sans courir puis courir puis re-pousser la balle sans courir.Quand tu pousses le ballon, le défenseur ne peut pas le tacler pendant un court instant (quand le ballon roule mais qu'il n'y a pas le curseur dessus). S'ils essaient de tacler, le ballon passera à travers eux.",
       },
       {
         title: "WallBounce",
@@ -158,6 +158,21 @@ const translations = {
         title: "Jump Dribble",
         description: "Use a header jump to control and dribble the ball.",
         fullDescription: "Master the art of dribbling by using a header jump to keep control of the ball while staying agile in the air.",
+      },
+      {
+        title: "Arc-en-ciel Effort Turn",
+        description: "Utilise le sprint bleu pour te retourner instantanément après un flick",
+        fullDescription: "Fais un arc-en-ciel sans courir, puis cours vers l’endroit où il atterrit et utilise le sprint bleu dans l’autre direction pour te retourner instantanément avec le ballon."
+      },
+      {
+        title: "Dribble Tacle Glissé",
+        description: "Pousse le ballon puis effectue un tacle glissé pour dribbler",
+        fullDescription: "Pousse le ballon puis effectue un tacle glissé pour dribbler. Cela fonctionne comme quand on pousse la balle : quand tu tacles, le ballon traverse est non attrapable par le défenseur pendant un court instant.",
+      },
+      {
+        title: "Dribble Tacle",
+        description: "Pousse le ballon puis effectue un tacle pour dribbler",
+        fullDescription: "Pousse le ballon puis effectue un tacle pour dribbler. Cela fonctionne comme quand on pousse la balle : quand tu tacles, le ballon traverse est non attrapable par le défenseur pendant un court instant.",
       }
 
 
@@ -188,7 +203,7 @@ const translations = {
         title: "Control",
         description: "Control that pushes the ball",
         fullDescription:
-          "Tap to push the ball and press the push ball button as it lands near you to control it.",
+          "Tap to push the ball and press the push ball button as it lands near you to control it. to beat players who spam headers, just do a control.",
       },
       {
         title: "Perfect Control",
@@ -236,7 +251,7 @@ const translations = {
         title: "Push Ball",
         description: "Push the ball away as a core tool",
         fullDescription:
-          "Pushing the ball can fake defenders and helps you run faster. A blue sprint also pushes the ball instantly. You can choose the push power; running makes it go further than walking. so for more controle you should push ball without running then run then repush the ball without running",
+          "Pushing the ball can fake defenders and helps you run faster. A blue sprint also pushes the ball instantly. You can choose the push power; running makes it go further than walking. so for more control you should push ball without running then run then repush the ball without running, when you push the ball the defender can't tackle it for brief periode of time (when ball is rolling but there is not the cursor on it) if they try to tack the ball will clip through them.",
       },
       {
         title: "WallBounce",
@@ -309,7 +324,25 @@ const translations = {
         description: "you can use header jump to dribble the ball",
         fullDescription:
           "you can use header jump to dribble the ball",
-      }
+      },
+      {
+        title: "Flick Effort Turn",
+        description: "Use the blue sprint to instantly turn with after flick",
+        fullDescription:
+          "Do a rainbow flick without running, then run where the flick end and blue sprint toward the other direction to instantly turn with the ball.",
+      },
+      {
+        title: "Slide tackle dribble",
+        description: "Push the ball then slide tackle to dribble",
+        fullDescription:
+          "Push the ball then slide tackle to dribble it work like for push ball, when you tackle the ball, it clip through the defender for a brief time.",
+      },
+      {
+        title: "Tackle dribble",
+        description: "Push the ball then tackle to dribble",
+        fullDescription:
+          "Push the ball then tackle to dribble it work like for push ball, when you tackle the ball, it clip through the defender for a brief time.",
+      },
     ],
   },
 }
@@ -361,6 +394,9 @@ export default function DriblesPage() {
     { id: 20, videoUrl: "https://youtu.be/9xGmC0ZJfPk", videoType: "youtubemuted", difficulty: 3, utility: 5 },
     { id: 21, videoUrl: "https://youtu.be/7t31Ej_30VE", videoType: "youtubemuted", difficulty: 5, utility: 3 },
     { id: 22, videoUrl: "https://youtu.be/txopR66-Bw8", videoType: "youtubemuted", difficulty: 4, utility: 2 },
+    { id: 23, videoUrl: "https://youtu.be/xkN-aRQpvRY", videoType: "youtubemuted", difficulty: 3, utility: 3 },
+    { id: 24, videoUrl: "https://youtu.be/pgwxgjY_WdM", videoType: "youtubemuted", difficulty: 3, utility: 1 },
+    { id: 25, videoUrl: "https://youtu.be/XO1mP41WlH4", videoType: "youtubemuted", difficulty: 1, utility: 3 },
 
   ]
   // Combine technique data with translations
