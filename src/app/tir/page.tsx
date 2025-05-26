@@ -151,10 +151,10 @@ const translations = {
           "Quick Side Rainbowflick then do a Small Lob Pass then blue Sprint then do an instant Shot. You can do it but toward other sides",
       },
       {
-        title: "Instant Backshot",
-        description: "Do a back drible, keep the back key pressed and shoot",
+        title: "Turnarround Shot/Pass",
+        description: "Do a back drible, keep the dribble mod key pressed and shoot/pass",
         fullDescription:
-          "Do a back drible, keep the back key pressed and shoot, it will bait goalkeepers and defenders, it is a very effective technique.",
+          "Do a back drible, keep the dribble mod key pressed and shoot/pass, it will bait goalkeepers and defenders, it is a very effective technique.",
       },
        {
         title: "Side Backboard",
@@ -303,9 +303,9 @@ const translations = {
 
       },
       {
-        title: "Tir Instantané en Reculant",
-        description: "Faites un dribble en arrière, gardez la touche arrière enfoncée et tirez",
-        fullDescription: "Faites un dribble en arrière, gardez la touche arrière enfoncée et tirez. Cela trompe les gardiens et les défenseurs, c’est une technique très efficace."
+        title: "Tir/Passe en Reculant",
+        description: "Faites un dribble en arrière, gardez la touche mode drible enfoncée et tirez/passez",
+        fullDescription: "Faites un dribble en arrière, gardez la touche mode drible enfoncée et tirez/passez. Cela trompe les gardiens et les défenseurs, c’est une technique très efficace."
       },
       {
         title: "Side Backboard",
@@ -484,7 +484,7 @@ export default function TirPage() {
     },
     {
       id: 20,
-      videoUrl: "https://youtu.be/wfmEsqZd0Po",
+      videoUrl: "https://youtu.be/1w1qy4jTWVw",
       videoType: "youtubemuted" as const,
       difficulty: 1,
       utility: 3,
