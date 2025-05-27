@@ -129,7 +129,7 @@ const translations = {
           "Appuie sur la touche de sprint pour courir plus vite. Le sprint change tout, il modifie la distance de poussée de la balle, la distance de l'arc-en-ciel et même la distance de contrôle de la balle. Le sprint consomme de l'endurance. Le sprint est essentiel pour un gameplay rapide.",
       },
       {
-        title: "WaveDash",
+        title: "WaveDash Back",
         description: "Dash sur la balle en regardant dans une autre dirrection",
         fullDescription:
           "Dash sur la balle en regardant dans une autre dirrection pour pouvoir bouger plus vite car tu skip l'annimation où le personnage se retourne. avec le dash  si vous regardez par exemple devant vous et que vous dashé sur une balle, votre personnage attrapera la balle et convertira tous vos mouvements dans la direction de la caméra, c'est un peu délicat à faire, mais c'est de loin la meilleure façon de changer de direction avec la balle",
@@ -173,6 +173,11 @@ const translations = {
         title: "Dribble Tacle",
         description: "Pousse le ballon puis effectue un tacle pour dribbler",
         fullDescription: "Pousse le ballon puis effectue un tacle pour dribbler. Cela fonctionne comme quand on pousse la balle : quand tu tacles, le ballon traverse est non attrapable par le défenseur pendant un court instant.",
+      },
+      {
+        title: "Wavedash Latéral",
+        description: "Le wavedash est une excellente technique pour changer de direction avec le ballon",
+        fullDescription: "Pour faire un wavedash latéral, tu dois pousser le ballon dans une direction, activer le mode défense, puis dasher dans la direction du ballon tout en regardant ailleurs. Tu peux le faire dans toutes les directions. C’est un peu difficile à réaliser, mais c’est de loin la meilleure façon de changer de direction avec le ballon."
       }
 
 
@@ -290,7 +295,7 @@ const translations = {
           "Hold the sprint button to run faster. Sprint alter everything, it alter ball push distance, rainbow flick distance, and even the ball control distance. Sprinting use stamina. Sprinting is essential for fast-paced gameplay.",
       },
       {
-        title: "WaveDash",
+        title: "WaveDash Back",
         description: "Dash on the ball while loooking away",
         fullDescription:
           "Dash on the ball while loooking away to be able to move faster cause you skip the turn annimation. With the dash, if you looking for example infront of you and dash into a loose ball behind you, your character will snatch the ball and convert all your movement into the direction of the camera it is a bit tricky to do, but it is by far the best way to change direction with the ball",
@@ -342,6 +347,12 @@ const translations = {
         description: "Push the ball then tackle to dribble",
         fullDescription:
           "Push the ball then tackle to dribble it work like for push ball, when you tackle the ball, it clip through the defender for a brief time.",
+      },
+      {
+        title: "Wavedash Side",
+        description: "Wavedash is great tech for changing direction with the ball",
+        fullDescription:
+          "To do a side wavedash, you need to push the ball in a direction and then activate defense mode and dash in the direction of the ball while looking away, you can do it toward all dirrections, it is a bit tricky to do, but it is by far the best way to change direction with the ball",
       },
     ],
   },
@@ -397,6 +408,7 @@ export default function DriblesPage() {
     { id: 23, videoUrl: "https://youtu.be/xkN-aRQpvRY", videoType: "youtubemuted", difficulty: 3, utility: 3 },
     { id: 24, videoUrl: "https://youtu.be/pgwxgjY_WdM", videoType: "youtubemuted", difficulty: 3, utility: 1 },
     { id: 25, videoUrl: "https://youtu.be/XO1mP41WlH4", videoType: "youtubemuted", difficulty: 1, utility: 3 },
+    { id: 26, videoUrl: "https://youtu.be/Omy5jQBRMFU", videoType: "youtubemuted", difficulty: 3, utility: 4 },
 
   ]
   // Combine technique data with translations
