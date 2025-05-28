@@ -173,14 +173,14 @@ export function SiteHeader() {
   ]
   
   // Add Routines link only if not embedded in RematchFrance
-  if (!isEmbeddedRematchFrance) {
-    mainRoutes.unshift({ href: "/Routines", label: lang === "fr" ? "Routines" : "Routines" });
-  }
+  //if (!isEmbeddedRematchFrance) {
+  //  mainRoutes.unshift({ href: "/Routines", label: lang === "fr" ? "Routines" : "Routines" });
+  //}
   
   // Add Scrim Finder link only if not embedded in RematchFrance
-  if (!isEmbeddedRematchFrance) {
-    mainRoutes.push({ href: "/scrim", label: lang === "fr" ? "Recherche de Scrims" : "Scrim Finder" });
-  }
+  //if (!isEmbeddedRematchFrance) {
+  //  mainRoutes.push({ href: "/scrim", label: lang === "fr" ? "Recherche de Scrims" : "Scrim Finder" });
+  //}
   
   // Add donate link only if not embedded
   if (!isEmbeddedRematchFrance) {
