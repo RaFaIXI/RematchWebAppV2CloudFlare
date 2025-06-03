@@ -188,9 +188,9 @@ export function SiteHeader() {
   }
 
   // Add login link if user is not logged in and site is not embedded in RematchFrance
-  if (!isLoggedIn && !isEmbeddedRematchFrance) {
-    mainRoutes.push({ href: "/login", label: lang === "fr" ? "Connexion" : "Login" })
-  }
+  //if (!isLoggedIn && !isEmbeddedRematchFrance) {
+  //  mainRoutes.push({ href: "/login", label: lang === "fr" ? "Connexion" : "Login" })
+  //}
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
