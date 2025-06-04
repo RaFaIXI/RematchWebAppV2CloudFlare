@@ -81,12 +81,12 @@ const translations = {
         fullDescription:
           "Si tu bouges assez bien, tu peux dribbler et passer un adversaire sans utiliser le \"dribble\".",
       },
-      {
-        title: "Dribble tête",
-        description: "Mets la balle sur ta tête et parcours le terrain",
-        fullDescription:
-          "Tu peux parcourir tout le terrain en jonglant avec ta tête si tu fais le contrôle tête en boucle tout en bougeant.",
-      },
+//      {
+//        title: "Dribble tête",
+//        description: "Mets la balle sur ta tête et parcours le terrain",
+//        fullDescription:
+//          "Tu peux parcourir tout le terrain en jonglant avec ta tête si tu fais le contrôle tête en boucle tout en bougeant.",
+//      },
       {
         title: "Pousser la balle",
         description: "Pousser la balle est un outil indispensable",
@@ -246,12 +246,12 @@ const translations = {
         fullDescription:
           "With good movement, you can beat defenders without using the dribble button.",
       },
-      {
-        title: "Header Dribble",
-        description: "Carry the ball on your head across the field",
-        fullDescription:
-          "You can head-dribble across the field by repeating header controls while moving.",
-      },
+//      {
+//        title: "Header Dribble",
+//        description: "Carry the ball on your head across the field",
+//        fullDescription:
+//          "You can head-dribble across the field by repeating header controls while moving.",
+//     },
       {
         title: "Push Ball",
         description: "Push the ball away as a core tool",
@@ -391,13 +391,13 @@ export default function DriblesPage() {
     { id: 6, videoUrl: "https://youtu.be/lE0a3yHPXj4", videoType: "youtubemuted", difficulty: 1, utility: 5 },
     { id: 7, videoUrl: "https://youtu.be/cSmyH4gQRNk", videoType: "youtubemuted", difficulty: 1, utility: 4 },
     { id: 8, videoUrl: "https://youtu.be/coIWvWCnr6w", videoType: "youtubemuted", difficulty: 2, utility: 4 },
-    { id: 9, videoUrl: "https://youtu.be/d4HhcwXWT7o", videoType: "youtubemuted", difficulty: 2, utility: 2 },
+    //{ id: 9, videoUrl: "https://youtu.be/d4HhcwXWT7o", videoType: "youtubemuted", difficulty: 2, utility: 2 },
     { id: 10, videoUrl: "https://youtu.be/oBHnJahyxcw", videoType: "youtubemuted", difficulty: 1, utility: 5 },
     { id: 11, videoUrl: "https://youtu.be/-DBdXHjfwwU", videoType: "youtubemuted", difficulty: 2, utility: 1 },
     { id: 12, videoUrl: "https://youtu.be/7xZhLzUH_pY", videoType: "youtubemuted", difficulty: 3, utility: 3 },
     { id: 13, videoUrl: "https://youtu.be/hX5xom1Jg8s", videoType: "youtubemuted", difficulty: 4, utility: 3 },
     { id: 14, videoUrl: "https://youtu.be/T3Zp-4aa8ds", videoType: "youtubemuted", difficulty: 4, utility: 3 },
-    { id: 15, videoUrl: "https://youtu.be/bvqvwub7s_c", videoType: "youtubemuted", difficulty: 2, utility: 2 },
+    { id: 15, videoUrl: "https://youtu.be/bvqvwub7s_c", videoType: "youtubemuted", difficulty: 1, utility: 1 },
     { id: 16, videoUrl: "https://www.youtube.com/embed/mjie8ekJ5Yg?si=jpaif3_u733zHyHa&amp;clip=UgkxCb4_JrFA1w2ZtT5_-IuS2AQH7tPxcoOa&amp;clipt=EM2CAhit1wU", videoType: "youtubeclip", difficulty: 1, utility: 5 },
     { id: 17, videoUrl: "https://youtu.be/jZrw-aZaKOY", videoType: "youtubemuted", difficulty: 3, utility: 4 },
     { id: 18, videoUrl: "https://youtu.be/aPYuLq0PX08", videoType: "youtubemuted", difficulty: 2, utility: 4 },
@@ -406,9 +406,9 @@ export default function DriblesPage() {
     { id: 21, videoUrl: "https://youtu.be/7t31Ej_30VE", videoType: "youtubemuted", difficulty: 5, utility: 3 },
     { id: 22, videoUrl: "https://youtu.be/txopR66-Bw8", videoType: "youtubemuted", difficulty: 4, utility: 2 },
     { id: 23, videoUrl: "https://youtu.be/xkN-aRQpvRY", videoType: "youtubemuted", difficulty: 3, utility: 3 },
-    { id: 24, videoUrl: "https://youtu.be/pgwxgjY_WdM", videoType: "youtubemuted", difficulty: 3, utility: 1 },
+    { id: 24, videoUrl: "https://youtu.be/pgwxgjY_WdM", videoType: "youtubemuted", difficulty: 1, utility: 1 },
     { id: 25, videoUrl: "https://youtu.be/XO1mP41WlH4", videoType: "youtubemuted", difficulty: 1, utility: 3 },
-    { id: 26, videoUrl: "https://youtu.be/Omy5jQBRMFU", videoType: "youtubemuted", difficulty: 3, utility: 4 },
+    { id: 26, videoUrl: "https://youtu.be/Omy5jQBRMFU", videoType: "youtubemuted", difficulty: 3, utility: 2 },
 
   ]
   // Combine technique data with translations
