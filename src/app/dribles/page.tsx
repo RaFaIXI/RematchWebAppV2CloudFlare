@@ -178,8 +178,12 @@ const translations = {
         title: "Wavedash Latéral",
         description: "Le wavedash est une excellente technique pour changer de direction avec le ballon",
         fullDescription: "Pour faire un wavedash latéral, tu dois pousser le ballon dans une direction, activer le mode défense, puis dasher dans la direction du ballon tout en regardant ailleurs. Tu peux le faire dans toutes les directions. C’est un peu difficile à réaliser, mais c’est de loin la meilleure façon de changer de direction avec le ballon."
-      }
-
+      },
+      {
+        title: "Skip turning animation ",
+        description: "skip l'annimation \"turning\" du personange, tout en poussant instantanément le ballon et en gardant votre élan.",
+        fullDescription:
+"Comment faire : Lorsque vous tournez avec le ballon en votre possession, votre personnage effectue une animation de rotation. Juste après le début de cette animation, vous pouvez appuyer instantanément sur le bouton de poussée pour faire une poussée vers l'avant dans la direction du virage, en sautant la fin de l'animation et sans interrompre votre élan. Cette technique repose entièrement sur le timing. Si vous le faites trop tôt, votre personnage effectuera un dribble coupé à la place. Essayez d'abord lentement, prenez le temps de bien ressentir l'animation, puis accélérez progressivement. Petit conseil : repérez l'indicateur blanc au bas des pieds de votre personnage.  Nuances : En sprintant, cette technique ne fonctionne qu\'avec un virage complet à 180°, car c\'est le seul moment où l\'animation de rotation se déclenche. En trottinant, vous pouvez effectuer la poussée instantanée dans n\'importe quelle direction. (merci à Rurer pour la technique)",      },
 
 
     ],
