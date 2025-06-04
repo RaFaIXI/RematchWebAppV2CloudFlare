@@ -354,6 +354,12 @@ const translations = {
         fullDescription:
           "To do a side wavedash, you need to push the ball in a direction and then activate defense mode and dash in the direction of the ball while looking away, you can do it toward all dirrections, it is a bit tricky to do, but it is by far the best way to change direction with the ball",
       },
+      {
+        title: "Skip turning animation ",
+        description: "skip the turning animation of your character, while instantly pushing the ball and converting your momentum.",
+        fullDescription:
+          "How to : When you turn with the ball in your possession, your character will preform a turning animation. Right after the animation starts, you can instantly press the push ball button to do a forward push in the direction you are turning, skipping the end of the animation and not stopping your momentum. This tech is all about timing. If you do it to early, your character will do a chop dribble instead. Try to do it slow at first, get a feel for the animation, and then gradually speed up. Small tip: Look for the white indicator at the bottom of your characters feet. Nuances : While sprinting, this tech only works with a full 180 turn, as that is the only time they do the turn animation. While jogging, you can do the instant turn push in any direction. (thanks to Rurer for the tech)",
+      },
     ],
   },
 }
@@ -409,6 +415,7 @@ export default function DriblesPage() {
     { id: 24, videoUrl: "https://youtu.be/pgwxgjY_WdM", videoType: "youtubemuted", difficulty: 1, utility: 1 },
     { id: 25, videoUrl: "https://youtu.be/XO1mP41WlH4", videoType: "youtubemuted", difficulty: 1, utility: 3 },
     { id: 26, videoUrl: "https://youtu.be/Omy5jQBRMFU", videoType: "youtubemuted", difficulty: 3, utility: 2 },
+    { id: 27, videoUrl: "https://youtu.be/L55jJHmWdV4", videoType: "youtubemuted", difficulty: 1, utility: 4 },
 
   ]
   // Combine technique data with translations

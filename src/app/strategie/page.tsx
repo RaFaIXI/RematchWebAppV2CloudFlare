@@ -52,6 +52,12 @@ const translations = {
         fullDescription:
           "The pyramid formation is an offensive strategy to create scoring chances by exploiting defensive gaps. By positioning your players in a pyramid shape, you maximize passing and shooting options. It's especially effective at breaking down compact defenses and creating openings.",
       },
+      {
+        title: "Tiki Taka",
+        description: "a style of play involving highly accurate short passing and an emphasis on retaining possession of the ball.",
+        fullDescription:
+          "You need to do mostly one touch passes, and you need to be able to predict where your teammates will be. → This is a very difficult technique to master, but it can lead to some amazing plays. → It requires a lot of practice and communication with your teammates.",
+      },
     ],
   },
   fr: {
@@ -84,6 +90,12 @@ const translations = {
         description: "Formation offensive pour créer des occasions",
         fullDescription:
           "La formation en pyramide est une stratégie offensive qui permet de créer des occasions de but en exploitant les espaces laissés par la défense adverse. En plaçant vos joueurs en forme de pyramide, vous pouvez maximiser les options de passe et de tir. Cette formation est particulièrement efficace pour déstabiliser les défenses compactes et créer des ouvertures.",
+      },
+      {
+        title: "Tiki Taka",
+        description: "un style de jeu basé sur des passes courtes très précises et une forte importance accordée à la conservation du ballon.",
+        fullDescription:
+          "Vous devez principalement faire des passes en une touche, et vous devez être capable de prédire où se trouveront vos coéquipiers. → C’est une technique très difficile à maîtriser, mais elle peut mener à des actions spectaculaires. → Elle demande beaucoup d'entraînement et de communication avec vos coéquipiers.",
       },
     ],
   },
@@ -130,6 +142,13 @@ export default function StrategiePage() {
       videoType: "youtube" as const,
       difficulty: 5,
       utility: 3,
+    },
+    {
+      id: 4,
+      videoUrl: "https://youtu.be/Z1RAmsUveC8",
+      videoType: "youtubemuted" as const,
+      difficulty: 4,
+      utility: 5,
     },
   ]
 
