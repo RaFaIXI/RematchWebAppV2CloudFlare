@@ -124,7 +124,7 @@ const translations = {
         title: "Small Lob Pass Sprint Shot",
         description: "Small Lob Pass - Blue Sprint - Shot",
         fullDescription:
-          "Make a small lob pass by pressing the pass button, the modifier, and the push ball button at the same time, then immediately do the blue sprint and shoot as soon as possible. If done correctly, your character will perform an aerial shot."
+          "Make a small lob pass while running, then immediately do the blue sprint and shoot as soon as possible. If done correctly, your character will perform an aerial shot."
       },
       {
         title: "Shot Power",
@@ -148,7 +148,7 @@ const translations = {
         title: "RainbowFlick - Pass Lob- Shoot",
         description: "Quick Side Rainbowflick then do a Small Lob Pass then blue Sprint Shot",
         fullDescription:
-          "Quick Side Rainbowflick then do a Small Lob Pass then blue Sprint then do an instant Shot. You can do it but toward other sides",
+          "Quick Side Rainbowflick then do a Small Lob Pass then blue Sprint then do an instant Shot. You can do it but toward other sides (since the newer versions the small goes higher cause it does a header)",
       },
       {
         title: "Turnarround Shot/Pass",
@@ -157,14 +157,14 @@ const translations = {
           "Do a back drible, keep the dribble mod key pressed and shoot/pass, it will bait goalkeepers and defenders, it is a very effective technique.",
       },
        {
-        title: "Side Backboard",
+        title: "Solo Side Backboard (shoot version)",
         description: "Shoot on the site of the board to feint the keeper",
         fullDescription: "Shoot on the site of the board to feint the keeper, more high is the backboard more it goes far toward you"
       },
       {
         title: "Air combo",
         description: "Control the ball in the air, lob then shoot",
-        fullDescription: "Control the ball in the air, lob (short pass lob, blue sprint) then shoot"
+        fullDescription: "Control the ball in the air, lob (short pass lob while running, blue sprint) then shoot"
       },
       {
         title: "Movements and Shots Trajectory",
@@ -276,7 +276,7 @@ const translations = {
         title: "Petite Pass Sprint Tir",
         description: "Petite Pass Lobée - Sprint Bleu - Tir",
         fullDescription:
-          "fait une petite passe lobée en appuyant sur le bouton de passe, le modifier et le bouton pousser la balle en même temps puis dirrectement fait le Sprint bleu et tir le plus tot possible si bien réalisé ton personnage va faire un tir en l'air",
+          "fait une petite passe lobée en appuyant sur le bouton de petite passe lob en courrant, puis dirrectement fait le Sprint bleu et tir le plus tot possible si bien réalisé ton personnage va faire un tir en l'air",
       },
       {
         title: "Puissance des tirs",
@@ -299,7 +299,7 @@ const translations = {
       {
         title: "Arc en ciel - Passe Lobée - Tir",
         description: "Arc en ciel latéral rapide puis petite passe lobée suivie d'un tir en sprint bleu",
-        fullDescription: "Arc en ciel latéral rapide puis petite passe lobée suivie d'un tir en sprint blue. Tu peut faire cette technique dans différente dirrections"
+        fullDescription: "Arc en ciel latéral rapide puis petite passe lobée suivie d'un tir en sprint blue. Tu peut faire cette technique dans différente dirrections (depuis les nouvelles versions, la petite passe monte plus haut car le joueur fait une tête)"
 
       },
       {
@@ -308,14 +308,14 @@ const translations = {
         fullDescription: "Faites un dribble en arrière, gardez la touche mode drible enfoncée et tirez/passez. Cela trompe les gardiens et les défenseurs, c’est une technique très efficace."
       },
       {
-        title: "Side Backboard",
+        title: "Solo Side Backboard (shoot version)",
         description: "Tirez sur le côté du panneau pour feinter le gardien",
         fullDescription: "Tirez sur le côté du panneau pour feinter le gardien. Plus le panneau est haut, plus le ballon revient loin vers vous."
       },
       {
         title: "Air combo",
         description: "Controle la balle en l'air, lob puis tir",
-        fullDescription: "Controle la balle en l'air, lob (avec une petite passe lobée, sprint bleu) puis tir"
+        fullDescription: "Controle la balle en l'air, lob (avec une petite passe lobée en courrant, sprint bleu) puis tir"
       },
       {
         title: "Mouvements et Trajectoire des Tirs",
@@ -416,8 +416,8 @@ export default function TirPage() {
       id: 10,
       videoUrl: "https://youtu.be/vuXV0QRogfg",
       videoType: "youtubemuted" as const,
-      difficulty: 4,
-      utility: 4,
+      difficulty: 5,
+      utility: 1,
     },
     {
       id: 11,
