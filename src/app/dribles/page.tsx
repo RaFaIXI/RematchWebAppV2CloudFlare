@@ -180,11 +180,15 @@ const translations = {
         fullDescription: "Pour faire un wavedash latéral, tu dois pousser le ballon dans une direction, activer le mode défense, puis dasher dans la direction du ballon tout en regardant ailleurs. Tu peux le faire dans toutes les directions. C’est un peu difficile à réaliser, mais c’est de loin la meilleure façon de changer de direction avec le ballon."
       },
       {
-        title: "Skip turning animation ",
+        title: "Skip turning animation (Push Ball)",
         description: "skip l'annimation \"turning\" du personange, tout en poussant instantanément le ballon et en gardant votre élan.",
         fullDescription:"Comment faire : Lorsque vous tournez avec le ballon en votre possession, votre personnage effectue une animation de rotation. Juste après le début de cette animation, vous pouvez appuyer instantanément sur le bouton de poussée pour faire une poussée vers l'avant dans la direction du virage, en sautant la fin de l'animation et sans interrompre votre élan. Cette technique repose entièrement sur le timing. Si vous le faites trop tôt, votre personnage effectuera un dribble coupé à la place. Essayez d'abord lentement, prenez le temps de bien ressentir l'animation, puis accélérez progressivement. Petit conseil : repérez l'indicateur blanc au bas des pieds de votre personnage.  Nuances : En sprintant, cette technique ne fonctionne qu\'avec un virage complet à 180°, car c\'est le seul moment où l\'animation de rotation se déclenche. En trottinant, vous pouvez effectuer la poussée instantanée dans n\'importe quelle direction. (merci à Rurer pour la technique)",      
       },
-
+      {
+        title: "Skip turning animation ",
+        description: "skip l'annimation \"turning\" du personange, en utilisant le mode drible et en gardant votre élan.",
+        fullDescription:"Comment faire : Lorsque vous tournez avec le ballon en votre possession, votre personnage effectue une animation de rotation. Juste après le début de cette animation, vous pouvez appuyer instantanément sur le bouton de drible",      
+      },
 
     ],
   },
@@ -359,10 +363,16 @@ const translations = {
           "To do a side wavedash, you need to push the ball in a direction and then activate defense mode and dash in the direction of the ball while looking away, you can do it toward all dirrections, it is a bit tricky to do, but it is by far the best way to change direction with the ball",
       },
       {
-        title: "Skip turning animation ",
+        title: "Skip turning animation push ball",
         description: "skip the turning animation of your character, while instantly pushing the ball and converting your momentum.",
         fullDescription:
           "How to : When you turn with the ball in your possession, your character will preform a turning animation. Right after the animation starts, you can instantly press the push ball button to do a forward push in the direction you are turning, skipping the end of the animation and not stopping your momentum. This tech is all about timing. If you do it to early, your character will do a chop dribble instead. Try to do it slow at first, get a feel for the animation, and then gradually speed up. Small tip: Look for the white indicator at the bottom of your characters feet. Nuances : While sprinting, this tech only works with a full 180 turn, as that is the only time they do the turn animation. While jogging, you can do the instant turn push in any direction. (thanks to Rurer for the tech)",
+      },
+      {
+        title: "Skip turning animation",
+        description: "skip the turning animation of your character with drible mode and converting your momentum.",
+        fullDescription:
+          "How to : When you turn with the ball in your possession, your character will preform a turning animation. Right after the animation starts, you can instantly press the drible mode button skipping the end of the animation and not stopping your momentum. This tech is all about timing.",
       },
     ],
   },
@@ -410,7 +420,7 @@ export default function DriblesPage() {
     { id: 15, videoUrl: "https://youtu.be/bvqvwub7s_c", videoType: "youtubemuted", difficulty: 1, utility: 1 },
     { id: 16, videoUrl: "https://www.youtube.com/embed/mjie8ekJ5Yg?si=jpaif3_u733zHyHa&amp;clip=UgkxCb4_JrFA1w2ZtT5_-IuS2AQH7tPxcoOa&amp;clipt=EM2CAhit1wU", videoType: "youtubeclip", difficulty: 1, utility: 5 },
     { id: 17, videoUrl: "https://youtu.be/jZrw-aZaKOY", videoType: "youtubemuted", difficulty: 3, utility: 4 },
-    { id: 18, videoUrl: "https://youtu.be/aPYuLq0PX08", videoType: "youtubemuted", difficulty: 2, utility: 4 },
+    { id: 18, videoUrl: "https://youtu.be/ZtzL8DSZOyU", videoType: "youtubemuted", difficulty: 2, utility: 4 }, // ancien avant beta : https://youtu.be/aPYuLq0PX08
     { id: 19, videoUrl: "https://youtu.be/un1iAaaMDVA", videoType: "youtubemuted", difficulty: 5, utility: 2 },
     { id: 20, videoUrl: "https://youtu.be/9xGmC0ZJfPk", videoType: "youtubemuted", difficulty: 3, utility: 5 },
     { id: 21, videoUrl: "https://youtu.be/7t31Ej_30VE", videoType: "youtubemuted", difficulty: 5, utility: 3 },
@@ -420,6 +430,7 @@ export default function DriblesPage() {
     { id: 25, videoUrl: "https://youtu.be/XO1mP41WlH4", videoType: "youtubemuted", difficulty: 1, utility: 3 },
     { id: 26, videoUrl: "https://youtu.be/Omy5jQBRMFU", videoType: "youtubemuted", difficulty: 3, utility: 2 },
     { id: 27, videoUrl: "https://youtu.be/L55jJHmWdV4", videoType: "youtubemuted", difficulty: 1, utility: 4 },
+    { id: 28, videoUrl: "https://youtu.be/fg_vEVdxQQI", videoType: "youtubemuted", difficulty: 2, utility: 4 },
 
   ]
   // Combine technique data with translations
