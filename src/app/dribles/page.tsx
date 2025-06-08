@@ -189,7 +189,12 @@ const translations = {
         description: "skip l'annimation \"turning\" du personange, en utilisant le mode drible et en gardant votre élan.",
         fullDescription:"Comment faire : Lorsque vous tournez avec le ballon en votre possession, votre personnage effectue une animation de rotation. Juste après le début de cette animation, vous pouvez appuyer instantanément sur le bouton de drible",      
       },
-
+      {
+        title: "Chop Sprint Bleu",
+        description: "Tu peut utiliser le sprint bleu pour faire une feinte rapidement",
+        fullDescription:
+          "Remarque : cela fonctionne si le ballon est en votre possession et qu’il n’est pas à vos pieds. Vous pouvez effectuer une frappe, une passe ou toute autre action après la feinte avec le bon timing",
+      },
     ],
   },
   en: {
@@ -374,6 +379,12 @@ const translations = {
         fullDescription:
           "How to : When you turn with the ball in your possession, your character will preform a turning animation. Right after the animation starts, you can instantly press the drible mode button skipping the end of the animation and not stopping your momentum. This tech is all about timing.",
       },
+      {
+        title: "Blue Sprint Chop",
+        description: "You can use the blue sprint to instantly chop the ball in a direction",
+        fullDescription:
+          "Note : it work if the ball is in your possession and if the ball is not on your feet, you can do a shot a pass anything you want after the chop with the right timing",
+      },
     ],
   },
 }
@@ -431,6 +442,7 @@ export default function DriblesPage() {
     { id: 26, videoUrl: "https://youtu.be/Omy5jQBRMFU", videoType: "youtubemuted", difficulty: 3, utility: 2 },
     { id: 27, videoUrl: "https://youtu.be/L55jJHmWdV4", videoType: "youtubemuted", difficulty: 1, utility: 4 },
     { id: 28, videoUrl: "https://youtu.be/fg_vEVdxQQI", videoType: "youtubemuted", difficulty: 2, utility: 4 },
+    { id: 29, videoUrl: "https://youtu.be/oR3pxEKjgNE", videoType: "youtubemuted", difficulty: 3, utility: 4 },
 
   ]
   // Combine technique data with translations
