@@ -171,8 +171,21 @@ const translations = {
         description: "Moving changes shot Trajectory",
         fullDescription:
           "if you dont move : shoot aim on the middle of the cursor and pass aim on the left of the cursor, if you move shoot aim on the right of the cursor and pass still at left of the cursor"
+      },
+      {
+        title: "Side Rainbow Flick Chop Pass",
+        description: "Do a side rainbow flick then chop with blue sprint and pass to the goal",
+        fullDescription:
+          "This tech is all about timing when doing the pass after the blue sprint chop, you can do a shot instead of a pass, and change the dirrection of the flick"
+      },
+      {
+        title: "Rainbow Flick Chop Shot",
+        description: "Do a rainbow flick then chop with blue sprint and shoot",
+        fullDescription:
+          "This tech is all about timing when doing the shoot after the blue sprint chop, you can do a pass instead of a shot, and change the dirrection of the flick"
       }
     ],
+
   },
   fr: {
     pageTitle: "Techniques de Tir",
@@ -321,6 +334,18 @@ const translations = {
         title: "Mouvements et Trajectoire des Tirs",
         description: "Se déplacer change la trajectoire du tir",
         fullDescription: "Si tu ne bouges pas, la passe part à gauche du viseur et le tir se déclenche au centre du curseur. En revanche, si tu bouges, le tir partira légèrement à droite, voire complètement à droite du viseur selon la force appliquée, tandis que la passe reste toujours dirigée vers la gauche."
+      },
+      {
+        title: "Arc-en-ciel Latéral Feinte Sprint Bleu",
+        description: "Faites un arc-en-ciel latéral, puis une feinte avec le sprint bleue et passez vers le but",
+        fullDescription:
+          "Cette technique repose entièrement sur le timing lors de la passe après la feinte avec le sprint bleue. Vous pouvez faire une frappe au lieu d'une passe et changer la direction de l'arc-en-ciel",
+      },
+      {
+        title: "Arc-en-ciel Feinte Sprint Bleu",
+        description: "Faites un arc-en-ciel, puis une feinte avec le sprint bleue et tirez",
+        fullDescription:
+          "Cette technique repose entièrement sur le timing lors du tir après la feinte avec le sprint bleue. Vous pouvez faire une passe au lieu d'un tir et changer la direction de l'arc-en-ciel",
       }
 
 
@@ -509,6 +534,20 @@ export default function TirPage() {
       videoType: "youtubemuted" as const,
       difficulty: 1,
       utility: 5,
+    },
+    {
+      id: 24,
+      videoUrl: "https://youtu.be/VqgsGYlVYKc",
+      videoType: "youtubemuted" as const,
+      difficulty: 4,
+      utility: 4,
+    },
+    {
+      id: 25,
+      videoUrl: "https://youtu.be/trzTDjt2CiE",
+      videoType: "youtubemuted" as const,
+      difficulty: 4,
+      utility: 4,
     },
   ]
 
