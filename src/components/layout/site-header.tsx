@@ -161,7 +161,7 @@ export function SiteHeader() {
   const guideRoutes = [
     { href: "/tir", label: lang === "fr" ? "Tir" : "Shoot" },
     { href: "/defense", label: lang === "fr" ? "Défense" : "Defense" },
-    { href: "/dribles", label: lang === "fr" ? "Dribles" : "Dribbles" },
+    { href: "/dribbles", label: lang === "fr" ? "Dribles" : "Dribbles" },
     { href: "/gardien", label: lang === "fr" ? "Gardien" : "Goalkeeper" },
     { href: "/strategie", label: lang === "fr" ? "Stratégie" : "Strategy" },
   ]
