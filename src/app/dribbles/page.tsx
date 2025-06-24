@@ -195,6 +195,12 @@ const translations = {
         fullDescription:
           "Remarque : cela fonctionne si le ballon est en votre possession et qu’il n’est pas à vos pieds. Vous pouvez effectuer une frappe, une passe ou toute autre action après la feinte avec le bon timing",
       },
+      {
+        title: "Ippy Slide",
+        description: "La meilleure feinte de dribble du jeu",
+        fullDescription:
+          "Pour faire un Ippy Slide, il faut pousser la balle sans courrir puis dirrectement courrir dans la dirrection opposée.",
+      },
     ],
   },
   en: {
