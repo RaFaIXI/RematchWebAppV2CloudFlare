@@ -385,6 +385,13 @@ const translations = {
         fullDescription:
           "Note : it work if the ball is in your possession and if the ball is not on your feet, you can do a shot a pass anything you want after the chop with the right timing",
       },
+      {
+        title: "Ippy Slide",
+        description: "Best feint dribble in the game",
+        fullDescription:
+          "To do the Ippy Slide, you need to push the ball in a direction without sprinting, then immediately sprint in the opposite dirrection.",
+      },
+      
     ],
   },
 }
@@ -443,6 +450,7 @@ export default function DriblesPage() {
     { id: 27, videoUrl: "https://youtu.be/L55jJHmWdV4", videoType: "youtubemuted", difficulty: 1, utility: 4 },
     { id: 28, videoUrl: "https://youtu.be/fg_vEVdxQQI", videoType: "youtubemuted", difficulty: 2, utility: 4 },
     { id: 29, videoUrl: "https://youtu.be/oR3pxEKjgNE", videoType: "youtubemuted", difficulty: 3, utility: 4 },
+    { id: 30, videoUrl: "https://youtu.be/3kTs7qALADE", videoType: "youtubemuted", difficulty: 1, utility: 5 },
 
   ]
   // Combine technique data with translations
