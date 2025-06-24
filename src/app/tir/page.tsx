@@ -183,7 +183,14 @@ const translations = {
         description: "Do a rainbow flick then chop with blue sprint and shoot",
         fullDescription:
           "This tech is all about timing when doing the shoot after the blue sprint chop, you can do a pass instead of a shot, and change the dirrection of the flick"
-      }
+      },
+      {
+        title: "Bladeshot",
+        description: "The fastest way to score in Rematch",
+        fullDescription:
+          "Pulling off a bladeshot in Rematch is incredibly simple. All you have to do is push the ball a short distance forward using the A/X button on Xbox/PlayStation. Then, perform a short lob by pressing RB/X/A or R1/Square/X and then blue sprint and shoot"
+      },
+
     ],
 
   },
@@ -346,7 +353,13 @@ const translations = {
         description: "Faites un arc-en-ciel, puis une feinte avec le sprint bleue et tirez",
         fullDescription:
           "Cette technique repose entièrement sur le timing lors du tir après la feinte avec le sprint bleue. Vous pouvez faire une passe au lieu d'un tir et changer la direction de l'arc-en-ciel",
-      }
+      },
+      {
+        title: "Bladeshot",
+        description: "Le tir le plus rapide pour marquer en Rematch",
+        fullDescription:
+          "Réaliser un bladeshot en Rematch est incroyablement simple. Il vous suffit de pousser le ballon sur une courte distance vers l'avant en utilisant le bouton A/X sur Xbox/PlayStation. Ensuite, effectuez une petite passe lobée en appuyant sur RB/X/A ou R1/Square/X, puis faites un sprint bleu et tirez.",
+      },
 
 
     ],
@@ -548,6 +561,13 @@ export default function TirPage() {
       videoType: "youtubemuted" as const,
       difficulty: 4,
       utility: 4,
+    },
+    {
+      id: 26,
+      videoUrl: "https://youtu.be/ltdfYF3IJ6A",
+      videoType: "youtubemuted" as const,
+      difficulty: 2,
+      utility: 5,
     },
   ]
 
