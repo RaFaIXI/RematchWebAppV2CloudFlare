@@ -585,7 +585,7 @@ export default function TirPage() {
     {
       id: 27,
       videoUrl: "https://youtu.be/j18rTF_4gug",
-      videoType: "youtube" as const,
+      videoType: "normalyt" as const,
       difficulty: 2,
       utility: 5,
     },
