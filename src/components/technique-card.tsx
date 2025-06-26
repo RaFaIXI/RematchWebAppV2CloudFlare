@@ -21,7 +21,7 @@ interface TechniqueCardProps {
   title: string
   description: string
   videoUrl: string
-  videoType: "local" | "youtube" | "youtubemuted" | "youtubeclip"
+  videoType: "local" | "youtube" | "youtubemuted" | "youtubeclip" | "normalyt"
   fullDescription: string
   difficulty: number
   utility: number
@@ -90,7 +90,7 @@ export function TechniqueCard({
   const videoRef = useRef<HTMLVideoElement>(null)
   
   // Process different video types
-  const youtubeId = (videoType === "youtube" || videoType === "youtubemuted") ? getYouTubeVideoId(videoUrl) : null
+  const youtubeId = (videoType === "youtube" || videoType === "youtubemuted" || videoType === "normalyt") ? getYouTubeVideoId(videoUrl) : null
 
   const isException = exeptionTitle.includes(title)
   // Fix: Only mute if videoType is "youtubemuted"
@@ -165,6 +165,18 @@ export function TechniqueCard({
             allowFullScreen
           ></iframe>
         </div>
+      )
+    }
+    // Handle normal YouTube videos with standard overlay
+    else if (videoType === "normalyt" && youtubeId) {
+      return (
+        <iframe
+          src={`https://www.youtube.com/embed/${youtubeId}?autoplay=${isOpen ? "1" : "0"}&loop=1&playlist=${youtubeId}&rel=0&playsinline=1`}
+          title={`YouTube video: ${title}`}
+          className="w-full h-full absolute top-0 left-0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        ></iframe>
       )
     } 
     // Handle local videos
