@@ -190,6 +190,13 @@ const translations = {
         fullDescription:
           "Pulling off a bladeshot in Rematch is incredibly simple. All you have to do is push the ball a short distance forward using the A/X button on Xbox/PlayStation. Then, perform a short lob by pressing RB/X/A or R1/Square/X and then blue sprint and shoot"
       },
+      {
+        title: "Fake Shot",
+        description: "Bait defenders and create space with a quick cancel",
+        fullDescription:
+          "The fake shot is a powerful mind game in Rematch. Start by pushing the ball forward using the A/X button on Xbox/PlayStation. Immediately tap the shoot button (B/Circle), then pause the game just after inputting the shot to cancel the animation. Unpause at the right moment to freeze defenders and open up space for your next move."
+      }
+
 
     ],
 
@@ -360,6 +367,12 @@ const translations = {
         fullDescription:
           "Réaliser un bladeshot en Rematch est incroyablement simple. Il vous suffit de pousser le ballon sur une courte distance vers l'avant en utilisant le bouton A/X sur Xbox/PlayStation. Ensuite, effectuez une petite passe lobée en appuyant sur RB/X/A ou R1/Square/X, puis faites un sprint bleu et tirez.",
       },
+      {
+        title: "Feinte de tir",
+        description: "Leurre les défenseurs et crée de l’espace avec une annulation rapide",
+        fullDescription:
+          "La feinte de tir est une arme redoutable dans Rematch. Commencez par pousser le ballon vers l’avant avec le bouton A/X sur Xbox/PlayStation. Appuyez immédiatement sur le bouton de tir (B/Cercle), puis mettez le jeu en pause juste après pour annuler l’animation du tir. Reprenez la partie au bon moment pour figer les défenseurs et ouvrir des opportunités."
+      }
 
 
     ],
@@ -565,6 +578,13 @@ export default function TirPage() {
     {
       id: 26,
       videoUrl: "https://youtu.be/ltdfYF3IJ6A",
+      videoType: "youtubemuted" as const,
+      difficulty: 2,
+      utility: 5,
+    },
+    {
+      id: 27,
+      videoUrl: "https://youtu.be/j18rTF_4gug",
       videoType: "youtubemuted" as const,
       difficulty: 2,
       utility: 5,
