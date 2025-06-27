@@ -185,7 +185,9 @@ export function SiteHeader() {
   // Add donate link only if not embedded
   if (!isEmbeddedRematchFrance) {
     mainRoutes.push({ href: "/donate", label: lang === "fr" ? "Soutiens-moi" : "Support me" })
-  }
+  
+    mainRoutes.push({ href: "/Tracker", label: lang === "fr" ? "Tracker" : "Tracker" })
+}
 
   // Add login link if user is not logged in and site is not embedded in RematchFrance
   //if (!isLoggedIn && !isEmbeddedRematchFrance) {
