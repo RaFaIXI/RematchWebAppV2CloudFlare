@@ -382,6 +382,8 @@ const translations = {
 export default function TirPage() {
   const { theme } = useTheme()
   const [lang, setLang] = useState<"en" | "fr">("en")
+  const [isEmbedded, setIsEmbedded] = useState(false)
+  const [isEmbeddedRematchFrance, setIsEmbeddedRematchFrance] = useState(false)
   const [minDifficulty, setMinDifficulty] = useState(1)
   const [maxDifficulty, setMaxDifficulty] = useState(5)
   const [minUtility, setMinUtility] = useState(1)
@@ -390,6 +392,33 @@ export default function TirPage() {
   const [filtersExpanded, setFiltersExpanded] = useState(false)
 
   useEffect(() => {
+    // Check if the page is embedded in an iframe
+    if (window.top !== window.self) {
+      setIsEmbedded(true);
+      
+      try {
+        // Try to get the URL of the parent (embedding) page
+        const embedderURL = document.referrer;
+        console.log("Page is embedded in an iframe by:", embedderURL);
+        
+        // Check if the embedder is specifically rematchfrance.fr
+        if (embedderURL && embedderURL.includes("rematchfrance.fr")) {
+          console.log("Embedded specifically on rematchfrance.fr");
+          setIsEmbeddedRematchFrance(true);
+        } else {
+          setIsEmbeddedRematchFrance(false);
+        }
+      } catch (error) {
+        // If we can't access parent information due to same-origin policy
+        console.log("Page is embedded in an iframe but cannot determine embedder due to security restrictions");
+        setIsEmbeddedRematchFrance(false);
+      }
+    } else {
+      setIsEmbedded(false);
+      setIsEmbeddedRematchFrance(false);
+      console.log("Page is not embedded.");
+    }
+
     const storedLang = localStorage.getItem("lang")
     if (storedLang) {
       setLang(storedLang as "en" | "fr")
@@ -591,10 +620,20 @@ export default function TirPage() {
     },
   ]
 
+  // Filter technique meta data based on embedded status
+  const filteredTechniqueMeta = isEmbeddedRematchFrance 
+    ? techniqueMeta.filter(meta => meta.id !== 27)
+    : techniqueMeta;
+
+  // Filter translations to match the filtered meta data
+  const filteredTranslations = isEmbeddedRematchFrance 
+    ? t.techniques.filter((_, index) => techniqueMeta[index].id !== 27)
+    : t.techniques;
+
   // Combine technique data with translations
-  const techniques = t.techniques.map((tech, index) => ({
+  const techniques = filteredTranslations.map((tech, index) => ({
     ...tech,
-    ...techniqueMeta[index],
+    ...filteredTechniqueMeta[index],
   }))
 
   // Filter techniques based on difficulty and utility ranges
