@@ -499,7 +499,7 @@ export default function TirPage() {
       difficulty: 5,
       utility: 1,
     },
-    {
+    { 
       id: 11,
       videoUrl: "https://youtu.be/tQixT6PDYtQ",
       videoType: "youtubemuted" as const,
