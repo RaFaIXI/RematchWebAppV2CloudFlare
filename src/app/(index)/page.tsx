@@ -222,7 +222,7 @@ export default function Home() {
                 isEmbeddedRematchFrance={isEmbeddedRematchFrance}
               />
               <CategoryCard 
-                href="/dribles" 
+                href="/dribbles" 
                 icon={<Footprints />} 
                 title={t.dribbling} 
                 desc={t.dribblingDesc} 
