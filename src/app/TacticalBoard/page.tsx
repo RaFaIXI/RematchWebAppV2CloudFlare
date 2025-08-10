@@ -84,7 +84,7 @@ export default function TacticalBoardPage() {
 
   useEffect(() => {
     // Check for easter egg pattern after each move
-    checkForEasterEgg();
+    // checkForEasterEgg(); // Easter egg disabled
   }, [players]);
 
   useEffect(() => {
@@ -539,6 +539,9 @@ export default function TacticalBoardPage() {
   };
 
   const checkForEasterEgg = () => {
+    // Easter egg disabled
+    return;
+    
     // First find all the available players (excluding the ball)
     const playersOnly = players.filter(p => p.id !== "ball");
     
@@ -611,6 +614,9 @@ export default function TacticalBoardPage() {
   };
 
   const triggerEasterEgg = () => {
+    // Easter egg disabled
+    return;
+    
     if (showEasterEgg) return; // Already showing
     
     setShowEasterEgg(true);
@@ -1002,12 +1008,11 @@ export default function TacticalBoardPage() {
                 )}
                 
                 {/* Easter Egg Animation with Image */}
-                {showEasterEgg && (
+                {/* {showEasterEgg && (
                   <div className="absolute inset-0 flex items-center justify-center z-30">
                     <div className="bg-black bg-opacity-70 p-6 rounded-lg animate-bounce">
                       <p className="text-2xl text-white font-bold mb-4">{t.easterEggMessage}</p>
                       <div className="flex justify-center">
-                        {/* Replace the emoji with the actual image */}
                         <div className="relative w-64 h-64">
                           <Image 
                             src="/images.png" 
@@ -1020,7 +1025,7 @@ export default function TacticalBoardPage() {
                       </div>
                     </div>
                   </div>
-                )}
+                )} */}
               </div>
               
               <div className="mt-4 text-sm text-gray-600 dark:text-gray-400 text-center">
@@ -1351,12 +1356,11 @@ export default function TacticalBoardPage() {
                 )}
                 
                 {/* Easter Egg Animation with Image */}
-                {showEasterEgg && (
+                {/* {showEasterEgg && (
                   <div className="absolute inset-0 flex items-center justify-center z-30">
                     <div className="bg-black bg-opacity-70 p-6 rounded-lg animate-bounce">
                       <p className="text-2xl text-white font-bold mb-4">{t.easterEggMessage}</p>
                       <div className="flex justify-center">
-                        {/* Replace the emoji with the actual image */}
                         <div className="relative w-64 h-64">
                           <Image 
                             src="/images.png" 
@@ -1369,7 +1373,7 @@ export default function TacticalBoardPage() {
                       </div>
                     </div>
                   </div>
-                )}
+                )} */}
               </div>
               
               <div className="mt-4 text-sm text-gray-600 dark:text-gray-400 text-center">
